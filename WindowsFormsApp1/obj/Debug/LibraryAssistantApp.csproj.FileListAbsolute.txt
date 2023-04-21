@@ -1,0 +1,12 @@
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\bin\Debug\WindowsFormsApp1.exe.config
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\bin\Debug\WindowsFormsApp1.exe
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\bin\Debug\WindowsFormsApp1.pdb
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\obj\Debug\LibraryAssistantApp.csproj.AssemblyReference.cache
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\obj\Debug\LibraryAssistantApp.csproj.SuggestedBindingRedirects.cache
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.AuthForm.resources
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Form1.resources
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Properties.Resources.resources
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\obj\Debug\LibraryAssistantApp.csproj.GenerateResource.cache
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\obj\Debug\LibraryAssistantApp.csproj.CoreCompileInputs.cache
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.exe
+C:\Users\nikit\Desktop\WinFormApp\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.pdb
