@@ -1,22 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolBar;
 
 namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
-        private SqlConnection connection;
+        private SqlConnection connection = null;
         public Form1()
         {
 
@@ -70,10 +62,7 @@ namespace WindowsFormsApp1
 
         }
 
-        private void выходToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            Environment.Exit(0);
-        }
+
 
 
 
@@ -122,15 +111,15 @@ namespace WindowsFormsApp1
         }
 
         private void button4_Click(object sender, EventArgs e)
-        {
-            /* string que = $"update Авторы (Фамилия, Имя, Отчество, [Страна автора]) set ({textBox1.Text}, {textBox2.Text}, {textBox3.Text}, {textBox4.Text}) WHERE SEARCHRESULT";
+        {   /*
+             string que = $"update Авторы (Фамилия, Имя, Отчество, [Страна автора]) set ({textBox1.Text}, {textBox2.Text}, {textBox3.Text}, {textBox4.Text}) WHERE SEARCHRESULT";
              try
              {
                  DBO.ExecuteQuery(que);
                  MessageBox.Show("Успешно добавлен", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
              }
              catch (Exception ex) { MessageBox.Show("Ошибка обновления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-            */
+            /*
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -152,6 +141,22 @@ namespace WindowsFormsApp1
 
         private void button3_Click(object sender, EventArgs e)
         {
+            string que = $"select * from Авторы where Фамилия like '%{textBox1.Text}%'  or Имя like '%{textBox2.Text}%' or Отчество like '%{textBox3.Text}%' or [Страна автора] like '%{textBox4.Text}%'";
+            //DialogResult res = MessageBox.Show("", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
+            DataTable table = new DataTable();
+            SqlDataAdapter adapter = new SqlDataAdapter(que, connection);
+            try
+            {
+                dataGridView1.Location = new Point(241, 34);
+                dataGridView1.Size = new Size(585, 286);
+                adapter.Fill(table);
+                table.Columns.RemoveAt(0);
+                dataGridView1.AutoGenerateColumns = true;
+                dataGridView1.DataSource = table;
+                dataGridView1.Visible = true;
+
+            }
+            catch (Exception ex) { MessageBox.Show("Ошибка добавления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
         }
 
@@ -171,18 +176,29 @@ namespace WindowsFormsApp1
                 dataGridView1.AutoGenerateColumns = true;
                 dataGridView1.DataSource = table;
                 dataGridView1.Visible = true;
-            } catch (Exception er) { MessageBox.Show("Ошибка отображения! " + er.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-            
+            }
+            catch (Exception er) { MessageBox.Show("Ошибка отображения! " + er.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+
         }
 
         private void проверитьПодключениеКБДToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                if (connection is null)
-                    throw new Exception("Вы не авторизированы!");
-                connection?.Open();
-                MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                if (connection != null && connection.State == ConnectionState.Open)
+                {
+                    string sql = "SELECT SUSER_SNAME()";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        string userName = command.ExecuteScalar().ToString();
+
+                        MessageBox.Show($"Успешно подключено.\nПользователь: {Environment.UserName};\nКомпьютер: {Environment.MachineName};\nИмя сервера: {connection.DataSource};\nИмя базы данных: {connection.Database};\nВы авторизированы под именем: {userName}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else throw new Exception("Вы не авторизированы!");
+
+
             }
             catch (Exception ex) { MessageBox.Show("Невозможно подключиться\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
@@ -191,24 +207,21 @@ namespace WindowsFormsApp1
 
 
 
-        async private void авторизироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
+        private void авторизироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AuthForm authreg = new AuthForm();
             try
             {
-                
                 authreg.WhichWindow("authorize");
+                while (authreg.ShowDialog() == DialogResult.Retry)
+                    authreg.WhichWindow("authorize");
                 
-                connection = authreg.GetConnection;
-                Thread.Sleep(1000);
-                if (connection != null)
-                    MessageBox.Show("settled connection");
-                else
-                    MessageBox.Show("lee kuda", "hell no");
+                    connection = authreg.GetConnection;
             }
-            catch (Exception er) {
-            
-                
+            catch (Exception er)
+            {
+
+
                 Console.WriteLine(er);
             }
             //connection.Open();
@@ -218,10 +231,11 @@ namespace WindowsFormsApp1
 
         private void зарегистрироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AuthForm authForm= new AuthForm();
+            AuthForm authForm = new AuthForm();
             authForm.WhichWindow("register");
+            authForm.ShowDialog();
 
-         
+
         }
 
         private void вызовТаблицыToolStripMenuItem_Click(object sender, EventArgs e)
@@ -259,6 +273,16 @@ namespace WindowsFormsApp1
             groupBox2.Visible = true;
             groupBox2.Location = new Point(19, 26);
             groupBox2.Size = new Size(213, 340);
+        }
+
+        private void изПриложенияToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        private void изУчетнойЗаписиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            connection = null;
         }
     }
 }

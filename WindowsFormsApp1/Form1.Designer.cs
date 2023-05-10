@@ -81,6 +81,8 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.изУчетнойЗаписиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.изПриложенияToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -97,7 +99,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1627, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1627, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -108,7 +110,7 @@
             this.проверитьПодключениеКБДToolStripMenuItem,
             this.выходToolStripMenuItem1});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // регистрацияИАвторизацияToolStripMenuItem
@@ -119,7 +121,6 @@
             this.регистрацияИАвторизацияToolStripMenuItem.Name = "регистрацияИАвторизацияToolStripMenuItem";
             this.регистрацияИАвторизацияToolStripMenuItem.Size = new System.Drawing.Size(302, 26);
             this.регистрацияИАвторизацияToolStripMenuItem.Text = "Регистрация и авторизация";
-  
             // 
             // зарегистрироватьсяToolStripMenuItem
             // 
@@ -144,10 +145,13 @@
             // 
             // выходToolStripMenuItem1
             // 
+            this.выходToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.изУчетнойЗаписиToolStripMenuItem,
+            this.изПриложенияToolStripMenuItem});
             this.выходToolStripMenuItem1.Name = "выходToolStripMenuItem1";
             this.выходToolStripMenuItem1.Size = new System.Drawing.Size(302, 26);
             this.выходToolStripMenuItem1.Text = "Выход";
-            this.выходToolStripMenuItem1.Click += new System.EventHandler(this.выходToolStripMenuItem1_Click);
+ 
             // 
             // вызовТаблицыToolStripMenuItem
             // 
@@ -158,7 +162,7 @@
             this.поставкиИСписанияToolStripMenuItem,
             this.сотрудникиToolStripMenuItem});
             this.вызовТаблицыToolStripMenuItem.Name = "вызовТаблицыToolStripMenuItem";
-            this.вызовТаблицыToolStripMenuItem.Size = new System.Drawing.Size(131, 26);
+            this.вызовТаблицыToolStripMenuItem.Size = new System.Drawing.Size(131, 24);
             this.вызовТаблицыToolStripMenuItem.Text = "Вызов таблицы";
             this.вызовТаблицыToolStripMenuItem.Click += new System.EventHandler(this.вызовТаблицыToolStripMenuItem_Click);
             // 
@@ -176,28 +180,28 @@
             // авторыToolStripMenuItem
             // 
             this.авторыToolStripMenuItem.Name = "авторыToolStripMenuItem";
-            this.авторыToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.авторыToolStripMenuItem.Size = new System.Drawing.Size(185, 26);
             this.авторыToolStripMenuItem.Text = "Авторы";
             this.авторыToolStripMenuItem.Click += new System.EventHandler(this.авторыToolStripMenuItem_Click);
             // 
             // издательстваToolStripMenuItem
             // 
             this.издательстваToolStripMenuItem.Name = "издательстваToolStripMenuItem";
-            this.издательстваToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.издательстваToolStripMenuItem.Size = new System.Drawing.Size(185, 26);
             this.издательстваToolStripMenuItem.Text = "Издательства";
             this.издательстваToolStripMenuItem.Click += new System.EventHandler(this.издательстваToolStripMenuItem_Click);
             // 
             // жанрыToolStripMenuItem
             // 
             this.жанрыToolStripMenuItem.Name = "жанрыToolStripMenuItem";
-            this.жанрыToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.жанрыToolStripMenuItem.Size = new System.Drawing.Size(185, 26);
             this.жанрыToolStripMenuItem.Text = "Жанры";
             this.жанрыToolStripMenuItem.Click += new System.EventHandler(this.жанрыToolStripMenuItem_Click);
             // 
             // книгаToolStripMenuItem
             // 
             this.книгаToolStripMenuItem.Name = "книгаToolStripMenuItem";
-            this.книгаToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.книгаToolStripMenuItem.Size = new System.Drawing.Size(185, 26);
             this.книгаToolStripMenuItem.Text = "Книга";
             this.книгаToolStripMenuItem.Click += new System.EventHandler(this.книгаToolStripMenuItem_Click_1);
             // 
@@ -275,7 +279,7 @@
             this.справочникToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.книгиToolStripMenuItem1});
             this.справочникToolStripMenuItem.Name = "справочникToolStripMenuItem";
-            this.справочникToolStripMenuItem.Size = new System.Drawing.Size(108, 26);
+            this.справочникToolStripMenuItem.Size = new System.Drawing.Size(108, 24);
             this.справочникToolStripMenuItem.Text = "Справочник";
             // 
             // книгиToolStripMenuItem1
@@ -286,34 +290,34 @@
             this.авторыToolStripMenuItem1,
             this.книгиToolStripMenuItem2});
             this.книгиToolStripMenuItem1.Name = "книгиToolStripMenuItem1";
-            this.книгиToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.книгиToolStripMenuItem1.Size = new System.Drawing.Size(134, 26);
             this.книгиToolStripMenuItem1.Text = "Книги";
             // 
             // издательстваToolStripMenuItem1
             // 
             this.издательстваToolStripMenuItem1.Name = "издательстваToolStripMenuItem1";
-            this.издательстваToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.издательстваToolStripMenuItem1.Size = new System.Drawing.Size(185, 26);
             this.издательстваToolStripMenuItem1.Text = "Издательства";
             this.издательстваToolStripMenuItem1.Click += new System.EventHandler(this.издательстваToolStripMenuItem1_Click);
             // 
             // жанрыToolStripMenuItem1
             // 
             this.жанрыToolStripMenuItem1.Name = "жанрыToolStripMenuItem1";
-            this.жанрыToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.жанрыToolStripMenuItem1.Size = new System.Drawing.Size(185, 26);
             this.жанрыToolStripMenuItem1.Text = "Жанры";
             this.жанрыToolStripMenuItem1.Click += new System.EventHandler(this.жанрыToolStripMenuItem1_Click);
             // 
             // авторыToolStripMenuItem1
             // 
             this.авторыToolStripMenuItem1.Name = "авторыToolStripMenuItem1";
-            this.авторыToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.авторыToolStripMenuItem1.Size = new System.Drawing.Size(185, 26);
             this.авторыToolStripMenuItem1.Text = "Авторы";
             this.авторыToolStripMenuItem1.Click += new System.EventHandler(this.авторыToolStripMenuItem1_Click);
             // 
             // книгиToolStripMenuItem2
             // 
             this.книгиToolStripMenuItem2.Name = "книгиToolStripMenuItem2";
-            this.книгиToolStripMenuItem2.Size = new System.Drawing.Size(224, 26);
+            this.книгиToolStripMenuItem2.Size = new System.Drawing.Size(185, 26);
             this.книгиToolStripMenuItem2.Text = "Книги";
             this.книгиToolStripMenuItem2.Click += new System.EventHandler(this.книгиToolStripMenuItem2_Click);
             // 
@@ -323,7 +327,7 @@
             this.справкаToolStripMenuItem,
             this.разработчикToolStripMenuItem});
             this.оПрограммеToolStripMenuItem.Name = "оПрограммеToolStripMenuItem";
-            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(118, 26);
+            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(118, 24);
             this.оПрограммеToolStripMenuItem.Text = "О программе";
             // 
             // справкаToolStripMenuItem
@@ -362,12 +366,11 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Авторы";
-
             // 
             // disp_Авторы
             // 
             this.disp_Авторы.Location = new System.Drawing.Point(15, 372);
-            this.disp_Авторы.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.disp_Авторы.Margin = new System.Windows.Forms.Padding(4);
             this.disp_Авторы.Name = "disp_Авторы";
             this.disp_Авторы.Size = new System.Drawing.Size(261, 28);
             this.disp_Авторы.TabIndex = 9;
@@ -378,7 +381,7 @@
             // update_author
             // 
             this.update_author.Location = new System.Drawing.Point(11, 325);
-            this.update_author.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.update_author.Margin = new System.Windows.Forms.Padding(4);
             this.update_author.Name = "update_author";
             this.update_author.Size = new System.Drawing.Size(111, 28);
             this.update_author.TabIndex = 7;
@@ -389,7 +392,7 @@
             // search_author
             // 
             this.search_author.Location = new System.Drawing.Point(165, 289);
-            this.search_author.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.search_author.Margin = new System.Windows.Forms.Padding(4);
             this.search_author.Name = "search_author";
             this.search_author.Size = new System.Drawing.Size(111, 28);
             this.search_author.TabIndex = 6;
@@ -400,13 +403,12 @@
             // delete_author
             // 
             this.delete_author.Location = new System.Drawing.Point(165, 325);
-            this.delete_author.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.delete_author.Margin = new System.Windows.Forms.Padding(4);
             this.delete_author.Name = "delete_author";
             this.delete_author.Size = new System.Drawing.Size(111, 28);
             this.delete_author.TabIndex = 8;
             this.delete_author.Text = "Удалить";
             this.delete_author.UseVisualStyleBackColor = true;
-            this.delete_author.Click += new System.EventHandler(this.button2_Click);
             // 
             // label4
             // 
@@ -451,7 +453,7 @@
             // textBox4
             // 
             this.textBox4.Location = new System.Drawing.Point(11, 234);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(4);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(264, 22);
             this.textBox4.TabIndex = 4;
@@ -459,7 +461,7 @@
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(8, 174);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(4);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(268, 22);
             this.textBox3.TabIndex = 3;
@@ -467,7 +469,7 @@
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(7, 111);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(268, 22);
             this.textBox2.TabIndex = 2;
@@ -475,7 +477,7 @@
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(7, 49);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(269, 22);
             this.textBox1.TabIndex = 1;
@@ -506,7 +508,7 @@
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(731, 304);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(4);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.Size = new System.Drawing.Size(181, 81);
@@ -515,9 +517,9 @@
             // groupBox3
             // 
             this.groupBox3.Location = new System.Drawing.Point(699, 34);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox3.Size = new System.Drawing.Size(267, 123);
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
@@ -526,9 +528,9 @@
             // groupBox4
             // 
             this.groupBox4.Location = new System.Drawing.Point(1027, 42);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox4.Size = new System.Drawing.Size(221, 126);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
@@ -537,9 +539,9 @@
             // groupBox5
             // 
             this.groupBox5.Location = new System.Drawing.Point(1360, 54);
-            this.groupBox5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox5.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox5.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox5.Size = new System.Drawing.Size(267, 123);
             this.groupBox5.TabIndex = 5;
             this.groupBox5.TabStop = false;
@@ -548,13 +550,27 @@
             // groupBox6
             // 
             this.groupBox6.Location = new System.Drawing.Point(699, 167);
-            this.groupBox6.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox6.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox6.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox6.Size = new System.Drawing.Size(267, 123);
             this.groupBox6.TabIndex = 6;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Книга";
+            // 
+            // изУчетнойЗаписиToolStripMenuItem
+            // 
+            this.изУчетнойЗаписиToolStripMenuItem.Name = "изУчетнойЗаписиToolStripMenuItem";
+            this.изУчетнойЗаписиToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.изУчетнойЗаписиToolStripMenuItem.Text = "Из учетной записи";
+            this.изУчетнойЗаписиToolStripMenuItem.Click += new System.EventHandler(this.изУчетнойЗаписиToolStripMenuItem_Click);
+            // 
+            // изПриложенияToolStripMenuItem
+            // 
+            this.изПриложенияToolStripMenuItem.Name = "изПриложенияToolStripMenuItem";
+            this.изПриложенияToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.изПриложенияToolStripMenuItem.Text = "Из приложения";
+            this.изПриложенияToolStripMenuItem.Click += new System.EventHandler(this.изПриложенияToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -643,6 +659,8 @@
         private System.Windows.Forms.ToolStripMenuItem жанрыToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem авторыToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem книгиToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem изУчетнойЗаписиToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem изПриложенияToolStripMenuItem;
     }
 }
 
