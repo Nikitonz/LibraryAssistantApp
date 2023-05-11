@@ -130,14 +130,14 @@ namespace WindowsFormsApp1
                 connection = new SqlConnection(connectionString);
                 await connection.OpenAsync();
                 MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
+               // DialogResult = DialogResult.OK;
 
                 this.Close();//--only if connection establishing was succeed
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Ошибка подключения: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                DialogResult = DialogResult.Retry;
+                //DialogResult = DialogResult.Retry;
 
                 textBox3.Text = "";
                 textBox4.Text = "";

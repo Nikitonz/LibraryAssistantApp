@@ -69,9 +69,9 @@
             this.regbox.Controls.Add(this.label1);
             this.regbox.Controls.Add(this.textBox1);
             this.regbox.Location = new System.Drawing.Point(10, 20);
-            this.regbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.regbox.Margin = new System.Windows.Forms.Padding(2);
             this.regbox.Name = "regbox";
-            this.regbox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.regbox.Padding = new System.Windows.Forms.Padding(2);
             this.regbox.Size = new System.Drawing.Size(180, 327);
             this.regbox.TabIndex = 0;
             this.regbox.TabStop = false;
@@ -88,7 +88,7 @@
             "Библиотекарь",
             "Директор"});
             this.comboBox1.Location = new System.Drawing.Point(5, 98);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(170, 21);
             this.comboBox1.TabIndex = 9;
@@ -154,7 +154,7 @@
             // 
             this.button1.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.button1.Location = new System.Drawing.Point(24, 252);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(140, 25);
             this.button1.TabIndex = 4;
@@ -185,7 +185,7 @@
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(7, 47);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(169, 20);
             this.textBox1.TabIndex = 0;
@@ -199,20 +199,19 @@
             this.authbox.Controls.Add(this.label4);
             this.authbox.Controls.Add(this.label3);
             this.authbox.Location = new System.Drawing.Point(194, 20);
-            this.authbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.authbox.Margin = new System.Windows.Forms.Padding(2);
             this.authbox.Name = "authbox";
-            this.authbox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.authbox.Padding = new System.Windows.Forms.Padding(2);
             this.authbox.Size = new System.Drawing.Size(208, 155);
             this.authbox.TabIndex = 1;
             this.authbox.TabStop = false;
             this.authbox.Text = "Авторизация";
             this.authbox.Visible = false;
-
             // 
             // textBox4
             // 
             this.textBox4.Location = new System.Drawing.Point(31, 98);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(2);
             this.textBox4.MaxLength = 20;
             this.textBox4.Name = "textBox4";
             this.textBox4.PasswordChar = '*';
@@ -221,9 +220,8 @@
             // 
             // button2
             // 
-            this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.button2.Location = new System.Drawing.Point(8, 133);
-            this.button2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(196, 19);
             this.button2.TabIndex = 7;
@@ -234,7 +232,7 @@
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(31, 42);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(2);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(174, 20);
             this.textBox3.TabIndex = 5;
@@ -277,7 +275,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "AuthForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
