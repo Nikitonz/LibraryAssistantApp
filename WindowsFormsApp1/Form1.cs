@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace WindowsFormsApp1
@@ -10,8 +11,9 @@ namespace WindowsFormsApp1
     public partial class Form1 : Form
     {
         private SqlConnection connection = null;
+        private string[] usersAcessLevels = null;
 
-        private enum acessLevels
+        private enum AcсessLevels
         {
             db_owner,
             db_securityadmin,
@@ -30,7 +32,8 @@ namespace WindowsFormsApp1
             db_ddladmin_sid,
             db_datareader_sid,
             db_datawriter_sid,
-            db_denydatareader_sid
+            db_denydatareader_sid, 
+            none
         }
         public Form1()
         {
@@ -48,11 +51,11 @@ namespace WindowsFormsApp1
             groupBox6.Visible = false;
             вызовТаблицыToolStripMenuItem.Visible = false;
             dataGridView1.Visible = false;
-            DBO dbo = new DBO();
+            CheckAcessibility(usersAcessLevels);
 
         }
 
-        public void SetInvisible()
+        private void SetInvisible()
         {
             foreach (Control control in Controls)
             {
@@ -62,7 +65,7 @@ namespace WindowsFormsApp1
                 }
             }
         }
-        public void SetInvisible(GroupBox groupBoxToKeepVisible)
+        private void SetInvisible(GroupBox groupBoxToKeepVisible)
         {
             foreach (Control control in Controls)
             {
@@ -75,19 +78,70 @@ namespace WindowsFormsApp1
                 }
             }
         }
+        private void CheckAcessibility(string[] roles) {
+            AcсessLevels maxRole = AcсessLevels.none;
+            if (!(roles is null)) {
 
-        private void разработчикToolStripMenuItem_Click(object sender, EventArgs e)
+                foreach (string role in roles)
+                {
+                    if (Enum.TryParse(role, out AcсessLevels parsedRole) && parsedRole < maxRole)
+                    {
+                        maxRole = parsedRole;
+                    }
+                }
+            }
+            void FunctionalityDisable() {
+                add_author.Enabled = false;
+                search_author.Enabled = false;
+                update_author.Enabled = false;
+                delete_author.Enabled = false;
+
+            }
+            void FunctionalityEnable() {
+                add_author.Enabled = true;
+                search_author.Enabled = true;
+                update_author.Enabled = true;
+                delete_author.Enabled = true;
+
+            }
+
+            //MessageBox.Show($"{maxRole}", "yes", MessageBoxButtons.OK);
+            switch (maxRole)
+            {
+                case AcсessLevels.db_owner:
+                case AcсessLevels.db_datareader:
+                case AcсessLevels.db_datawriter:
+                    FunctionalityEnable();
+                    break;
+                default:
+                    FunctionalityDisable();
+                    break;
+            }
+
+        }
+
+
+        public void ExecuteQuery(string query)
         {
 
+            connection.Open();
+            SqlCommand command = new SqlCommand(query, connection);
+            SqlDataReader reader = command.ExecuteReader();
 
-            DialogResult = MessageBox.Show("Developer: Никита Обухов\nemail: nikitoniy2468@gmail.com\nAll rights reserved.", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+            while (reader.Read())
+            {
+                Console.WriteLine(reader.GetString(0));
+            }
+            connection.Close();
 
         }
 
 
 
-
+        private void разработчикToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult = MessageBox.Show("Developer: Никита Обухов\nemail: nikitoniy2468@gmail.com\nAll rights reserved.", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
         private void авторыToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -95,8 +149,6 @@ namespace WindowsFormsApp1
             groupBox1.Visible = true;
             groupBox1.Location = new Point(19, 26);
             groupBox1.Size = new Size(213, 340);
-
-
         }
         private void издательстваToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -127,14 +179,14 @@ namespace WindowsFormsApp1
             string que = $"INSERT INTO Авторы (Фамилия, Имя, Отчество, [Страна автора]) VALUES ({textBox1.Text}, {textBox2.Text}, {textBox3.Text}, {textBox4.Text})";
             try
             {
-                DBO.ExecuteQuery(que);
+                ExecuteQuery(que);
                 MessageBox.Show("Успешно добавлен", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex) { MessageBox.Show("Ошибка добавления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         private void button4_Click(object sender, EventArgs e)
-        {   
+        {
             /*
              string que = $"update Авторы (Фамилия, Имя, Отчество, [Страна автора]) set ({textBox1.Text}, {textBox2.Text}, {textBox3.Text}, {textBox4.Text}) WHERE SEARCHRESULT";
              try
@@ -159,7 +211,7 @@ namespace WindowsFormsApp1
                 }
                 catch (Exception ex) { MessageBox.Show("Ошибка добавления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             }
-            
+
             */
         }
 
@@ -231,26 +283,19 @@ namespace WindowsFormsApp1
 
 
 
-        private void авторизироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void  авторизироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AuthForm authreg = new AuthForm();
             try
             {
+                
                 authreg.WhichWindow("authorize");
-                while (authreg.ShowDialog() == DialogResult.Retry)
-                    authreg.WhichWindow("authorize");
-
+                authreg.ShowDialog();
                 connection = authreg.GetConnection;
+                usersAcessLevels = authreg.GetAcessLevels;
+                CheckAcessibility(usersAcessLevels);
             }
-            catch (Exception er)
-            {
-
-
-                Console.WriteLine(er);
-            }
-            //connection.Open();
-
-
+            catch (Exception er) { };
         }
 
         private void зарегистрироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
@@ -262,7 +307,7 @@ namespace WindowsFormsApp1
 
         }
 
-     
+
 
         private void книгиToolStripMenuItem2_Click(object sender, EventArgs e)
         {
@@ -304,6 +349,7 @@ namespace WindowsFormsApp1
         private void изУчетнойЗаписиToolStripMenuItem_Click(object sender, EventArgs e)
         {
             connection = null;
+            CheckAcessibility(null);
         }
     }
 }

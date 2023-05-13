@@ -21,28 +21,12 @@ namespace WindowsFormsApp1
         public string[] GetAcessLevels {
             get { return acessLevels.ToArray(); }
         }
+        private static string[] DateSourceBindings = { "NIKITPC", "NIKNOTEBOK" };
 
-        /*
-         using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                SqlCommand command = new SqlCommand(query, connection);
-                SqlDataReader reader = command.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    Console.WriteLine(reader.GetString(0));
-                }
-                connection.Close();
-            }
-        }
-         
-         
-         */
 
         private string PerformConnectionString(string name, string code)
         {
-            string cd = $"Data Source=NIKITPC;Initial Catalog=Библиотека;User ID={name};Password='{code}';";
+            string cd = $"Data Source={DateSourceBindings[0]};Initial Catalog=Библиотека;User ID={name};Password='{code}';";
             return cd;
         }
 
@@ -87,7 +71,7 @@ namespace WindowsFormsApp1
         {
             try
             {
-                string connectionString = "Data Source=NIKITPC;Initial Catalog=Библиотека;Integrated Security=True";
+                string connectionString = $"Data Source={DateSourceBindings[0]};Initial Catalog=Библиотека;Integrated Security=True";
                 string transfer = textBox1.Text;
                 transfer = transfer.Replace(" ", "_");
                 transfer += "_" + comboBox1.Text;
@@ -151,11 +135,10 @@ namespace WindowsFormsApp1
                                 acessLevels.Add(roleName);
                             }
                         }
-                        else
-                            MessageBox.Show($"0 rows", "test", MessageBoxButtons.OK,MessageBoxIcon.Hand);
+                        
                     }
                     Console.WriteLine();
-                    MessageBox.Show($"text {acessLevels.ToString()}", "test", MessageBoxButtons.OK);
+                    
 
                 }
                 DialogResult = DialogResult.OK;
@@ -168,7 +151,7 @@ namespace WindowsFormsApp1
 
                 textBox3.Text = "";
                 textBox4.Text = "";
-              
+                textBox3.Focus();
             }
         }
 
