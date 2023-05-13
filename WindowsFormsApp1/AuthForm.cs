@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Threading;
@@ -15,6 +17,11 @@ namespace WindowsFormsApp1
             get { return connection; }
 
         }
+        private List<string> acessLevels = new List<string>();
+        public string[] GetAcessLevels {
+            get { return acessLevels.ToArray(); }
+        }
+
         /*
          using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -130,9 +137,29 @@ namespace WindowsFormsApp1
                 connection = new SqlConnection(connectionString);
                 await connection.OpenAsync();
                 MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-               // DialogResult = DialogResult.OK;
+                
+                using (SqlCommand command = new SqlCommand($"SELECT DP1.name AS DatabaseRoleName FROM sys.database_role_members AS DRM RIGHT OUTER JOIN sys.database_principals AS DP1  ON DRM.role_principal_id = DP1.principal_id LEFT OUTER JOIN sys.database_principals AS DP2 ON DRM.member_principal_id = DP2.principal_id WHERE DP2.name = '{textBox3.Text}' -- Имя пользователя AND DP1.type = 'R' ORDER BY DP1.name;", connection))
+                {
+                    int i;
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                string roleName = reader["DatabaseRoleName"].ToString();
+                                acessLevels.Add(roleName);
+                            }
+                        }
+                        else
+                            MessageBox.Show($"0 rows", "test", MessageBoxButtons.OK,MessageBoxIcon.Hand);
+                    }
+                    Console.WriteLine();
+                    MessageBox.Show($"text {acessLevels.ToString()}", "test", MessageBoxButtons.OK);
 
-                this.Close();//--only if connection establishing was succeed
+                }
+                DialogResult = DialogResult.OK;
+                this.Close();
             }
             catch (Exception ex)
             {
@@ -141,9 +168,13 @@ namespace WindowsFormsApp1
 
                 textBox3.Text = "";
                 textBox4.Text = "";
-                //Thread.Sleep(1000);   --bad, can't manipulate at all
-                //button2_Click(sender, e);    --bad, endless cycle, no ability to define new user's input
+              
             }
+        }
+
+        private void authbox_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }

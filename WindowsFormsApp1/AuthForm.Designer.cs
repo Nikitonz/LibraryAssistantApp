@@ -192,13 +192,14 @@
             // 
             // authbox
             // 
+            this.authbox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.authbox.BackColor = System.Drawing.SystemColors.Control;
             this.authbox.Controls.Add(this.textBox4);
             this.authbox.Controls.Add(this.button2);
             this.authbox.Controls.Add(this.textBox3);
             this.authbox.Controls.Add(this.label4);
             this.authbox.Controls.Add(this.label3);
-            this.authbox.Location = new System.Drawing.Point(194, 20);
+            this.authbox.Location = new System.Drawing.Point(259, 103);
             this.authbox.Margin = new System.Windows.Forms.Padding(2);
             this.authbox.Name = "authbox";
             this.authbox.Padding = new System.Windows.Forms.Padding(2);
@@ -207,6 +208,7 @@
             this.authbox.TabStop = false;
             this.authbox.Text = "Авторизация";
             this.authbox.Visible = false;
+            this.authbox.Enter += new System.EventHandler(this.authbox_Enter);
             // 
             // textBox4
             // 

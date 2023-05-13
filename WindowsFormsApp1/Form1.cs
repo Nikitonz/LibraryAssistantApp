@@ -6,9 +6,32 @@ using System.Windows.Forms;
 
 namespace WindowsFormsApp1
 {
+
     public partial class Form1 : Form
     {
         private SqlConnection connection = null;
+
+        private enum acessLevels
+        {
+            db_owner,
+            db_securityadmin,
+            db_accessadmin,
+            db_backupoperator,
+            db_ddladmin,
+            db_datareader,
+            db_datawriter,
+            db_denydatareader,
+            db_denydatawriter,
+            db_executor,
+            db_owner_sid,
+            db_securityadmin_sid,
+            db_accessadmin_sid,
+            db_backupoperator_sid,
+            db_ddladmin_sid,
+            db_datareader_sid,
+            db_datawriter_sid,
+            db_denydatareader_sid
+        }
         public Form1()
         {
 
@@ -111,7 +134,8 @@ namespace WindowsFormsApp1
         }
 
         private void button4_Click(object sender, EventArgs e)
-        {   /*
+        {   
+            /*
              string que = $"update Авторы (Фамилия, Имя, Отчество, [Страна автора]) set ({textBox1.Text}, {textBox2.Text}, {textBox3.Text}, {textBox4.Text}) WHERE SEARCHRESULT";
              try
              {
@@ -119,7 +143,7 @@ namespace WindowsFormsApp1
                  MessageBox.Show("Успешно добавлен", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
              }
              catch (Exception ex) { MessageBox.Show("Ошибка обновления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-            /*
+            */
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -215,8 +239,8 @@ namespace WindowsFormsApp1
                 authreg.WhichWindow("authorize");
                 while (authreg.ShowDialog() == DialogResult.Retry)
                     authreg.WhichWindow("authorize");
-                
-                    connection = authreg.GetConnection;
+
+                connection = authreg.GetConnection;
             }
             catch (Exception er)
             {
@@ -238,10 +262,7 @@ namespace WindowsFormsApp1
 
         }
 
-        private void вызовТаблицыToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
+     
 
         private void книгиToolStripMenuItem2_Click(object sender, EventArgs e)
         {
