@@ -95,14 +95,16 @@ namespace WindowsFormsApp1
                 search_author.Enabled = false;
                 update_author.Enabled = false;
                 delete_author.Enabled = false;
-
+                dataGridView1.Enabled = false;
+                dataGridView1.Visible = false;
+                вызовТаблицыToolStripMenuItem.Visible = false;
             }
             void FunctionalityEnable() {
                 add_author.Enabled = true;
                 search_author.Enabled = true;
                 update_author.Enabled = true;
                 delete_author.Enabled = true;
-
+                вызовТаблицыToolStripMenuItem.Visible = true;
             }
 
             //MessageBox.Show($"{maxRole}", "yes", MessageBoxButtons.OK);
@@ -123,8 +125,7 @@ namespace WindowsFormsApp1
 
         public void ExecuteQuery(string query)
         {
-
-            connection.Open();
+            
             SqlCommand command = new SqlCommand(query, connection);
             SqlDataReader reader = command.ExecuteReader();
 
@@ -132,7 +133,7 @@ namespace WindowsFormsApp1
             {
                 Console.WriteLine(reader.GetString(0));
             }
-            connection.Close();
+        
 
         }
 
@@ -176,7 +177,7 @@ namespace WindowsFormsApp1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string que = $"INSERT INTO Авторы (Фамилия, Имя, Отчество, [Страна автора]) VALUES ({textBox1.Text}, {textBox2.Text}, {textBox3.Text}, {textBox4.Text})";
+            string que = $"INSERT INTO Авторы (Фамилия, Имя, Отчество, [Страна автора]) VALUES ('{textBox1.Text}', '{textBox2.Text}', '{textBox3.Text}', '{textBox4.Text}')";
             try
             {
                 ExecuteQuery(que);
@@ -261,7 +262,7 @@ namespace WindowsFormsApp1
         {
             try
             {
-
+                
                 if (connection != null && connection.State == ConnectionState.Open)
                 {
                     string sql = "SELECT SUSER_SNAME()";
@@ -348,6 +349,7 @@ namespace WindowsFormsApp1
 
         private void изУчетнойЗаписиToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            connection.Close();
             connection = null;
             CheckAcessibility(null);
         }
