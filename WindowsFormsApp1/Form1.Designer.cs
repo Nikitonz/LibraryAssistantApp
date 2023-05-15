@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,14 +79,21 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.add_author = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.библиотекаDataSet = new WindowsFormsApp1.БиблиотекаDataSet();
+            this.авторыBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.авторыTableAdapter = new WindowsFormsApp1.БиблиотекаDataSetTableAdapters.АвторыTableAdapter();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.authFormBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.библиотекаDataSet)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.авторыBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.authFormBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -177,7 +185,6 @@
             this.вызовТаблицыToolStripMenuItem.Name = "вызовТаблицыToolStripMenuItem";
             this.вызовТаблицыToolStripMenuItem.Size = new System.Drawing.Size(104, 20);
             this.вызовТаблицыToolStripMenuItem.Text = "Вызов таблицы";
-         
             // 
             // книгиToolStripMenuItem
             // 
@@ -372,9 +379,9 @@
             this.groupBox1.Controls.Add(this.textBox1);
             this.groupBox1.Controls.Add(this.add_author);
             this.groupBox1.Location = new System.Drawing.Point(19, 26);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(213, 340);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
@@ -486,7 +493,7 @@
             // add_author
             // 
             this.add_author.Location = new System.Drawing.Point(8, 235);
-            this.add_author.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.add_author.Margin = new System.Windows.Forms.Padding(2);
             this.add_author.Name = "add_author";
             this.add_author.Size = new System.Drawing.Size(83, 23);
             this.add_author.TabIndex = 5;
@@ -497,22 +504,13 @@
             // groupBox2
             // 
             this.groupBox2.Location = new System.Drawing.Point(236, 26);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox2.Size = new System.Drawing.Size(231, 340);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Издательства";
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 371);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowHeadersWidth = 51;
-            this.dataGridView1.Size = new System.Drawing.Size(136, 66);
-            this.dataGridView1.TabIndex = 7;
             // 
             // groupBox3
             // 
@@ -525,6 +523,7 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.groupBox4.Location = new System.Drawing.Point(678, 28);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(217, 338);
@@ -550,11 +549,41 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Книга";
             // 
+            // библиотекаDataSet
+            // 
+            this.библиотекаDataSet.DataSetName = "БиблиотекаDataSet";
+            this.библиотекаDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // авторыBindingSource
+            // 
+            this.авторыBindingSource.DataMember = "Авторы";
+            this.авторыBindingSource.DataSource = this.библиотекаDataSet;
+            // 
+            // авторыTableAdapter
+            // 
+            this.авторыTableAdapter.ClearBeforeFill = true;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dataGridView1.ImeMode = System.Windows.Forms.ImeMode.On;
+            this.dataGridView1.Location = new System.Drawing.Point(52, 391);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView1.Size = new System.Drawing.Size(240, 150);
+            this.dataGridView1.TabIndex = 7;
+            // 
+            // authFormBindingSource
+            // 
+            this.authFormBindingSource.DataSource = typeof(WindowsFormsApp1.AuthForm);
+            // 
             // Form1
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoScroll = true;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(1449, 576);
@@ -569,15 +598,19 @@
             this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(266, 48);
             this.Name = "Form1";
             this.Text = "Меню библиотеки";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.библиотекаDataSet)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.авторыBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.authFormBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -624,7 +657,6 @@
         private System.Windows.Forms.Button update_author;
         private System.Windows.Forms.Button search_author;
         private System.Windows.Forms.Button delete_author;
-        private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Button disp_Авторы;
         private System.Windows.Forms.ToolStripMenuItem справочникToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem книгиToolStripMenuItem;
@@ -639,6 +671,11 @@
         private System.Windows.Forms.ToolStripMenuItem книгиToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem изУчетнойЗаписиToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem изПриложенияToolStripMenuItem;
+        private System.Windows.Forms.BindingSource authFormBindingSource;
+        private БиблиотекаDataSet библиотекаDataSet;
+        private System.Windows.Forms.BindingSource авторыBindingSource;
+        private БиблиотекаDataSetTableAdapters.АвторыTableAdapter авторыTableAdapter;
+        private System.Windows.Forms.DataGridView dataGridView1;
     }
 }
 

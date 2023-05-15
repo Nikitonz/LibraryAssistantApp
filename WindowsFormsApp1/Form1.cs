@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Text;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 namespace WindowsFormsApp1
@@ -12,7 +13,7 @@ namespace WindowsFormsApp1
     {
         private SqlConnection connection = null;
         private string[] usersAcessLevels = null;
-
+        private DataTable table = new DataTable();
         private enum AcсessLevels
         {
             db_owner,
@@ -37,12 +38,19 @@ namespace WindowsFormsApp1
         }
         public Form1()
         {
+            this.Size = new Size(200, 200);
+            this.Refresh();
+            this.AutoSize = true;
+            this.PerformAutoScale();
 
             /* 
              groupBox7.Visible = false;
              groupBox8.Visible = false;
              groupBox9.Visible = false;*/
             InitializeComponent();
+            
+            //this.MaximizeBox = false;
+            //this.MinimizeBox = false;
             groupBox1.Visible = false;
             groupBox2.Visible = false;
             groupBox3.Visible = false;
@@ -52,6 +60,8 @@ namespace WindowsFormsApp1
             вызовТаблицыToolStripMenuItem.Visible = false;
             dataGridView1.Visible = false;
             CheckAcessibility(usersAcessLevels);
+            dataGridView1.Location = new Point(241, 34);
+            dataGridView1.Size = new Size(585, 286);
 
         }
 
@@ -98,6 +108,7 @@ namespace WindowsFormsApp1
                 dataGridView1.Enabled = false;
                 dataGridView1.Visible = false;
                 вызовТаблицыToolStripMenuItem.Visible = false;
+                this.MinimumSize = new System.Drawing.Size(266, 48);
             }
             void FunctionalityEnable() {
                 add_author.Enabled = true;
@@ -105,6 +116,7 @@ namespace WindowsFormsApp1
                 update_author.Enabled = true;
                 delete_author.Enabled = true;
                 вызовТаблицыToolStripMenuItem.Visible = true;
+                this.MinimumSize = new System.Drawing.Size(365, 46);
             }
 
             //MessageBox.Show($"{maxRole}", "yes", MessageBoxButtons.OK);
@@ -174,7 +186,50 @@ namespace WindowsFormsApp1
             groupBox6.Location = new Point(19, 26);
             groupBox6.Size = new Size(213, 340);
         }
+        private void книгиToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            SetInvisible();
+            groupBox6.Visible = true;
+            groupBox6.Location = new Point(19, 26);
+            groupBox6.Size = new Size(213, 340);
+        }
 
+        private void авторыToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            SetInvisible();
+            groupBox1.Visible = true;
+            groupBox1.Location = new Point(19, 26);
+            groupBox1.Size = new Size(213, 340);
+        }
+
+        private void жанрыToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            SetInvisible();
+            groupBox3.Visible = true;
+            groupBox3.Location = new Point(19, 26);
+            groupBox3.Size = new Size(213, 340);
+        }
+
+        private void издательстваToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            SetInvisible();
+            groupBox2.Visible = true;
+            groupBox2.Location = new Point(19, 26);
+            groupBox2.Size = new Size(213, 340);
+        }
+
+        private void изПриложенияToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        private void изУчетнойЗаписиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            connection.Close();
+            connection = null;
+            this.MinimumSize = new System.Drawing.Size(266, 48);
+            CheckAcessibility(null);
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             string que = $"INSERT INTO Авторы (Фамилия, Имя, Отчество, [Страна автора]) VALUES ('{textBox1.Text}', '{textBox2.Text}', '{textBox3.Text}', '{textBox4.Text}')";
@@ -218,19 +273,19 @@ namespace WindowsFormsApp1
 
         private void button3_Click(object sender, EventArgs e)
         {
-            string que = $"select * from Авторы where Фамилия like '%{textBox1.Text}%'  or Имя like '%{textBox2.Text}%' or Отчество like '%{textBox3.Text}%' or [Страна автора] like '%{textBox4.Text}%'";
+            string que = $"select * from Авторы where Фамилия like '{textBox1.Text}%'  or Имя like '{textBox2.Text}%' or Отчество like '{textBox3.Text}%' or [Страна автора] like '{textBox4.Text}%'";
             //DialogResult res = MessageBox.Show("", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
             DataTable table = new DataTable();
             SqlDataAdapter adapter = new SqlDataAdapter(que, connection);
             try
             {
-                dataGridView1.Location = new Point(241, 34);
-                dataGridView1.Size = new Size(585, 286);
+                
                 adapter.Fill(table);
                 table.Columns.RemoveAt(0);
-                dataGridView1.AutoGenerateColumns = true;
                 dataGridView1.DataSource = table;
                 dataGridView1.Visible = true;
+                SqlCommandBuilder commandBuilder = new SqlCommandBuilder(adapter);
+                adapter.Update(table);
 
             }
             catch (Exception ex) { MessageBox.Show("Ошибка добавления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
@@ -241,18 +296,20 @@ namespace WindowsFormsApp1
 
         private void disp_Авторы_Click(object sender, EventArgs e)
         {
-            dataGridView1.Location = new Point(241, 34);
-            dataGridView1.Size = new Size(585, 286);
+          
             string sqlQuery = "SELECT * FROM Авторы";
             SqlDataAdapter adapter = new SqlDataAdapter(sqlQuery, connection);
-            DataTable table = new DataTable();
+            
+            
             try
             {
                 adapter.Fill(table);
                 table.Columns.RemoveAt(0);
-                dataGridView1.AutoGenerateColumns = true;
                 dataGridView1.DataSource = table;
                 dataGridView1.Visible = true;
+                //dataGridView1.Show();
+              
+                //MessageBox.Show($"{dataGridView1.}", "1", MessageBoxButtons.OK);
             }
             catch (Exception er) { MessageBox.Show("Ошибка отображения! " + er.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
@@ -295,6 +352,7 @@ namespace WindowsFormsApp1
                 connection = authreg.GetConnection;
                 usersAcessLevels = authreg.GetAcessLevels;
                 CheckAcessibility(usersAcessLevels);
+                
             }
             catch (Exception er) { };
         }
@@ -308,50 +366,13 @@ namespace WindowsFormsApp1
 
         }
 
-
-
-        private void книгиToolStripMenuItem2_Click(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
-            SetInvisible();
-            groupBox6.Visible = true;
-            groupBox6.Location = new Point(19, 26);
-            groupBox6.Size = new Size(213, 340);
+            // TODO: данная строка кода позволяет загрузить данные в таблицу "библиотекаDataSet.Авторы". При необходимости она может быть перемещена или удалена.
+            this.авторыTableAdapter.Fill(this.библиотекаDataSet.Авторы);
+
         }
 
-        private void авторыToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            SetInvisible();
-            groupBox1.Visible = true;
-            groupBox1.Location = new Point(19, 26);
-            groupBox1.Size = new Size(213, 340);
-        }
-
-        private void жанрыToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            SetInvisible();
-            groupBox3.Visible = true;
-            groupBox3.Location = new Point(19, 26);
-            groupBox3.Size = new Size(213, 340);
-        }
-
-        private void издательстваToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            SetInvisible();
-            groupBox2.Visible = true;
-            groupBox2.Location = new Point(19, 26);
-            groupBox2.Size = new Size(213, 340);
-        }
-
-        private void изПриложенияToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Environment.Exit(0);
-        }
-
-        private void изУчетнойЗаписиToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            connection.Close();
-            connection = null;
-            CheckAcessibility(null);
-        }
+        
     }
 }

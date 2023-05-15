@@ -21,12 +21,12 @@ namespace WindowsFormsApp1
         public string[] GetAcessLevels {
             get { return acessLevels.ToArray(); }
         }
-        private static string[] DateSourceBindings = { "NIKITPC", "NIKNOTEBOOK" };
+        private static string[] DateSourceBindings = { "NIKITPC", "NIKNOTEBOOK", "0.0.0.0" };
 
 
         private string PerformConnectionString(string name, string code)
         {
-            string cd = $"Data Source={DateSourceBindings[1]};Initial Catalog=Библиотека;User ID={name};Password='{code}';";
+            string cd = $"Data Source={DateSourceBindings[0]};Initial Catalog=Библиотека;User ID={name};Password='{code}';";
             return cd;
         }
 
@@ -71,7 +71,7 @@ namespace WindowsFormsApp1
         {
             try
             {
-                string connectionString = $"Data Source={DateSourceBindings[1]};Initial Catalog=Библиотека;Integrated Security=True";
+                string connectionString = $"Data Source={DateSourceBindings[2]};Initial Catalog=Библиотека;Integrated Security=True";
                 string transfer = textBox1.Text;
                 transfer = transfer.Replace(" ", "_");
                 transfer += "_" + comboBox1.Text;

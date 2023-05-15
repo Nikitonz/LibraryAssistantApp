@@ -283,6 +283,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Tag = "RegAuth";
             this.Text = "Rigister/Login window";
+            this.TopMost = true;
             this.Load += new System.EventHandler(this.AuthForm_Load);
             this.regbox.ResumeLayout(false);
             this.regbox.PerformLayout();
