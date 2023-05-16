@@ -21,14 +21,10 @@ namespace WindowsFormsApp1
         public string[] GetAcessLevels {
             get { return acessLevels.ToArray(); }
         }
-        private static string[] DateSourceBindings = { "NIKITPC", "NIKNOTEBOOK", "0.0.0.0" };
+        private string DateSourceBind ;
 
 
-        private string PerformConnectionString(string name, string code)
-        {
-            string cd = $"Data Source={DateSourceBindings[0]};Initial Catalog=Библиотека;User ID={name};Password='{code}';";
-            return cd;
-        }
+        
 
         public void WhichWindow(string op)
         {
@@ -61,7 +57,7 @@ namespace WindowsFormsApp1
             InitializeComponent();
             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             this.AutoSize = true;
-            //connection = new SqlConnection()
+            DateSourceBind = Form1.GetDataSources;
         }
 
 
@@ -71,7 +67,7 @@ namespace WindowsFormsApp1
         {
             try
             {
-                string connectionString = $"Data Source={DateSourceBindings[2]};Initial Catalog=Библиотека;Integrated Security=True";
+                string connectionString = $"Data Source={DateSourceBind};Initial Catalog=Библиотека;Integrated Security=True";
                 string transfer = textBox1.Text;
                 transfer = transfer.Replace(" ", "_");
                 transfer += "_" + comboBox1.Text;
@@ -114,7 +110,12 @@ namespace WindowsFormsApp1
 
         private async void button2_Click(object sender, EventArgs e)
         {
+            string PerformConnectionString(string name, string code)
+            {
 
+                string cd = $"Data Source={DateSourceBind};Initial Catalog=Библиотека;User ID={name};Password='{code}';";
+                return cd;
+            }
             try
             {
                 string connectionString = PerformConnectionString(textBox3.Text, textBox4.Text);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -14,6 +15,17 @@ namespace WindowsFormsApp1
         private SqlConnection connection = null;
         private string[] usersAcessLevels = null;
         private DataTable table = new DataTable();
+        private static string[] dataSourse = new string[] { "NIKNOTEBOOK", "NIKITPC", "127.0.0.1" };
+
+        public static string GetDataSources
+        {
+            get
+            {
+                int usedSorce = 0;
+                
+                return dataSourse[usedSorce];
+            }
+        }
         private enum AcсessLevels
         {
             db_owner,
@@ -295,20 +307,23 @@ namespace WindowsFormsApp1
 
 
         private void disp_Авторы_Click(object sender, EventArgs e)
-        {
-          
-            string sqlQuery = "SELECT * FROM Авторы";
-            SqlDataAdapter adapter = new SqlDataAdapter(sqlQuery, connection);
-            
-            
+        {     
             try
             {
-                adapter.Fill(table);
-                table.Columns.RemoveAt(0);
-                dataGridView1.DataSource = table;
+                using (SqlConnection connection = new SqlConnection("your_connection_string"))
+                {
+                    string query = "SELECT * FROM Авторы";
+
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(query, connection))
+                    {
+                        DataTable dataTable = new DataTable();
+                        adapter.Fill(dataTable);
+
+                        dataGridView1.DataSource = dataTable;
+                    }
+                }
                 dataGridView1.Visible = true;
-                //dataGridView1.Show();
-              
+
                 //MessageBox.Show($"{dataGridView1.}", "1", MessageBoxButtons.OK);
             }
             catch (Exception er) { MessageBox.Show("Ошибка отображения! " + er.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
