@@ -14,7 +14,7 @@ namespace WindowsFormsApp1
     {
         private SqlConnection connection = null;
         private string[] usersAcessLevels = null;
-        private DataTable table = new DataTable();
+    
         private static string[] dataSourse = new string[] { "NIKNOTEBOOK", "NIKITPC", "127.0.0.1" };
 
         public static string GetDataSources
@@ -308,9 +308,10 @@ namespace WindowsFormsApp1
 
         private void disp_Авторы_Click(object sender, EventArgs e)
         {     
+            
             try
             {
-                using (SqlConnection connection = new SqlConnection("your_connection_string"))
+                using (SqlConnection connection = new SqlConnection($"Data Source={dataSourse[0]};Initial Catalog=Библиотека;Integrated Security=True"))
                 {
                     string query = "SELECT * FROM Авторы";
 
@@ -322,6 +323,7 @@ namespace WindowsFormsApp1
                         dataGridView1.DataSource = dataTable;
                     }
                 }
+                dataGridView1.Enabled = true;
                 dataGridView1.Visible = true;
 
                 //MessageBox.Show($"{dataGridView1.}", "1", MessageBoxButtons.OK);
