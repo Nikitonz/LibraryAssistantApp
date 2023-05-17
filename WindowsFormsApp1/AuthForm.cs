@@ -102,7 +102,7 @@ namespace WindowsFormsApp1
             AcceptButton = button2;
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            // Добавить элементы в ComboBox
+        
 
         }
 
@@ -125,7 +125,7 @@ namespace WindowsFormsApp1
                 
                 using (SqlCommand command = new SqlCommand($"USE Библиотека SELECT DP2.name as DatabaseRoleName FROM sys.server_principals AS SP JOIN sys.database_principals AS DP ON SP.sid = DP.sid JOIN sys.database_role_members AS DRM ON DP.principal_id = DRM.member_principal_id JOIN sys.database_principals AS DP2 ON DRM.role_principal_id = DP2.principal_id WHERE SP.name = '{textBox3.Text}' ORDER BY DP2.name;", connection))
                 {
-                    int i;
+                   
                     using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
                         if (reader.HasRows)

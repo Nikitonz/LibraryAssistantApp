@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
-using System.Drawing.Text;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 namespace WindowsFormsApp1
@@ -14,15 +11,15 @@ namespace WindowsFormsApp1
     {
         private SqlConnection connection = null;
         private string[] usersAcessLevels = null;
-    
-        private static string[] dataSourse = new string[] { "NIKNOTEBOOK", "NIKITPC", "127.0.0.1" };
 
+        private static string[] dataSourse = new string[] { "NIKNOTEBOOK", "NIKITPC", "127.0.0.1" };
+        private DataTable dataTable;
         public static string GetDataSources
         {
             get
             {
                 int usedSorce = 0;
-                
+
                 return dataSourse[usedSorce];
             }
         }
@@ -45,30 +42,29 @@ namespace WindowsFormsApp1
             db_ddladmin_sid,
             db_datareader_sid,
             db_datawriter_sid,
-            db_denydatareader_sid, 
+            db_denydatareader_sid,
             none
         }
         public Form1()
         {
+
+            dataTable = new DataTable();
             this.Size = new Size(200, 200);
             this.Refresh();
             this.AutoSize = true;
             this.PerformAutoScale();
 
-            /* 
-             groupBox7.Visible = false;
-             groupBox8.Visible = false;
-             groupBox9.Visible = false;*/
+
+
             InitializeComponent();
-            
             //this.MaximizeBox = false;
             //this.MinimizeBox = false;
             groupBox1.Visible = false;
             groupBox2.Visible = false;
             groupBox3.Visible = false;
             groupBox4.Visible = false;
-            groupBox5.Visible = false;
-            groupBox6.Visible = false;
+
+
             вызовТаблицыToolStripMenuItem.Visible = false;
             dataGridView1.Visible = false;
             CheckAcessibility(usersAcessLevels);
@@ -100,9 +96,11 @@ namespace WindowsFormsApp1
                 }
             }
         }
-        private void CheckAcessibility(string[] roles) {
+        private void CheckAcessibility(string[] roles)
+        {
             AcсessLevels maxRole = AcсessLevels.none;
-            if (!(roles is null)) {
+            if (!(roles is null))
+            {
 
                 foreach (string role in roles)
                 {
@@ -112,23 +110,23 @@ namespace WindowsFormsApp1
                     }
                 }
             }
-            void FunctionalityDisable() {
+            void FunctionalityDisable()
+            {
                 add_author.Enabled = false;
                 search_author.Enabled = false;
-                update_author.Enabled = false;
-                delete_author.Enabled = false;
+
                 dataGridView1.Enabled = false;
                 dataGridView1.Visible = false;
                 вызовТаблицыToolStripMenuItem.Visible = false;
-                this.MinimumSize = new System.Drawing.Size(266, 48);
+                this.MinimumSize = new System.Drawing.Size(260, 48);
             }
-            void FunctionalityEnable() {
+            void FunctionalityEnable()
+            {
                 add_author.Enabled = true;
                 search_author.Enabled = true;
-                update_author.Enabled = true;
-                delete_author.Enabled = true;
+
                 вызовТаблицыToolStripMenuItem.Visible = true;
-                this.MinimumSize = new System.Drawing.Size(365, 46);
+                this.MinimumSize = new System.Drawing.Size(380, 46);
             }
 
             //MessageBox.Show($"{maxRole}", "yes", MessageBoxButtons.OK);
@@ -143,13 +141,16 @@ namespace WindowsFormsApp1
                     FunctionalityDisable();
                     break;
             }
-
+            if (maxRole.ToString() != "none")
+            {
+                statText.Text = $"Успешно авторизированы. Уровень доступа: {maxRole}";
+            }
         }
 
 
         public void ExecuteQuery(string query)
         {
-            
+
             SqlCommand command = new SqlCommand(query, connection);
             SqlDataReader reader = command.ExecuteReader();
 
@@ -157,10 +158,72 @@ namespace WindowsFormsApp1
             {
                 Console.WriteLine(reader.GetString(0));
             }
-        
+
 
         }
 
+        private void DoTransactRoutine(string tablename)
+        {
+
+            if (dataTable != null)
+            {
+
+
+                SqlTransaction transaction = connection.BeginTransaction();
+
+                try
+                {
+                    using (SqlDataAdapter adapter = new SqlDataAdapter())
+                    {
+                        adapter.SelectCommand = new SqlCommand($"SELECT * FROM {tablename}", connection);
+                        adapter.SelectCommand.Transaction = transaction;
+
+                        SqlCommandBuilder commandBuilder = new SqlCommandBuilder(adapter);
+                        adapter.UpdateCommand = commandBuilder.GetUpdateCommand();
+                        adapter.InsertCommand = commandBuilder.GetInsertCommand();
+                        adapter.DeleteCommand = commandBuilder.GetDeleteCommand();
+
+                        adapter.Update(dataTable);
+                        transaction.Commit();
+                        statText.Text = "Изменения сохранены в базе данных.";
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show("Произошла ошибка при сохранении изменений: " + ex.Message);
+                }
+
+            }
+        }
+
+        private void DoDisplayRoutine(string tablename)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection($"Data Source={dataSourse[0]};Initial Catalog=Библиотека;Integrated Security=True"))
+                {
+                    string query = $"SELECT * FROM {tablename}";
+
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(query, connection))
+                    {
+                        dataTable = new DataTable();
+                        adapter.Fill(dataTable);
+
+                        dataGridView1.DataSource = dataTable;
+                    }
+                }
+                dataGridView1.Enabled = true;
+                dataGridView1.Visible = true;
+                dataGridView1.Columns[0].ReadOnly = true;
+
+
+
+            }
+            catch (Exception er) { MessageBox.Show("Ошибка отображения! " + er.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+
+        }
 
 
         private void разработчикToolStripMenuItem_Click(object sender, EventArgs e)
@@ -173,14 +236,14 @@ namespace WindowsFormsApp1
             SetInvisible();
             groupBox1.Visible = true;
             groupBox1.Location = new Point(19, 26);
-            groupBox1.Size = new Size(213, 340);
+            groupBox1.Size = new Size(213, 350);
         }
         private void издательстваToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetInvisible();
             groupBox2.Visible = true;
             groupBox2.Location = new Point(19, 26);
-            groupBox2.Size = new Size(213, 340);
+            groupBox2.Size = new Size(213, 350);
         }
 
         private void жанрыToolStripMenuItem_Click(object sender, EventArgs e)
@@ -188,22 +251,22 @@ namespace WindowsFormsApp1
             SetInvisible();
             groupBox3.Visible = true;
             groupBox3.Location = new Point(19, 26);
-            groupBox3.Size = new Size(213, 340);
+            groupBox3.Size = new Size(213, 350);
         }
 
         private void книгаToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             SetInvisible();
-            groupBox6.Visible = true;
-            groupBox6.Location = new Point(19, 26);
-            groupBox6.Size = new Size(213, 340);
+            groupBox4.Visible = true;
+            groupBox4.Location = new Point(19, 26);
+            groupBox4.Size = new Size(213, 350);
         }
         private void книгиToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             SetInvisible();
-            groupBox6.Visible = true;
-            groupBox6.Location = new Point(19, 26);
-            groupBox6.Size = new Size(213, 340);
+            groupBox4.Visible = true;
+            groupBox4.Location = new Point(19, 26);
+            groupBox4.Size = new Size(213, 350);
         }
 
         private void авторыToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -211,7 +274,7 @@ namespace WindowsFormsApp1
             SetInvisible();
             groupBox1.Visible = true;
             groupBox1.Location = new Point(19, 26);
-            groupBox1.Size = new Size(213, 340);
+            groupBox1.Size = new Size(213, 350);
         }
 
         private void жанрыToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -219,7 +282,7 @@ namespace WindowsFormsApp1
             SetInvisible();
             groupBox3.Visible = true;
             groupBox3.Location = new Point(19, 26);
-            groupBox3.Size = new Size(213, 340);
+            groupBox3.Size = new Size(213, 350);
         }
 
         private void издательстваToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -227,9 +290,32 @@ namespace WindowsFormsApp1
             SetInvisible();
             groupBox2.Visible = true;
             groupBox2.Location = new Point(19, 26);
-            groupBox2.Size = new Size(213, 340);
+            groupBox2.Size = new Size(213, 350);
+        }
+        private void авторизироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AuthForm authreg = new AuthForm();
+            try
+            {
+
+                authreg.WhichWindow("authorize");
+                authreg.ShowDialog();
+                connection = authreg.GetConnection;
+                usersAcessLevels = authreg.GetAcessLevels;
+                CheckAcessibility(usersAcessLevels);
+
+            }
+            catch { };
         }
 
+        private void зарегистрироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AuthForm authForm = new AuthForm();
+            authForm.WhichWindow("register");
+            authForm.ShowDialog();
+
+
+        }
         private void изПриложенияToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Environment.Exit(0);
@@ -242,101 +328,13 @@ namespace WindowsFormsApp1
             this.MinimumSize = new System.Drawing.Size(266, 48);
             CheckAcessibility(null);
         }
-        private void button1_Click(object sender, EventArgs e)
-        {
-            string que = $"INSERT INTO Авторы (Фамилия, Имя, Отчество, [Страна автора]) VALUES ('{textBox1.Text}', '{textBox2.Text}', '{textBox3.Text}', '{textBox4.Text}')";
-            try
-            {
-                ExecuteQuery(que);
-                MessageBox.Show("Успешно добавлен", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex) { MessageBox.Show("Ошибка добавления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-        }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            /*
-             string que = $"update Авторы (Фамилия, Имя, Отчество, [Страна автора]) set ({textBox1.Text}, {textBox2.Text}, {textBox3.Text}, {textBox4.Text}) WHERE SEARCHRESULT";
-             try
-             {
-                 DBO.ExecuteQuery(que);
-                 MessageBox.Show("Успешно добавлен", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-             }
-             catch (Exception ex) { MessageBox.Show("Ошибка обновления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-            */
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            /*string que = $"delete from Авторы WHERE SEARCHRESULT ";
-            DialogResult res = MessageBox.Show("Точно удалить ?", "Уточнение", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
-            if (res == DialogResult.OK)
-            {
-                try
-                {
-                    DBO.ExecuteQuery(que);
-                    MessageBox.Show("Успешно добавлен", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex) { MessageBox.Show("Ошибка добавления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-            }
-
-            */
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            string que = $"select * from Авторы where Фамилия like '{textBox1.Text}%'  or Имя like '{textBox2.Text}%' or Отчество like '{textBox3.Text}%' or [Страна автора] like '{textBox4.Text}%'";
-            //DialogResult res = MessageBox.Show("", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
-            DataTable table = new DataTable();
-            SqlDataAdapter adapter = new SqlDataAdapter(que, connection);
-            try
-            {
-                
-                adapter.Fill(table);
-                table.Columns.RemoveAt(0);
-                dataGridView1.DataSource = table;
-                dataGridView1.Visible = true;
-                SqlCommandBuilder commandBuilder = new SqlCommandBuilder(adapter);
-                adapter.Update(table);
-
-            }
-            catch (Exception ex) { MessageBox.Show("Ошибка добавления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-
-        }
-
-
-
-        private void disp_Авторы_Click(object sender, EventArgs e)
-        {     
-            
-            try
-            {
-                using (SqlConnection connection = new SqlConnection($"Data Source={dataSourse[0]};Initial Catalog=Библиотека;Integrated Security=True"))
-                {
-                    string query = "SELECT * FROM Авторы";
-
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(query, connection))
-                    {
-                        DataTable dataTable = new DataTable();
-                        adapter.Fill(dataTable);
-
-                        dataGridView1.DataSource = dataTable;
-                    }
-                }
-                dataGridView1.Enabled = true;
-                dataGridView1.Visible = true;
-
-                //MessageBox.Show($"{dataGridView1.}", "1", MessageBoxButtons.OK);
-            }
-            catch (Exception er) { MessageBox.Show("Ошибка отображения! " + er.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-
-        }
 
         private void проверитьПодключениеКБДToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                
+
                 if (connection != null && connection.State == ConnectionState.Open)
                 {
                     string sql = "SELECT SUSER_SNAME()";
@@ -358,38 +356,209 @@ namespace WindowsFormsApp1
 
 
 
-        private async void  авторизироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
+
+
+        /* private void Form1_Load(object sender, EventArgs e)
+         {
+             // TODO: данная строка кода позволяет загрузить данные в таблицу "библиотекаDataSet.Авторы". При необходимости она может быть перемещена или удалена.
+             this.авторыTableAdapter.Fill(this.библиотекаDataSet.Авторы);
+
+         }*/
+        //авторы===========
+        private void button1_Click(object sender, EventArgs e)
         {
-            AuthForm authreg = new AuthForm();
+            string que = "INSERT INTO Авторы (Фамилия, Имя, Отчество, [Страна автора]) VALUES (@Фамилия, @Имя, @Отчество, @Страна)";
+            using (SqlCommand command = new SqlCommand(que, connection))
+            {
+                command.Parameters.AddWithValue("@Фамилия", textBox1.Text);
+                command.Parameters.AddWithValue("@Имя", textBox2.Text);
+                command.Parameters.AddWithValue("@Отчество", textBox3.Text);
+                command.Parameters.AddWithValue("@Страна", textBox4.Text);
+
+                int rowsAffected = command.ExecuteNonQuery();
+
+                if (rowsAffected > 0)
+                {
+                    disp_Авторы_Click(sender, e);
+                    statText.Text = "Запись успешно добавлена. Используйте \"Создать транзакцию\", чтобы зафиксировать изменения";
+                    if (dataGridView1.Rows.Count > 0)
+                    {
+                        int lastIndex = dataGridView1.Rows.Count - 1;
+                        dataGridView1.FirstDisplayedScrollingRowIndex = lastIndex;
+                        dataGridView1.Rows[lastIndex].Selected = true;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Не удалось добавить запись.");
+                }
+            }
+        }
+
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string que = $"select * from Авторы where Фамилия like '{textBox1.Text}%'  or Имя like '{textBox2.Text}%' or Отчество like '{textBox3.Text}%' or [Страна автора] like '{textBox4.Text}%'";
+
             try
             {
-                
-                authreg.WhichWindow("authorize");
-                authreg.ShowDialog();
-                connection = authreg.GetConnection;
-                usersAcessLevels = authreg.GetAcessLevels;
-                CheckAcessibility(usersAcessLevels);
-                
+                using (SqlDataAdapter adapter = new SqlDataAdapter(que, connection))
+                {
+                    dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+
+                    dataGridView1.DataSource = dataTable;
+
+                }
+                dataGridView1.Enabled = true;
+                dataGridView1.Visible = true;
+                dataGridView1.Columns[0].ReadOnly = true;
             }
-            catch (Exception er) { };
+            catch (Exception ex) { MessageBox.Show("Ошибка добавления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+
         }
 
-        private void зарегистрироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
+        private void pushAuthor_Click(object sender, EventArgs e)
         {
-            AuthForm authForm = new AuthForm();
-            authForm.WhichWindow("register");
-            authForm.ShowDialog();
-
-
+            DoTransactRoutine("Авторы");
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+
+        private void disp_Авторы_Click(object sender, EventArgs e)
         {
-            // TODO: данная строка кода позволяет загрузить данные в таблицу "библиотекаDataSet.Авторы". При необходимости она может быть перемещена или удалена.
-            this.авторыTableAdapter.Fill(this.библиотекаDataSet.Авторы);
+
+            DoDisplayRoutine("Авторы");
 
         }
 
-        
+
+        //Издательства ========================
+
+        private void addIzd_Click(object sender, EventArgs e)
+        {
+            string que = "INSERT INTO Издательство VALUES (@Название, @Город, @Адрес)";
+            using (SqlCommand command = new SqlCommand(que, connection))
+            {
+                command.Parameters.AddWithValue("@Название", textBox5.Text);
+                command.Parameters.AddWithValue("@Город", textBox6.Text);
+                command.Parameters.AddWithValue("@Адрес", textBox7.Text);
+
+
+                int rowsAffected = command.ExecuteNonQuery();
+
+                if (rowsAffected > 0)
+                {
+                    dispIzd_Click(sender, e);
+                    statText.Text = "Запись успешно добавлена. Используйте \"Создать транзакцию\", чтобы зафиксировать изменения";
+                    if (dataGridView1.Rows.Count > 0)
+                    {
+                        int lastIndex = dataGridView1.Rows.Count - 1;
+                        dataGridView1.FirstDisplayedScrollingRowIndex = lastIndex;
+                        dataGridView1.Rows[lastIndex].Selected = true;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Не удалось добавить запись.");
+                }
+            }
+        }
+
+        private void pushIzd_Click(object sender, EventArgs e)
+        {
+            DoTransactRoutine("Издательство");
+        }
+
+        private void dispIzd_Click(object sender, EventArgs e)
+        {
+            DoDisplayRoutine("Издательство");
+        }
+        //Жанры================================
+        private void addGenre_Click(object sender, EventArgs e)
+        {
+            string que = "INSERT INTO Жанр VALUES (@GENRE)";
+            using (SqlCommand command = new SqlCommand(que, connection))
+            {
+                command.Parameters.AddWithValue("@GENRE", textBox8.Text);
+
+
+                int rowsAffected = command.ExecuteNonQuery();
+
+                if (rowsAffected > 0)
+                {
+                    dispGenre_Click(sender, e);
+                    statText.Text = "Запись успешно добавлена. Используйте \"Создать транзакцию\", чтобы зафиксировать изменения";
+                    if (dataGridView1.Rows.Count > 0)
+                    {
+                        int lastIndex = dataGridView1.Rows.Count - 1;
+                        dataGridView1.FirstDisplayedScrollingRowIndex = lastIndex;
+                        dataGridView1.Rows[lastIndex].Selected = true;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Не удалось добавить запись.");
+                }
+            }
+        }
+        private void genreTran_Click(object sender, EventArgs e)
+        {
+            DoTransactRoutine("Жанр");
+        }
+
+        private void dispGenre_Click(object sender, EventArgs e)
+        {
+            DoDisplayRoutine("Жанр");
+        }
+        //КНИГА=============================
+
+        private void addBook_Click(object sender, EventArgs e)
+        {
+            string que = "INSERT INTO Книга([Название],[Год выпуска],[Число страниц],[Язык книги],[Цена]) VALUES (@name,@yearIs,@pagesCol,@lang,@moneh)";
+            using (SqlCommand command = new SqlCommand(que, connection))
+            {
+                command.Parameters.AddWithValue("@name", textBox9.Text);
+                command.Parameters.AddWithValue("@yearIs", textBox10.Text);
+                command.Parameters.AddWithValue("@pagesCol", textBox11.Text);
+                command.Parameters.AddWithValue("@lang", textBox12.Text);
+                command.Parameters.AddWithValue("@moneh", textBox13.Text);
+
+                try
+                {
+                    int rowsAffected = command.ExecuteNonQuery();
+
+                    if (rowsAffected > 0)
+                    {
+                        dispBook_Click(sender, e);
+                        statText.Text = "Запись успешно добавлена. Используйте \"Создать транзакцию\", чтобы зафиксировать изменения";
+                        if (dataGridView1.Rows.Count > 0)
+                        {
+                            int lastIndex = dataGridView1.Rows.Count - 1;
+                            dataGridView1.FirstDisplayedScrollingRowIndex = lastIndex;
+                            dataGridView1.Rows[lastIndex].Selected = true;
+                        }
+                    }
+                }catch 
+                {
+                    MessageBox.Show("Не удалось добавить запись. Проверьте корректность введенных данных");
+                }
+            }
+        }
+
+        private void pushBook_Click(object sender, EventArgs e)
+        {
+            DoTransactRoutine("Книга");
+        }
+
+
+        private void dispBook_Click(object sender, EventArgs e)
+        {
+            DoDisplayRoutine("Книга");
+            dataGridView1.Columns[1].Visible = false;
+            dataGridView1.Columns[2].Visible = false;
+            dataGridView1.Columns[3].Visible = false;
+        }
+
+
     }
 }

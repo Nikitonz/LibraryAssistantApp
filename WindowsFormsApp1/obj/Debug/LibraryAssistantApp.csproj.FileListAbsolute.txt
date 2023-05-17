@@ -34,3 +34,5 @@ C:\Users\nikit\Desktop\LibraryAssistantApp\WindowsFormsApp1\obj\Debug\LibraryAss
 C:\Users\nikit\Desktop\LibraryAssistantApp\WindowsFormsApp1\obj\Debug\LibraryAssistantApp.csproj.CoreCompileInputs.cache
 C:\Users\nikit\Desktop\LibraryAssistantApp\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.exe
 C:\Users\nikit\Desktop\LibraryAssistantApp\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.pdb
+C:\Users\nikit\Desktop\LibraryAssistantApp\WindowsFormsApp1\bin\Debug\ToggleSlider.dll
+C:\Users\nikit\Desktop\LibraryAssistantApp\WindowsFormsApp1\obj\Debug\LibraryAssistantApp.csproj.CopyComplete
