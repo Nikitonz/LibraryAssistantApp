@@ -79,7 +79,6 @@
             this.add_author = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dispIzd = new System.Windows.Forms.Button();
-            this.findIzd = new System.Windows.Forms.Button();
             this.pushIzd = new System.Windows.Forms.Button();
             this.addIzd = new System.Windows.Forms.Button();
             this.textBox7 = new System.Windows.Forms.TextBox();
@@ -116,6 +115,7 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lookForCountry = new System.Windows.Forms.Button();
             this.authFormBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -140,7 +140,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1924, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1924, 30);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -151,7 +151,7 @@
             this.проверитьПодключениеКБДToolStripMenuItem,
             this.выходToolStripMenuItem1});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // регистрацияИАвторизацияToolStripMenuItem
@@ -216,7 +216,7 @@
             this.поставкиИСписанияToolStripMenuItem,
             this.сотрудникиToolStripMenuItem});
             this.вызовТаблицыToolStripMenuItem.Name = "вызовТаблицыToolStripMenuItem";
-            this.вызовТаблицыToolStripMenuItem.Size = new System.Drawing.Size(131, 24);
+            this.вызовТаблицыToolStripMenuItem.Size = new System.Drawing.Size(131, 26);
             this.вызовТаблицыToolStripMenuItem.Text = "Вызов таблицы";
             // 
             // книгиToolStripMenuItem
@@ -332,7 +332,7 @@
             this.справочникToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.книгиToolStripMenuItem1});
             this.справочникToolStripMenuItem.Name = "справочникToolStripMenuItem";
-            this.справочникToolStripMenuItem.Size = new System.Drawing.Size(108, 24);
+            this.справочникToolStripMenuItem.Size = new System.Drawing.Size(108, 26);
             this.справочникToolStripMenuItem.Text = "Справочник";
             // 
             // книгиToolStripMenuItem1
@@ -380,7 +380,7 @@
             this.справкаToolStripMenuItem,
             this.разработчикToolStripMenuItem});
             this.оПрограммеToolStripMenuItem.Name = "оПрограммеToolStripMenuItem";
-            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(118, 24);
+            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(118, 26);
             this.оПрограммеToolStripMenuItem.Text = "О программе";
             // 
             // справкаToolStripMenuItem
@@ -398,6 +398,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lookForCountry);
             this.groupBox1.Controls.Add(this.pushAuthor);
             this.groupBox1.Controls.Add(this.disp_Авторы);
             this.groupBox1.Controls.Add(this.search_author);
@@ -443,14 +444,14 @@
             // 
             // search_author
             // 
-            this.search_author.Location = new System.Drawing.Point(6, 339);
+            this.search_author.Location = new System.Drawing.Point(190, 49);
             this.search_author.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.search_author.Name = "search_author";
-            this.search_author.Size = new System.Drawing.Size(261, 23);
+            this.search_author.Size = new System.Drawing.Size(85, 23);
             this.search_author.TabIndex = 6;
             this.search_author.Text = "Найти";
             this.search_author.UseVisualStyleBackColor = true;
-            this.search_author.Click += new System.EventHandler(this.button3_Click);
+            this.search_author.Click += new System.EventHandler(this.search_author_Click);
             // 
             // label4
             // 
@@ -497,7 +498,7 @@
             this.textBox4.Location = new System.Drawing.Point(11, 234);
             this.textBox4.Margin = new System.Windows.Forms.Padding(4);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(264, 22);
+            this.textBox4.Size = new System.Drawing.Size(172, 22);
             this.textBox4.TabIndex = 4;
             // 
             // textBox3
@@ -505,7 +506,7 @@
             this.textBox3.Location = new System.Drawing.Point(8, 174);
             this.textBox3.Margin = new System.Windows.Forms.Padding(4);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(268, 22);
+            this.textBox3.Size = new System.Drawing.Size(267, 22);
             this.textBox3.TabIndex = 3;
             // 
             // textBox2
@@ -521,12 +522,12 @@
             this.textBox1.Location = new System.Drawing.Point(7, 49);
             this.textBox1.Margin = new System.Windows.Forms.Padding(4);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(269, 22);
+            this.textBox1.Size = new System.Drawing.Size(176, 22);
             this.textBox1.TabIndex = 1;
             // 
             // add_author
             // 
-            this.add_author.Location = new System.Drawing.Point(7, 310);
+            this.add_author.Location = new System.Drawing.Point(6, 333);
             this.add_author.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.add_author.Name = "add_author";
             this.add_author.Size = new System.Drawing.Size(260, 28);
@@ -538,7 +539,6 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.dispIzd);
-            this.groupBox2.Controls.Add(this.findIzd);
             this.groupBox2.Controls.Add(this.pushIzd);
             this.groupBox2.Controls.Add(this.addIzd);
             this.groupBox2.Controls.Add(this.textBox7);
@@ -566,15 +566,6 @@
             this.dispIzd.UseVisualStyleBackColor = true;
             this.dispIzd.Click += new System.EventHandler(this.dispIzd_Click);
             // 
-            // findIzd
-            // 
-            this.findIzd.Location = new System.Drawing.Point(20, 337);
-            this.findIzd.Name = "findIzd";
-            this.findIzd.Size = new System.Drawing.Size(267, 23);
-            this.findIzd.TabIndex = 8;
-            this.findIzd.Text = "Найти";
-            this.findIzd.UseVisualStyleBackColor = true;
-            // 
             // pushIzd
             // 
             this.pushIzd.Location = new System.Drawing.Point(20, 361);
@@ -587,7 +578,7 @@
             // 
             // addIzd
             // 
-            this.addIzd.Location = new System.Drawing.Point(20, 312);
+            this.addIzd.Location = new System.Drawing.Point(20, 336);
             this.addIzd.Name = "addIzd";
             this.addIzd.Size = new System.Drawing.Size(267, 24);
             this.addIzd.TabIndex = 6;
@@ -688,6 +679,7 @@
             this.findGenre.TabIndex = 3;
             this.findGenre.Text = "Найти";
             this.findGenre.UseVisualStyleBackColor = true;
+            this.findGenre.Click += new System.EventHandler(this.findGenre_Click);
             // 
             // addGenre
             // 
@@ -762,16 +754,17 @@
             // 
             // findBook
             // 
-            this.findBook.Location = new System.Drawing.Point(6, 335);
+            this.findBook.Location = new System.Drawing.Point(179, 47);
             this.findBook.Name = "findBook";
-            this.findBook.Size = new System.Drawing.Size(252, 23);
+            this.findBook.Size = new System.Drawing.Size(81, 23);
             this.findBook.TabIndex = 11;
             this.findBook.Text = "Найти";
             this.findBook.UseVisualStyleBackColor = true;
+            this.findBook.Click += new System.EventHandler(this.findBook_Click);
             // 
             // addBook
             // 
-            this.addBook.Location = new System.Drawing.Point(6, 312);
+            this.addBook.Location = new System.Drawing.Point(6, 338);
             this.addBook.Name = "addBook";
             this.addBook.Size = new System.Drawing.Size(253, 23);
             this.addBook.TabIndex = 10;
@@ -811,7 +804,7 @@
             // 
             this.textBox9.Location = new System.Drawing.Point(8, 48);
             this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(252, 22);
+            this.textBox9.Size = new System.Drawing.Size(162, 22);
             this.textBox9.TabIndex = 5;
             // 
             // label13
@@ -906,6 +899,16 @@
             this.statText.Name = "statText";
             this.statText.Size = new System.Drawing.Size(83, 20);
             this.statText.Text = "Запущено!";
+            // 
+            // lookForCountry
+            // 
+            this.lookForCountry.Location = new System.Drawing.Point(190, 232);
+            this.lookForCountry.Name = "lookForCountry";
+            this.lookForCountry.Size = new System.Drawing.Size(75, 23);
+            this.lookForCountry.TabIndex = 11;
+            this.lookForCountry.Text = "Найти";
+            this.lookForCountry.UseVisualStyleBackColor = true;
+            this.lookForCountry.Click += new System.EventHandler(this.lookForCountry_Click);
             // 
             // authFormBindingSource
             // 
@@ -1032,7 +1035,6 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button dispIzd;
-        private System.Windows.Forms.Button findIzd;
         private System.Windows.Forms.Button pushIzd;
         private System.Windows.Forms.Button addIzd;
         private System.Windows.Forms.Button dispGenre;
@@ -1043,6 +1045,7 @@
         private System.Windows.Forms.Button pushBook;
         private System.Windows.Forms.Button findBook;
         private System.Windows.Forms.Button addBook;
+        private System.Windows.Forms.Button lookForCountry;
     }
 }
 

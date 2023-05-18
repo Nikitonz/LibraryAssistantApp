@@ -113,10 +113,19 @@ namespace WindowsFormsApp1
             void FunctionalityDisable()
             {
                 add_author.Enabled = false;
-                search_author.Enabled = false;
-
+                
+                pushAuthor.Enabled = false;
+                addIzd.Enabled = false;
+                pushIzd.Enabled = false;
+                addGenre.Enabled = false;
+                genreTran.Enabled = false;
+                addBook.Enabled = false;
+                pushBook.Enabled = false;
                 dataGridView1.Enabled = false;
                 dataGridView1.Visible = false;
+
+
+
                 вызовТаблицыToolStripMenuItem.Visible = false;
                 this.MinimumSize = new System.Drawing.Size(260, 48);
             }
@@ -124,9 +133,16 @@ namespace WindowsFormsApp1
             {
                 add_author.Enabled = true;
                 search_author.Enabled = true;
-
-                вызовТаблицыToolStripMenuItem.Visible = true;
-                this.MinimumSize = new System.Drawing.Size(380, 46);
+                lookForCountry.Enabled = true;
+                pushAuthor.Enabled = true;
+                addIzd.Enabled = true;
+                pushIzd.Enabled = true;
+                addGenre.Enabled = true;
+                genreTran.Enabled = true;
+                addBook.Enabled = true;
+                pushBook.Enabled = true;
+                //вызовТаблицыToolStripMenuItem.Visible = true;
+               // this.MinimumSize = new System.Drawing.Size(380, 46);
             }
 
             //MessageBox.Show($"{maxRole}", "yes", MessageBoxButtons.OK);
@@ -143,7 +159,7 @@ namespace WindowsFormsApp1
             }
             if (maxRole.ToString() != "none")
             {
-                statText.Text = $"Успешно авторизированы. Уровень доступа: {maxRole}";
+                statText.Text = $"Авторизирован. Уровень доступа: {maxRole}";
             }
         }
 
@@ -161,7 +177,27 @@ namespace WindowsFormsApp1
 
 
         }
+        private void doSearchRoutine(string tablename, string field, string qText) {
+            string que = $"select * from [{tablename}] where [{field}] like '%{qText}%'";
 
+            try
+            {
+                using (SqlDataAdapter adapter = new SqlDataAdapter(que, connection))
+                {
+                    dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+
+                    dataGridView1.DataSource = dataTable;
+
+                }
+                dataGridView1.Enabled = true;
+                dataGridView1.Visible = true;
+                dataGridView1.Columns[0].Visible = false;
+            }
+            catch (Exception ex) { MessageBox.Show("Ошибка поиска!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+
+
+        }
         private void DoTransactRoutine(string tablename)
         {
 
@@ -236,14 +272,14 @@ namespace WindowsFormsApp1
             SetInvisible();
             groupBox1.Visible = true;
             groupBox1.Location = new Point(19, 26);
-            groupBox1.Size = new Size(213, 350);
+            groupBox1.Size = new Size(220, 360);
         }
         private void издательстваToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetInvisible();
             groupBox2.Visible = true;
             groupBox2.Location = new Point(19, 26);
-            groupBox2.Size = new Size(213, 350);
+            groupBox2.Size = new Size(220, 360);
         }
 
         private void жанрыToolStripMenuItem_Click(object sender, EventArgs e)
@@ -251,7 +287,7 @@ namespace WindowsFormsApp1
             SetInvisible();
             groupBox3.Visible = true;
             groupBox3.Location = new Point(19, 26);
-            groupBox3.Size = new Size(213, 350);
+            groupBox3.Size = new Size(220, 360);
         }
 
         private void книгаToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -259,14 +295,14 @@ namespace WindowsFormsApp1
             SetInvisible();
             groupBox4.Visible = true;
             groupBox4.Location = new Point(19, 26);
-            groupBox4.Size = new Size(213, 350);
+            groupBox4.Size = new Size(220, 360);
         }
         private void книгиToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             SetInvisible();
             groupBox4.Visible = true;
             groupBox4.Location = new Point(19, 26);
-            groupBox4.Size = new Size(213, 350);
+            groupBox4.Size = new Size(220, 360);
         }
 
         private void авторыToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -274,7 +310,7 @@ namespace WindowsFormsApp1
             SetInvisible();
             groupBox1.Visible = true;
             groupBox1.Location = new Point(19, 26);
-            groupBox1.Size = new Size(213, 350);
+            groupBox1.Size = new Size(220, 360);
         }
 
         private void жанрыToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -282,7 +318,7 @@ namespace WindowsFormsApp1
             SetInvisible();
             groupBox3.Visible = true;
             groupBox3.Location = new Point(19, 26);
-            groupBox3.Size = new Size(213, 350);
+            groupBox3.Size = new Size(220, 360);
         }
 
         private void издательстваToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -290,7 +326,7 @@ namespace WindowsFormsApp1
             SetInvisible();
             groupBox2.Visible = true;
             groupBox2.Location = new Point(19, 26);
-            groupBox2.Size = new Size(213, 350);
+            groupBox2.Size = new Size(220, 360);
         }
         private void авторизироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -325,7 +361,7 @@ namespace WindowsFormsApp1
         {
             connection.Close();
             connection = null;
-            this.MinimumSize = new System.Drawing.Size(266, 48);
+         
             CheckAcessibility(null);
         }
 
@@ -358,12 +394,7 @@ namespace WindowsFormsApp1
 
 
 
-        /* private void Form1_Load(object sender, EventArgs e)
-         {
-             // TODO: данная строка кода позволяет загрузить данные в таблицу "библиотекаDataSet.Авторы". При необходимости она может быть перемещена или удалена.
-             this.авторыTableAdapter.Fill(this.библиотекаDataSet.Авторы);
-
-         }*/
+ 
         //авторы===========
         private void button1_Click(object sender, EventArgs e)
         {
@@ -396,26 +427,14 @@ namespace WindowsFormsApp1
         }
 
 
-        private void button3_Click(object sender, EventArgs e)
+        private void search_author_Click(object sender, EventArgs e)
         {
-            string que = $"select * from Авторы where Фамилия like '{textBox1.Text}%'  or Имя like '{textBox2.Text}%' or Отчество like '{textBox3.Text}%' or [Страна автора] like '{textBox4.Text}%'";
-
-            try
-            {
-                using (SqlDataAdapter adapter = new SqlDataAdapter(que, connection))
-                {
-                    dataTable = new DataTable();
-                    adapter.Fill(dataTable);
-
-                    dataGridView1.DataSource = dataTable;
-
-                }
-                dataGridView1.Enabled = true;
-                dataGridView1.Visible = true;
-                dataGridView1.Columns[0].ReadOnly = true;
-            }
-            catch (Exception ex) { MessageBox.Show("Ошибка добавления!" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-
+            doSearchRoutine("Авторы", "Фамилия", textBox1.Text);
+        }
+        
+        private void lookForCountry_Click(object sender, EventArgs e)
+        {
+            doSearchRoutine("Авторы", "Страна автора", textBox4.Text);
         }
 
         private void pushAuthor_Click(object sender, EventArgs e)
@@ -501,6 +520,10 @@ namespace WindowsFormsApp1
                 }
             }
         }
+        private void findGenre_Click(object sender, EventArgs e)
+        {
+            doSearchRoutine("Жанр", "Название жанра", textBox8.Text);
+        }
         private void genreTran_Click(object sender, EventArgs e)
         {
             DoTransactRoutine("Жанр");
@@ -545,6 +568,10 @@ namespace WindowsFormsApp1
             }
         }
 
+        private void findBook_Click(object sender, EventArgs e)
+        {
+            doSearchRoutine("Книга", "Название", textBox9.Text);
+        }
         private void pushBook_Click(object sender, EventArgs e)
         {
             DoTransactRoutine("Книга");
@@ -558,7 +585,6 @@ namespace WindowsFormsApp1
             dataGridView1.Columns[2].Visible = false;
             dataGridView1.Columns[3].Visible = false;
         }
-
 
     }
 }
