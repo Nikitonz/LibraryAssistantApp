@@ -18,7 +18,7 @@ namespace WindowsFormsApp1
         {
             get
             {
-                int usedSorce = 0;
+                int usedSorce = 1;
 
                 return dataSourse[usedSorce];
             }
@@ -238,7 +238,7 @@ namespace WindowsFormsApp1
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection($"Data Source={dataSourse[0]};Initial Catalog=Библиотека;Integrated Security=True"))
+                using (SqlConnection connection = new SqlConnection($"Data Source={GetDataSources};Initial Catalog=Библиотека;Integrated Security=True"))
                 {
                     string query = $"SELECT * FROM {tablename}";
 
