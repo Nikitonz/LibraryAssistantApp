@@ -252,7 +252,7 @@ namespace WindowsFormsApp1
                 }
                 dataGridView1.Enabled = true;
                 dataGridView1.Visible = true;
-                dataGridView1.Columns[0].ReadOnly = true;
+                dataGridView1.Columns[0].Visible = false;
 
 
 
