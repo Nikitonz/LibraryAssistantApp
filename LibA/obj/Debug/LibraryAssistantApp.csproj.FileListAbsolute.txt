@@ -54,7 +54,6 @@ E:\LibraryAssistantApp\LibA\bin\Debug\LibA.exe.config
 E:\LibraryAssistantApp\LibA\bin\Debug\LibA.exe
 E:\LibraryAssistantApp\LibA\bin\Debug\LibA.pdb
 E:\LibraryAssistantApp\LibA\obj\Debug\LibraryAssistantApp.csproj.AssemblyReference.cache
-E:\LibraryAssistantApp\LibA\obj\Debug\WindowsFormsApp1.AdminPanel.resources
 E:\LibraryAssistantApp\LibA\obj\Debug\LibA.AuthForm.resources
 E:\LibraryAssistantApp\LibA\obj\Debug\LibA.SettingsPane.resources
 E:\LibraryAssistantApp\LibA\obj\Debug\LibA.UserPanel.resources
@@ -63,3 +62,4 @@ E:\LibraryAssistantApp\LibA\obj\Debug\LibraryAssistantApp.csproj.GenerateResourc
 E:\LibraryAssistantApp\LibA\obj\Debug\LibraryAssistantApp.csproj.CoreCompileInputs.cache
 E:\LibraryAssistantApp\LibA\obj\Debug\LibA.exe
 E:\LibraryAssistantApp\LibA\obj\Debug\LibA.pdb
+E:\LibraryAssistantApp\LibA\obj\Debug\LibA.AdminPanel.resources

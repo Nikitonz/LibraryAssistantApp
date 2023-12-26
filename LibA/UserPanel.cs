@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using WindowsFormsApp1;
+
 
 namespace LibA
 {
@@ -33,6 +33,7 @@ namespace LibA
             InitializeComponent();
             Screen screen = Screen.FromControl(this);
             this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
+            администрированиеToolStripMenuItem_Click();
         }
 
     
@@ -227,7 +228,7 @@ namespace LibA
             Dispose();
         }
 
-        private void администрированиеToolStripMenuItem_Click(object sender, EventArgs e)
+        private void администрированиеToolStripMenuItem_Click(object sender=null, EventArgs e = null)
         {
             AdminPanel admpane = new AdminPanel();
             admpane.Show();
