@@ -1,0 +1,14 @@
+C:\Users\nikit\Desktop\SqlCreateUser\bin\Debug\SqlCreateUser.exe.config
+C:\Users\nikit\Desktop\SqlCreateUser\bin\Debug\SqlCreateUser.exe
+C:\Users\nikit\Desktop\SqlCreateUser\bin\Debug\SqlCreateUser.pdb
+C:\Users\nikit\Desktop\SqlCreateUser\obj\Debug\SqlCreateUser.csproj.AssemblyReference.cache
+C:\Users\nikit\Desktop\SqlCreateUser\obj\Debug\SqlCreateUser.csproj.CoreCompileInputs.cache
+C:\Users\nikit\Desktop\SqlCreateUser\obj\Debug\SqlCreateUser.exe
+C:\Users\nikit\Desktop\SqlCreateUser\obj\Debug\SqlCreateUser.pdb
+E:\SqlCreateUser\bin\Debug\SqlCreateUser.exe.config
+E:\SqlCreateUser\bin\Debug\SqlCreateUser.exe
+E:\SqlCreateUser\bin\Debug\SqlCreateUser.pdb
+E:\SqlCreateUser\obj\Debug\SqlCreateUser.csproj.AssemblyReference.cache
+E:\SqlCreateUser\obj\Debug\SqlCreateUser.csproj.CoreCompileInputs.cache
+E:\SqlCreateUser\obj\Debug\SqlCreateUser.exe
+E:\SqlCreateUser\obj\Debug\SqlCreateUser.pdb

@@ -79,6 +79,7 @@
     <Compile Include="AdminPanel.Designer.cs">
       <DependentUpon>AdminPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="ConnectionManager.cs" />
     <Compile Include="DBWorker.cs" />
     <Compile Include="SettingsPane.cs">
       <SubType>Form</SubType>

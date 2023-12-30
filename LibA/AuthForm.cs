@@ -7,33 +7,37 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Data;
+using System.IO.Packaging;
 
 namespace LibA
 {
-
+    public enum WindowType { 
+        REGISTER,
+        AUTHORIZE
+    }
     public partial class AuthForm : Form
     {
-        public SqlConnection connection;
-        UserPanel userPanel;
+        public event EventHandler RegAuthSuccess;
+
+      
         List<string> accessLevels= new List<string>();
-        public void WhichWindow(string op)
+        public void WhichWindow(WindowType winType)
         {
             this.AutoSize = true;
-            if (op == "register")
+            if (winType == WindowType.REGISTER)
             {
                 authbox.Visible = false;
                 regbox.Visible = true;
                 regbox.Location = new Point(5, 5);
-                //regbox.Size = new Size(213, 340);
+               
                 regbox.AutoSize = true;
                 this.Text = "Окно регистрации";
             }
-            else if (op == "authorize")
+            else if (winType == WindowType.AUTHORIZE)
             {
                 regbox.Visible = false;
                 authbox.Visible = true;
                 authbox.Location = new Point(5, 5);
-                //authbox.Size = new Size(213, 340);
                 this.Text = "Окно авторизации";
             }
         }
@@ -43,32 +47,37 @@ namespace LibA
             InitializeComponent();
             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             this.AutoSize = true;
-            this.userPanel = userPanel;
+          
         }
 
+        
 
 
-
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             try
             {
-                string connectionString = $"Data Source={Properties.Settings.Default.dbConnStrMain};Initial Catalog=Библиотека;Integrated Security=True";
                 string transfer = textBox1.Text;
                 transfer = transfer.Replace(' ', '_').TrimEnd('_');
                 transfer += "_" + comboBox1.Text;
+                /*string connectionString = $"Data Source={Properties.Settings.Default.dbConnStrMain};Initial Catalog={Properties.Settings.Default.ICatalog};Integrated Security=True";
+                
                 string query = $"CREATE LOGIN {textBox2.Text} WITH PASSWORD = '{textBox5.Text}'; " +
                     $"CREATE USER {transfer} FOR LOGIN {textBox2.Text}; " +
                     $"GRANT SELECT ON Авторы TO {textBox2.Text};";
 
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connectionTRUSTABLE = new SqlConnection(connectionString))
                 {
-                    SqlCommand command = new SqlCommand(query, connection);
-                    connection.Open();
+                    SqlCommand command = new SqlCommand(query, connectionTRUSTABLE);
+                    connectionTRUSTABLE.Open();
                     command.ExecuteNonQueryAsync();
-                    connection.Close();
+                    connectionTRUSTABLE.Close();
                 }
                 MessageBox.Show($"Пользователь {textBox2.Text} успешно зарегистрирован", "RegGud", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                */
+                await ConnectionManager.Instance.SetupConnection(transfer, textBox2.Text, textBox5.Text);
+                await ConnectionManager.Instance.OpenConnection();
+                RegAuthSuccess?.Invoke(this, EventArgs.Empty);
             }
             catch (SqlException er)
             {
@@ -78,7 +87,7 @@ namespace LibA
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            WhichWindow("authorize");
+            WhichWindow(WindowType.AUTHORIZE);
         }
 
         private void AuthForm_Load(object sender, EventArgs e)
@@ -91,43 +100,16 @@ namespace LibA
         
 
         }
-        //$"USE Библиотека SELECT DP2.name as DatabaseRoleName FROM sys.server_principals AS SP JOIN sys.database_principals AS DP ON SP.sid = DP.sid JOIN sys.database_role_members AS DRM ON DP.principal_id = DRM.member_principal_id JOIN sys.database_principals AS DP2 ON DRM.role_principal_id = DP2.principal_id WHERE SP.name = '{textBox3.Text}' ORDER BY DP2.name;", connection)
-
-
-
-        /*private async void button2_Click(object sender, EventArgs e)
-        {
-           
-            try
-            {
-                string connectionString = $"Data Source={dateSource};Initial Catalog=Библиотека;User ID={textBox3.Text};Password='{textBox4.Text}';"; ;
-                connection = new SqlConnection(connectionString);
-                await connection.OpenAsync();
-                MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                userPanel.statText.Text = $"Пользователь {textBox3.Text}. Уроверь доступа: не реалтзовано";
-                List<string> resultList = 
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка подключения: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                //DialogResult = DialogResult.Retry;
-
-                textBox3.Text = "";
-                textBox4.Text = "";
-                textBox3.Focus();
-            }
-        }
-        */
+        
 
         private async void button2_Click(object sender, EventArgs e)
         {
             try
             {
-                string connectionString = $"Data Source={Properties.Settings.Default.dbConnStrMain};Initial Catalog=Библиотека;User ID={textBox3.Text};Password='{textBox4.Text}';";
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                
+                using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
                 {
-                    await connection.OpenAsync();
+                    
                     MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     string query = $"USE Библиотека SELECT DP2.name as DatabaseRoleName FROM sys.server_principals AS SP JOIN sys.database_principals AS DP ON SP.sid = DP.sid JOIN sys.database_role_members AS DRM ON DP.principal_id = DRM.member_principal_id JOIN sys.database_principals AS DP2 ON DRM.role_principal_id = DP2.principal_id WHERE SP.name = '{textBox3.Text}' ORDER BY DP2.name;";
@@ -138,18 +120,19 @@ namespace LibA
                         {
                             
 
-                            while (await reader.ReadAsync())
-                            {
+                            while (await reader.ReadAsync()){
                                 string roleName = reader["DatabaseRoleName"].ToString();
                                 accessLevels.Add(roleName);
                             }
 
-                           
 
-                            userPanel.statText.Text = $"Пользователь {textBox3.Text}. Роли базы данных: {string.Join(", ", accessLevels)}";
-                            this.Close();
+                            RegAuthSuccess?.Invoke(this, EventArgs.Empty);
+         
+                            
                         }
                     }
+                    
+                    this.Close();
                 }
             }
             catch (Exception ex)
@@ -161,7 +144,11 @@ namespace LibA
             }
         }
 
+        internal static void Disconnect()
+        {
+           
 
+        }
     }
     
 

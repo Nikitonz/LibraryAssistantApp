@@ -25,7 +25,7 @@ namespace LibA.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
+        [global::System.Configuration.DefaultSettingValueAttribute("192.168.100.128")]
         public string dbConnStrMain {
             get {
                 return ((string)(this["dbConnStrMain"]));
@@ -37,13 +37,25 @@ namespace LibA.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
         public string dbConnStrBackup {
             get {
                 return ((string)(this["dbConnStrBackup"]));
             }
             set {
                 this["dbConnStrBackup"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Библиотека")]
+        public string ICatalog {
+            get {
+                return ((string)(this["ICatalog"]));
+            }
+            set {
+                this["ICatalog"] = value;
             }
         }
     }

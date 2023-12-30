@@ -3,10 +3,13 @@
   <Profiles />
   <Settings>
     <Setting Name="dbConnStrMain" Type="System.String" Scope="User">
-      <Value Profile="(Default)">localhost</Value>
+      <Value Profile="(Default)">192.168.100.128</Value>
     </Setting>
     <Setting Name="dbConnStrBackup" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">localhost</Value>
+    </Setting>
+    <Setting Name="ICatalog" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Библиотека</Value>
     </Setting>
   </Settings>
 </SettingsFile>

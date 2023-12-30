@@ -112,10 +112,8 @@
             // 
             // comboBox1
             // 
-            this.comboBox1.DisplayMember = "Guest";
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
-            "Гость",
             "Читатель",
             "Библиотекарь",
             "Директор"});
@@ -125,8 +123,7 @@
             this.comboBox1.Size = new System.Drawing.Size(225, 24);
             this.comboBox1.TabIndex = 9;
             this.comboBox1.Tag = "ifftag";
-            this.comboBox1.Text = "Гость";
-            this.comboBox1.ValueMember = "Guest";
+            this.comboBox1.Text = "Читатель";
             // 
             // linkLabel1
             // 
@@ -224,6 +221,7 @@
             // 
             // authbox
             // 
+            this.authbox.AutoSize = true;
             this.authbox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.authbox.BackColor = System.Drawing.SystemColors.Control;
             this.authbox.Controls.Add(this.pictureBox2);
@@ -233,11 +231,12 @@
             this.authbox.Controls.Add(this.textBox3);
             this.authbox.Controls.Add(this.label4);
             this.authbox.Controls.Add(this.label3);
-            this.authbox.Location = new System.Drawing.Point(273, 11);
+            this.authbox.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.authbox.Location = new System.Drawing.Point(339, 29);
             this.authbox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.authbox.Name = "authbox";
             this.authbox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.authbox.Size = new System.Drawing.Size(277, 191);
+            this.authbox.Size = new System.Drawing.Size(278, 206);
             this.authbox.TabIndex = 1;
             this.authbox.TabStop = false;
             this.authbox.Text = "Авторизация";

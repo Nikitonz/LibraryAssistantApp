@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace LibA
 {
@@ -10,7 +11,7 @@ namespace LibA
     {
         private const string INITAL_CATALOG = "Библиотека";
         private static string DEFAULT_CONNECTION = $"Data Source={Properties.Settings.Default.dbConnStrMain};Initial Catalog={INITAL_CATALOG};Integrated Security=True";
-
+        private static SqlTransaction transaction;
         public static async Task<string[]> BdGetDataMSSQL(string commandText)
         {
             List<string> result = new List<string>();
@@ -41,19 +42,19 @@ namespace LibA
             return result.ToArray();
         }
 
-        public static async Task<DataTable> GetDataTable(string commandText)
+        public static async Task<DataTable> GetDataTable(string tableName)
         {
+            string commandText = $"SELECT * FROM [{tableName}]";
             try
             {
-                using (SqlConnection connection = new SqlConnection(DEFAULT_CONNECTION))
-                {
-                    await connection.OpenAsync();
-                    using (SqlCommand command = new SqlCommand(commandText, connection))
+                    
+                   
+                    using (SqlCommand command = new SqlCommand(commandText, await ConnectionManager.Instance.OpenConnection()))
                     {
                         using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                         {
 
-                            DataTable dataTable = new();
+                            DataTable dataTable = new(tableName);
                             adapter.Fill(dataTable);
                             return dataTable;
 
@@ -61,42 +62,111 @@ namespace LibA
                     }
 
 
-                }
+                
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                MessageBox.Show(e.ToString());  
 
             }
             return null;
 
         }
 
-        public static async Task<DataTable> Transactable(Func<Task> operation)
+       /*
+        public static async void BeginTransaction(DataGridView dgv)
         {
-            using (SqlConnection connection = new SqlConnection(DEFAULT_CONNECTION))
+            DataTable dataTable = dgv.DataSource as DataTable;
+
+            if (dataTable != null)
             {
-                await connection.OpenAsync();
-                using (SqlTransaction transaction = connection.BeginTransaction())
+                
+                
+
+                try
                 {
-                    try
+                   
+                    transaction = .BeginTransaction();
+
+                    using (SqlDataAdapter adapter = new SqlDataAdapter($"SELECT * FROM {dataTable.TableName}", await ConnectionManager.Instance.OpenConnection()))
                     {
-                        await operation();
-                        transaction.Commit();
+                        adapter.SelectCommand.Transaction = transaction;
+
+                        SqlCommandBuilder commandBuilder = new SqlCommandBuilder(adapter);
+                        adapter.UpdateCommand = commandBuilder.GetUpdateCommand();
+                        adapter.InsertCommand = commandBuilder.GetInsertCommand();
+                        adapter.DeleteCommand = commandBuilder.GetDeleteCommand();
+
+                       
+                        adapter.RowUpdated += (sender, e) =>
+                        {
+                            if (e.StatementType == StatementType.Insert || e.StatementType == StatementType.Update || e.StatementType == StatementType.Delete)
+                            {
+                                transaction.Commit();
+                                MessageBox.Show("Изменения сохранены в базе данных.");
+                            }
+                        };
+
+                      
+                        adapter.RowUpdating += (sender, e) =>
+                        {
+                            if (e.StatementType == StatementType.Insert || e.StatementType == StatementType.Update || e.StatementType == StatementType.Delete)
+                            {
+                                if (e.Errors != null)
+                                {
+                                    e.Status = UpdateStatus.SkipCurrentRow;
+                                    MessageBox.Show($"Произошла ошибка при обновлении строки: {e.Errors.Message}");
+                                    transaction.Rollback();
+                                }
+                            }
+                        };
+
+                        adapter.Update(dataTable);
                     }
-                    catch (Exception e)
+                }
+                catch (Exception ex)
+                {
+                    if (transaction != null)
                     {
-                        Console.WriteLine(e.ToString());
                         transaction.Rollback();
                     }
-                    finally
+
+                    MessageBox.Show($"Произошла ошибка при сохранении изменений: {ex.Message}");
+                }
+                finally
+                {
+                    if (await ConnectionManager.Instance.OpenConnection().State == ConnectionState.Open)
                     {
-                        connection.Close();
+                        .Close();
                     }
                 }
             }
-
-            return new DataTable();
         }
+
+        public static async void RollbackTransaction()
+        {
+            try
+            {
+               
+                    await .OpenAsync();
+                    transaction = .BeginTransaction();
+                    if (transaction != null)
+                    {
+                        transaction.Commit();
+                        MessageBox.Show("Изменения сохранены. Используйте кнопку отката изменений, чтобы откатить изменения");
+                    }
+
+
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при транзакции: {ex.Message}");
+            }
+        }
+
+        */
+
     }
 }

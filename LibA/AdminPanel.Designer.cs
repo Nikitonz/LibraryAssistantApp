@@ -36,8 +36,8 @@
             this.Tables = new System.Windows.Forms.ListBox();
             this.dataGridViewMain = new System.Windows.Forms.DataGridView();
             this.lPane = new System.Windows.Forms.SplitContainer();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.buttonRollback = new System.Windows.Forms.Button();
+            this.buttonTransact = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lPane)).BeginInit();
@@ -55,7 +55,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(800, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(800, 30);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -64,7 +64,7 @@
             this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.деавторизоватьсяToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // деавторизоватьсяToolStripMenuItem
@@ -76,13 +76,13 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 24);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 26);
             this.settingsToolStripMenuItem.Text = "Настройки";
             // 
             // выходToolStripMenuItem
             // 
             this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
-            this.выходToolStripMenuItem.Size = new System.Drawing.Size(67, 24);
+            this.выходToolStripMenuItem.Size = new System.Drawing.Size(67, 26);
             this.выходToolStripMenuItem.Text = "Выход";
             this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
             // 
@@ -95,18 +95,20 @@
             this.Tables.Margin = new System.Windows.Forms.Padding(0);
             this.Tables.MultiColumn = true;
             this.Tables.Name = "Tables";
-            this.Tables.Size = new System.Drawing.Size(158, 484);
+            this.Tables.Size = new System.Drawing.Size(158, 500);
             this.Tables.TabIndex = 13;
             this.Tables.SelectedIndexChanged += new System.EventHandler(this.Tables_SelectedIndexChanged);
             // 
             // dataGridViewMain
             // 
+            this.dataGridViewMain.BackgroundColor = System.Drawing.Color.White;
             this.dataGridViewMain.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewMain.Location = new System.Drawing.Point(243, 28);
+            this.dataGridViewMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridViewMain.Location = new System.Drawing.Point(200, 30);
             this.dataGridViewMain.Name = "dataGridViewMain";
             this.dataGridViewMain.RowHeadersWidth = 51;
             this.dataGridViewMain.RowTemplate.Height = 24;
-            this.dataGridViewMain.Size = new System.Drawing.Size(128, 77);
+            this.dataGridViewMain.Size = new System.Drawing.Size(600, 570);
             this.dataGridViewMain.TabIndex = 14;
             this.dataGridViewMain.Visible = false;
             // 
@@ -117,15 +119,15 @@
             this.lPane.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.lPane.ForeColor = System.Drawing.SystemColors.ActiveCaption;
             this.lPane.IsSplitterFixed = true;
-            this.lPane.Location = new System.Drawing.Point(0, 28);
+            this.lPane.Location = new System.Drawing.Point(0, 30);
             this.lPane.Margin = new System.Windows.Forms.Padding(0);
             this.lPane.MaximumSize = new System.Drawing.Size(200, 0);
             this.lPane.Name = "lPane";
             // 
             // lPane.Panel1
             // 
-            this.lPane.Panel1.Controls.Add(this.button2);
-            this.lPane.Panel1.Controls.Add(this.button1);
+            this.lPane.Panel1.Controls.Add(this.buttonRollback);
+            this.lPane.Panel1.Controls.Add(this.buttonTransact);
             this.lPane.Panel1.Controls.Add(this.Tables);
             this.lPane.Panel1.ImeMode = System.Windows.Forms.ImeMode.Hiragana;
             this.lPane.Panel1MinSize = 0;
@@ -138,39 +140,42 @@
             this.lPane.Panel2.Cursor = System.Windows.Forms.Cursors.Default;
             this.lPane.Panel2.Click += new System.EventHandler(this.lPane_Panel2_Click);
             this.lPane.Panel2MinSize = 20;
-            this.lPane.Size = new System.Drawing.Size(200, 572);
+            this.lPane.Size = new System.Drawing.Size(200, 570);
             this.lPane.SplitterDistance = 160;
             this.lPane.TabIndex = 15;
             // 
-            // button2
+            // buttonRollback
             // 
-            this.button2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.button2.ForeColor = System.Drawing.SystemColors.InfoText;
-            this.button2.Location = new System.Drawing.Point(-1, 531);
-            this.button2.Margin = new System.Windows.Forms.Padding(0);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(159, 37);
-            this.button2.TabIndex = 17;
-            this.button2.Text = "Отменить изменения";
-            this.button2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.button2.UseVisualStyleBackColor = false;
-            this.button2.UseWaitCursor = true;
+            this.buttonRollback.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.buttonRollback.BackColor = System.Drawing.Color.Gray;
+            this.buttonRollback.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonRollback.Enabled = false;
+            this.buttonRollback.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.buttonRollback.Location = new System.Drawing.Point(-1, 533);
+            this.buttonRollback.Margin = new System.Windows.Forms.Padding(0);
+            this.buttonRollback.Name = "buttonRollback";
+            this.buttonRollback.Size = new System.Drawing.Size(159, 37);
+            this.buttonRollback.TabIndex = 17;
+            this.buttonRollback.Text = "Отменить изменения";
+            this.buttonRollback.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.buttonRollback.UseVisualStyleBackColor = false;
+            this.buttonRollback.Click += new System.EventHandler(this.buttonRollback_Click);
             // 
-            // button1
+            // buttonTransact
             // 
-            this.button1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.button1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.button1.Location = new System.Drawing.Point(-1, 494);
-            this.button1.Margin = new System.Windows.Forms.Padding(0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(159, 37);
-            this.button1.TabIndex = 16;
-            this.button1.Text = "Применить изменения";
-            this.button1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.UseWaitCursor = true;
+            this.buttonTransact.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.buttonTransact.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.buttonTransact.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonTransact.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.buttonTransact.Location = new System.Drawing.Point(-1, 496);
+            this.buttonTransact.Margin = new System.Windows.Forms.Padding(0);
+            this.buttonTransact.Name = "buttonTransact";
+            this.buttonTransact.Size = new System.Drawing.Size(159, 37);
+            this.buttonTransact.TabIndex = 16;
+            this.buttonTransact.Text = "Применить изменения";
+            this.buttonTransact.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.buttonTransact.UseVisualStyleBackColor = false;
+            this.buttonTransact.Click += new System.EventHandler(this.buttonTransact_Click);
             // 
             // AdminPanel
             // 
@@ -205,7 +210,7 @@
         private System.Windows.Forms.ToolStripMenuItem выходToolStripMenuItem;
         private System.Windows.Forms.DataGridView dataGridViewMain;
         private System.Windows.Forms.SplitContainer lPane;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button buttonTransact;
+        private System.Windows.Forms.Button buttonRollback;
     }
 }

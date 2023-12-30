@@ -38,7 +38,6 @@ C:\Users\nikit\Desktop\LibraryAssistantApp\WindowsFormsApp1\obj\Debug\LibA.Setti
 C:\Users\nikit\Desktop\LibraryAssistantApp\WindowsFormsApp1\obj\Debug\LibA.exe
 C:\Users\nikit\Desktop\LibraryAssistantApp\WindowsFormsApp1\obj\Debug\LibA.pdb
 C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Debug\LibraryAssistantApp.csproj.AssemblyReference.cache
-C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Debug\WindowsFormsApp1.AdminPanel.resources
 C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Debug\LibA.AuthForm.resources
 C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Debug\LibA.SettingsPane.resources
 C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Debug\LibA.UserPanel.resources
@@ -63,3 +62,4 @@ E:\LibraryAssistantApp\LibA\obj\Debug\LibraryAssistantApp.csproj.CoreCompileInpu
 E:\LibraryAssistantApp\LibA\obj\Debug\LibA.exe
 E:\LibraryAssistantApp\LibA\obj\Debug\LibA.pdb
 E:\LibraryAssistantApp\LibA\obj\Debug\LibA.AdminPanel.resources
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Debug\LibA.AdminPanel.resources
