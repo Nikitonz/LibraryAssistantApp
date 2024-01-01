@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Data;
 using System.IO.Packaging;
+using System.Threading.Tasks;
 
 namespace LibA
 {
@@ -18,39 +19,62 @@ namespace LibA
     public partial class AuthForm : Form
     {
         public event EventHandler RegAuthSuccess;
+        private ProgressBar progressBar;
 
-      
         List<string> accessLevels= new List<string>();
-        public void WhichWindow(WindowType winType)
-        {
-            this.AutoSize = true;
-            if (winType == WindowType.REGISTER)
-            {
-                authbox.Visible = false;
-                regbox.Visible = true;
-                regbox.Location = new Point(5, 5);
-               
-                regbox.AutoSize = true;
-                this.Text = "Окно регистрации";
-            }
-            else if (winType == WindowType.AUTHORIZE)
-            {
-                regbox.Visible = false;
-                authbox.Visible = true;
-                authbox.Location = new Point(5, 5);
-                this.Text = "Окно авторизации";
-            }
-        }
-
         public AuthForm(UserPanel userPanel)
         {
             InitializeComponent();
             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             this.AutoSize = true;
-          
+
         }
 
-        
+
+
+
+
+        public void WhichWindow(WindowType winType)
+        {
+            this.AutoSize = true;
+            if (winType == WindowType.REGISTER)
+            {
+                this.AcceptButton = button1;
+                authbox.Visible = false;
+                regbox.Visible = true;
+                regbox.Location = new Point(5, 5);
+                regbox.AutoSize = true;
+                this.Text = "Окно регистрации";
+                
+            }
+            else if (winType == WindowType.AUTHORIZE)
+            {
+                this.AcceptButton = button2;
+                regbox.Visible = false;
+                authbox.Visible = true;
+                authbox.Location = new Point(5, 5);
+                this.Text = "Окно авторизации";
+                
+            }
+        }
+
+
+        private void AddProgressBarToRegBox()
+        {
+            // Создание и настройка ProgressBar
+            progressBar = new ProgressBar();
+            progressBar.Visible = false; // Начально скрыт
+            progressBar.Dock = DockStyle.Bottom; // Занимает всю ширину внизу
+
+            // Настраиваем внешний вид ProgressBar по вашему желанию
+            progressBar.BackColor = Color.Green; // Цвет фона
+            progressBar.ForeColor = Color.White; // Цвет полосы прогресса
+
+            // Добавление ProgressBar в regbox
+            regbox.Controls.Add(progressBar);
+        }
+
+
 
 
         private async void button1_Click(object sender, EventArgs e)
@@ -60,29 +84,17 @@ namespace LibA
                 string transfer = textBox1.Text;
                 transfer = transfer.Replace(' ', '_').TrimEnd('_');
                 transfer += "_" + comboBox1.Text;
-                /*string connectionString = $"Data Source={Properties.Settings.Default.dbConnStrMain};Initial Catalog={Properties.Settings.Default.ICatalog};Integrated Security=True";
-                
-                string query = $"CREATE LOGIN {textBox2.Text} WITH PASSWORD = '{textBox5.Text}'; " +
-                    $"CREATE USER {transfer} FOR LOGIN {textBox2.Text}; " +
-                    $"GRANT SELECT ON Авторы TO {textBox2.Text};";
-
-                using (SqlConnection connectionTRUSTABLE = new SqlConnection(connectionString))
-                {
-                    SqlCommand command = new SqlCommand(query, connectionTRUSTABLE);
-                    connectionTRUSTABLE.Open();
-                    command.ExecuteNonQueryAsync();
-                    connectionTRUSTABLE.Close();
-                }
-                MessageBox.Show($"Пользователь {textBox2.Text} успешно зарегистрирован", "RegGud", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                */
-                await ConnectionManager.Instance.SetupConnection(transfer, textBox2.Text, textBox5.Text);
-                await ConnectionManager.Instance.OpenConnection();
-                RegAuthSuccess?.Invoke(this, EventArgs.Empty);
+                AddProgressBarToRegBox();
+                //await Task.Delay(10000);
+                //await ConnectionManager.Instance.SendRegData(transfer, textBox2.Text, textBox5.Text);
+                //await ConnectionManager.Instance.OpenConnection();
+                //RegAuthSuccess?.Invoke(this, EventArgs.Empty);
             }
             catch (SqlException er)
             {
                 MessageBox.Show($"Невозможно добавить такого пользователя\n" + er, "RegErr", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+           
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -90,28 +102,21 @@ namespace LibA
             WhichWindow(WindowType.AUTHORIZE);
         }
 
-        private void AuthForm_Load(object sender, EventArgs e)
-        {
-            this.AutoSize = true;
-            AcceptButton = button1;
-            AcceptButton = button2;
-            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
-
         
-
-        }
         
 
         private async void button2_Click(object sender, EventArgs e)
         {
             try
             {
-                
+                ConnectionManager.Instance.SetupConnectionString(textBox3.Text, textBox4.Text);
                 using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
                 {
-                    
-                    MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                    if (connection.State is ConnectionState.Open)
+                    {
+                        MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else throw new Exception();
                     string query = $"USE Библиотека SELECT DP2.name as DatabaseRoleName FROM sys.server_principals AS SP JOIN sys.database_principals AS DP ON SP.sid = DP.sid JOIN sys.database_role_members AS DRM ON DP.principal_id = DRM.member_principal_id JOIN sys.database_principals AS DP2 ON DRM.role_principal_id = DP2.principal_id WHERE SP.name = '{textBox3.Text}' ORDER BY DP2.name;";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
@@ -144,11 +149,7 @@ namespace LibA
             }
         }
 
-        internal static void Disconnect()
-        {
-           
-
-        }
+       
     }
     
 

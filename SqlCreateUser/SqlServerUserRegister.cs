@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
@@ -14,7 +16,7 @@ namespace SqlCreateUser
     {
         private TcpListener tcpListener;
         private CancellationTokenSource cancellationTokenSource;
-
+        private const string CRYPTOKEY = "ThisSecuredKey123";
         public SqlServerUserRegister()
         {
             InitializeComponent();
@@ -66,8 +68,8 @@ namespace SqlCreateUser
                 if (credentials.Length == 3)
                 {
                     string userName = credentials[0].Trim();
-                    string login = credentials[1].Trim();
-                    string password = credentials[2].Trim();
+                    string login = DecryptString(credentials[1].Trim());
+                    string password = DecryptString(credentials[2].Trim());
 
 
 
@@ -84,14 +86,14 @@ namespace SqlCreateUser
                             SqlCommand command = new SqlCommand(query, connectionTRUSTABLE);
                             connectionTRUSTABLE.Open();
                             await command.ExecuteNonQueryAsync(cancellationToken);
-                            EventLog.WriteEntry("SQLSlujba", "создал", EventLogEntryType.Information);
+                            // EventLog.WriteEntry("SQLSlujba", "создал", EventLogEntryType.Information);
                         }
                     }
                     catch (Exception e)
                     {
-                        EventLog.WriteEntry("SQLSlujba", "Ошибка в создании записи.\n" + e.Message + e.StackTrace, EventLogEntryType.Error);
+                        EventLog.WriteEntry("SQLSlujba", "Ошибка в создании записи.\n" + e.Message, EventLogEntryType.Error);
 
-                       
+
                         string errorMessage = $"500|{e.Message}";
                         byte[] errorData = Encoding.UTF8.GetBytes(errorMessage);
                         await networkStream.WriteAsync(errorData, 0, errorData.Length, cancellationToken);
@@ -100,7 +102,7 @@ namespace SqlCreateUser
                     byte[] responseData = BitConverter.GetBytes(200);
                     await networkStream.WriteAsync(responseData, 0, responseData.Length, cancellationToken);
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -110,6 +112,49 @@ namespace SqlCreateUser
             finally
             {
                 tcpClient.Close();
+            }
+
+
+        }
+        /*private string EncryptString(string plainText, string key)
+        {
+            using (AesManaged aesAlg = new AesManaged())
+            {
+                aesAlg.Key = Encoding.UTF8.GetBytes(key);
+                aesAlg.IV = new byte[aesAlg.BlockSize / 8];
+
+                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+                using (MemoryStream msEncrypt = new MemoryStream())
+                {
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                    {
+                        swEncrypt.Write(plainText);
+                    }
+
+                    return Convert.ToBase64String(msEncrypt.ToArray());
+                }
+            }
+        }
+        */
+        private string DecryptString(string cipherText)
+        {
+            using (AesManaged aesAlg = new AesManaged())
+            {
+                aesAlg.Key = Encoding.UTF8.GetBytes(CRYPTOKEY);
+                aesAlg.IV = new byte[aesAlg.BlockSize / 8];
+
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                using (MemoryStream msDecrypt = new MemoryStream(Convert.FromBase64String(cipherText)))
+                {
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                    {
+                        return srDecrypt.ReadToEnd();
+                    }
+                }
             }
         }
     }

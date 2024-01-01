@@ -153,5 +153,11 @@ namespace LibA
         {
             throw new NotImplementedException();
         }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AdminPanel adm = new();
+            adm.Show();
+        }
     }
 }

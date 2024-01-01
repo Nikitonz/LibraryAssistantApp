@@ -31,7 +31,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.dataSource = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.servName = new System.Windows.Forms.TextBox();
             this.saveState = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -43,18 +43,18 @@
             this.label1.Location = new System.Drawing.Point(12, 16);
             this.label1.Name = "label1";
             this.label1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label1.Size = new System.Drawing.Size(159, 16);
+            this.label1.Size = new System.Drawing.Size(33, 16);
             this.label1.TabIndex = 0;
-            this.label1.Text = "База данных(источник)";
+            this.label1.Text = "IPv4";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 47);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(21, 16);
+            this.label2.Size = new System.Drawing.Size(91, 16);
             this.label2.TabIndex = 1;
-            this.label2.Text = ">?";
+            this.label2.Text = "Имя сервера";
             // 
             // dataSource
             // 
@@ -62,14 +62,13 @@
             this.dataSource.Name = "dataSource";
             this.dataSource.Size = new System.Drawing.Size(231, 22);
             this.dataSource.TabIndex = 2;
-         
             // 
-            // textBox2
+            // servName
             // 
-            this.textBox2.Location = new System.Drawing.Point(178, 41);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(231, 22);
-            this.textBox2.TabIndex = 3;
+            this.servName.Location = new System.Drawing.Point(178, 41);
+            this.servName.Name = "servName";
+            this.servName.Size = new System.Drawing.Size(231, 22);
+            this.servName.TabIndex = 3;
             // 
             // saveState
             // 
@@ -90,7 +89,7 @@
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(420, 155);
             this.Controls.Add(this.saveState);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.servName);
             this.Controls.Add(this.dataSource);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -107,7 +106,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox dataSource;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox servName;
         private System.Windows.Forms.Button saveState;
     }
 }

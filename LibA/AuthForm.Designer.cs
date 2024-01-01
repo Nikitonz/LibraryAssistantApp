@@ -334,7 +334,7 @@
             this.Tag = "RegAuth";
             this.Text = "Rigister/Login window";
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.AuthForm_Load);
+    
             this.regbox.ResumeLayout(false);
             this.regbox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();

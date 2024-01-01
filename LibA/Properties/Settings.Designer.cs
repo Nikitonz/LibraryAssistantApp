@@ -25,25 +25,25 @@ namespace LibA.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("192.168.100.128")]
-        public string dbConnStrMain {
+        [global::System.Configuration.DefaultSettingValueAttribute("192.168.100.2")]
+        public string dbConnSourceAddr {
             get {
-                return ((string)(this["dbConnStrMain"]));
+                return ((string)(this["dbConnSourceAddr"]));
             }
             set {
-                this["dbConnStrMain"] = value;
+                this["dbConnSourceAddr"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
-        public string dbConnStrBackup {
+        [global::System.Configuration.DefaultSettingValueAttribute("NIKNOTEBOOK")]
+        public string dbConnSourceName {
             get {
-                return ((string)(this["dbConnStrBackup"]));
+                return ((string)(this["dbConnSourceName"]));
             }
             set {
-                this["dbConnStrBackup"] = value;
+                this["dbConnSourceName"] = value;
             }
         }
         

@@ -1,9 +1,16 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
+using System.IO;
+using System.Net.Http;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Input;
+using System.Windows.Markup;
 
 namespace LibA
 {
@@ -11,20 +18,34 @@ namespace LibA
     {
         public static ConnectionManager Instance { get; private set; }
         private string connectionString;
+        private const string CRYPTOKEY = "ThisSecuredKey123";
 
         public ConnectionManager()
         {
             if (Instance is null)
                 Instance = this;
         }
-
-
-        public async Task<SqlConnection> OpenConnection(string login, string password)
-        {
-            SqlConnection connection = new(connectionString);
-            await connection.OpenAsync();
-            return connection;
+        public void SetupConnectionString(string login, string password) {
+            string backup = connectionString;
+            connectionString = $"Server={Properties.Settings.Default.dbConnSourceAddr};Database={Properties.Settings.Default.ICatalog};User Id={login};Password='{password}'";
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    if (conn.State is not ConnectionState.Open)
+                    {
+                        throw new Exception();
+                    }
+                }
+            }
+            catch {
+                connectionString = backup;
+            }
+            
         }
+
+       
 
         public async Task<SqlConnection> OpenConnection()
         {
@@ -59,75 +80,107 @@ namespace LibA
 
 
 
-        public async Task SetupConnection(string name, string login, string password)
+        public async Task SendRegData(string name, string login, string password)
         {
             TcpClient tcpClient = new TcpClient();
-            await tcpClient.ConnectAsync(Properties.Settings.Default.dbConnStrMain, 8888);
-            string credentials = $"{name},{login},{password}";
-
-            string response = await SendDataAsync(tcpClient, credentials);
-
-            // Парсим ответ
-            if (TryParseResponse(response, out int responseCode, out string errorText))
+            try
             {
-                if (responseCode == 200)
-                {
-                    this.connectionString = $"Data Source={Properties.Settings.Default.dbConnStrMain};Initial Catalog={Properties.Settings.Default.ICatalog};User ID={login};Password='{password}'";
-                }
-                else
-                {
-                    MessageBox.Show($"Ошибка при установке соединения: {errorText}");
-                }
+                
+                await tcpClient.ConnectAsync(Properties.Settings.Default.dbConnSourceAddr, 8888);
+                
+
+
+                string credentials = $"{name},{EncryptString(login)},{EncryptString(password)}";
+                NetworkStream networkStream = tcpClient.GetStream();
+                byte[] bytes = Encoding.UTF8.GetBytes(credentials);
+                await networkStream.WriteAsync(bytes, 0, bytes.Length);
+
+                string responce = await ReceiveResponceAsync(tcpClient);
+                MessageBox.Show(responce);
+                tcpClient.Close();
             }
-            else
+            catch (Exception e)
             {
-                MessageBox.Show("Ошибка при разборе ответа.");
+                MessageBox.Show(e.ToString());
             }
-
-            tcpClient.Close();
-        }
-
-        public static async Task<string> SendDataAsync(TcpClient tcpClient, string data)
-        {
-            NetworkStream networkStream = tcpClient.GetStream();
-            byte[] bytes = Encoding.UTF8.GetBytes(data);
-            await networkStream.WriteAsync(bytes, 0, bytes.Length);
-            return await ReceiveDataAsync(tcpClient);
-        }
-
-        private static bool TryParseResponse(string response, out int responseCode, out string errorText)
-        {
-            string[] parts = response.Split('|');
-            if (parts.Length >= 1 && int.TryParse(parts[0], out responseCode))
-            {
-                errorText = (parts.Length >= 2) ? parts[1] : null;
-                return true;
-            }
-            else
-            {
-                responseCode = -1;
-                errorText = null;
-                return false;
+            finally {
+                tcpClient.Close();
+                
             }
         }
 
-        public static async Task<string> ReceiveDataAsync(TcpClient tcpClient)
+
+
+
+        public static async Task<string> ReceiveResponceAsync(TcpClient tcpClient)
         {
             NetworkStream networkStream = tcpClient.GetStream();
             byte[] buffer = new byte[1024];
             StringBuilder responseBuilder = new StringBuilder();
 
-            // Читаем данные, пока они поступают
+            CancellationTokenSource cts = new CancellationTokenSource();
+          
+            cts.CancelAfter(TimeSpan.FromMinutes(1));
+
             int bytesRead;
-            do
+            try
             {
-                bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length);
-                responseBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-            } while (networkStream.DataAvailable);
+                do
+                {
+                    bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
+                    responseBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
+                } while (networkStream.DataAvailable);
+            }
+            catch (OperationCanceledException)
+            {
+                
+            }
 
             return responseBuilder.ToString();
         }
 
+
+        private string EncryptString(string plainText)
+        {
+            using (AesManaged aesAlg = new AesManaged())
+            {
+                aesAlg.Key = Encoding.UTF8.GetBytes(CRYPTOKEY);
+                aesAlg.IV = new byte[aesAlg.BlockSize / 8];
+
+                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+                using (MemoryStream msEncrypt = new MemoryStream())
+                {
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                    {
+                        swEncrypt.Write(plainText);
+                    }
+
+                    return Convert.ToBase64String(msEncrypt.ToArray());
+                }
+            }
+        }
+
+        private string DecryptString(string cipherText)
+        {
+            using (AesManaged aesAlg = new AesManaged())
+            {
+                aesAlg.Key = Encoding.UTF8.GetBytes(CRYPTOKEY);
+                aesAlg.IV = new byte[aesAlg.BlockSize / 8];
+
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                using (MemoryStream msDecrypt = new MemoryStream(Convert.FromBase64String(cipherText)))
+                {
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                    {
+                        return srDecrypt.ReadToEnd();
+                    }
+                }
+            }
+        }
 
     }
 }

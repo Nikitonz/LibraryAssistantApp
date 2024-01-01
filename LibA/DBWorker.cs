@@ -9,15 +9,13 @@ namespace LibA
 {
     internal class DBWorker
     {
-        private const string INITAL_CATALOG = "Библиотека";
-        private static string DEFAULT_CONNECTION = $"Data Source={Properties.Settings.Default.dbConnStrMain};Initial Catalog={INITAL_CATALOG};Integrated Security=True";
-        private static SqlTransaction transaction;
+       
         public static async Task<string[]> BdGetDataMSSQL(string commandText)
         {
             List<string> result = new List<string>();
             try
             {
-                using (SqlConnection connection = new SqlConnection(DEFAULT_CONNECTION))
+                using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
                 {
                     await connection.OpenAsync();
                     using (SqlCommand command = new SqlCommand(commandText, connection))

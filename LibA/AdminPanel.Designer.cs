@@ -55,7 +55,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(800, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(800, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -64,7 +64,7 @@
             this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.деавторизоватьсяToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // деавторизоватьсяToolStripMenuItem
@@ -76,13 +76,14 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 26);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 24);
             this.settingsToolStripMenuItem.Text = "Настройки";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // выходToolStripMenuItem
             // 
             this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
-            this.выходToolStripMenuItem.Size = new System.Drawing.Size(67, 26);
+            this.выходToolStripMenuItem.Size = new System.Drawing.Size(67, 24);
             this.выходToolStripMenuItem.Text = "Выход";
             this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
             // 
@@ -104,11 +105,11 @@
             this.dataGridViewMain.BackgroundColor = System.Drawing.Color.White;
             this.dataGridViewMain.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridViewMain.Location = new System.Drawing.Point(200, 30);
+            this.dataGridViewMain.Location = new System.Drawing.Point(200, 28);
             this.dataGridViewMain.Name = "dataGridViewMain";
             this.dataGridViewMain.RowHeadersWidth = 51;
             this.dataGridViewMain.RowTemplate.Height = 24;
-            this.dataGridViewMain.Size = new System.Drawing.Size(600, 570);
+            this.dataGridViewMain.Size = new System.Drawing.Size(600, 572);
             this.dataGridViewMain.TabIndex = 14;
             this.dataGridViewMain.Visible = false;
             // 
@@ -119,7 +120,7 @@
             this.lPane.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.lPane.ForeColor = System.Drawing.SystemColors.ActiveCaption;
             this.lPane.IsSplitterFixed = true;
-            this.lPane.Location = new System.Drawing.Point(0, 30);
+            this.lPane.Location = new System.Drawing.Point(0, 28);
             this.lPane.Margin = new System.Windows.Forms.Padding(0);
             this.lPane.MaximumSize = new System.Drawing.Size(200, 0);
             this.lPane.Name = "lPane";
@@ -140,7 +141,7 @@
             this.lPane.Panel2.Cursor = System.Windows.Forms.Cursors.Default;
             this.lPane.Panel2.Click += new System.EventHandler(this.lPane_Panel2_Click);
             this.lPane.Panel2MinSize = 20;
-            this.lPane.Size = new System.Drawing.Size(200, 570);
+            this.lPane.Size = new System.Drawing.Size(200, 572);
             this.lPane.SplitterDistance = 160;
             this.lPane.TabIndex = 15;
             // 
