@@ -2,32 +2,57 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Net.Http;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Markup;
 
 namespace LibA
 {
     public class ConnectionManager
     {
-        public static ConnectionManager Instance { get; private set; }
-        private string connectionString;
-        private const string CRYPTOKEY = "ThisSecuredKey123";
-
-        public ConnectionManager()
+        private static ConnectionManager _instance;
+        private String connectionString;
+        private const String CRYPTOKEY = "ThisIsASecretKey1234567890123456";
+        private ConnectionManager() { }
+        public static ConnectionManager Instance
         {
-            if (Instance is null)
-                Instance = this;
+            get
+            {
+                if (_instance is null)
+                    _instance = new ConnectionManager();
+
+                return _instance;
+            }
         }
-        public void SetupConnectionString(string login, string password) {
+
+        public void Disconnect()
+        {
+            if (_instance != null)
+            {
+                _instance.connectionString = null;
+                _instance = null;
+
+            }
+
+        }
+
+
+        public Boolean SetupConnectionString(string login = null, string password = null)
+        {
             string backup = connectionString;
-            connectionString = $"Server={Properties.Settings.Default.dbConnSourceAddr};Database={Properties.Settings.Default.ICatalog};User Id={login};Password='{password}'";
+            connectionString = $"Data Source={Properties.Settings.Default.dbConnSourceAddr}{(Properties.Settings.Default.DBPort == "" ? "" : $",{Properties.Settings.Default.DBPort}")};Database={Properties.Settings.Default.ICatalog};";
+
+            if (login is null || password is null)
+            {
+                MessageBox.Show("Поля для регистрации не могут быть пусты");
+                return false;
+            }
+            else
+                connectionString += $"User Id = {login};Password='{password}'";
+
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -39,26 +64,41 @@ namespace LibA
                     }
                 }
             }
-            catch {
+            catch (Exception e)
+            {
                 connectionString = backup;
+                MessageBox.Show("Ошибка создания соединения. Проверьте данные и попробуйте ещё раз");
+                Console.WriteLine(e.Message);
+                return false;
+
             }
-            
+            return true;
+
         }
 
-       
+
 
         public async Task<SqlConnection> OpenConnection()
         {
+            SqlConnection connection = null;
+
             try
             {
-                SqlConnection connection = new SqlConnection(connectionString);
-                await connection.OpenAsync();
+                connection = new SqlConnection(connectionString);
+                await Task.Run(() => connection.OpenAsync());
                 return connection;
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Ошибка установки пользователя: " + ex.Message);
+                connection?.Dispose();
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
+                MessageBox.Show("Ошибка открытия сеодинения");
+                connection?.Dispose();
             }
+
             return null;
         }
 
@@ -85,9 +125,9 @@ namespace LibA
             TcpClient tcpClient = new TcpClient();
             try
             {
-                
+
                 await tcpClient.ConnectAsync(Properties.Settings.Default.dbConnSourceAddr, 8888);
-                
+
 
 
                 string credentials = $"{name},{EncryptString(login)},{EncryptString(password)}";
@@ -101,11 +141,12 @@ namespace LibA
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
+                MessageBox.Show("Ошибка регистрации");
             }
-            finally {
+            finally
+            {
                 tcpClient.Close();
-                
+
             }
         }
 
@@ -119,7 +160,7 @@ namespace LibA
             StringBuilder responseBuilder = new StringBuilder();
 
             CancellationTokenSource cts = new CancellationTokenSource();
-          
+
             cts.CancelAfter(TimeSpan.FromMinutes(1));
 
             int bytesRead;
@@ -133,7 +174,7 @@ namespace LibA
             }
             catch (OperationCanceledException)
             {
-                
+
             }
 
             return responseBuilder.ToString();
@@ -142,7 +183,7 @@ namespace LibA
 
         private string EncryptString(string plainText)
         {
-            using (AesManaged aesAlg = new AesManaged())
+            using (Aes aesAlg = Aes.Create())
             {
                 aesAlg.Key = Encoding.UTF8.GetBytes(CRYPTOKEY);
                 aesAlg.IV = new byte[aesAlg.BlockSize / 8];
@@ -164,7 +205,7 @@ namespace LibA
 
         private string DecryptString(string cipherText)
         {
-            using (AesManaged aesAlg = new AesManaged())
+            using (Aes aesAlg = Aes.Create())
             {
                 aesAlg.Key = Encoding.UTF8.GetBytes(CRYPTOKEY);
                 aesAlg.IV = new byte[aesAlg.BlockSize / 8];

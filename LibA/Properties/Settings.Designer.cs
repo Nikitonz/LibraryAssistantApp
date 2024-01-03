@@ -25,7 +25,7 @@ namespace LibA.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("192.168.100.2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string dbConnSourceAddr {
             get {
                 return ((string)(this["dbConnSourceAddr"]));
@@ -38,12 +38,12 @@ namespace LibA.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("NIKNOTEBOOK")]
-        public string dbConnSourceName {
+        public string dbConnSourceInstName {
             get {
-                return ((string)(this["dbConnSourceName"]));
+                return ((string)(this["dbConnSourceInstName"]));
             }
             set {
-                this["dbConnSourceName"] = value;
+                this["dbConnSourceInstName"] = value;
             }
         }
         
@@ -56,6 +56,18 @@ namespace LibA.Properties {
             }
             set {
                 this["ICatalog"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1433")]
+        public string DBPort {
+            get {
+                return ((string)(this["DBPort"]));
+            }
+            set {
+                this["DBPort"] = value;
             }
         }
     }

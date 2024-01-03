@@ -1,55 +1,101 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace LibA
 {
     public partial class SettingsPane : Form
     {
+        private static SettingsPane instance;
+        private static bool isClosed = true;
 
-       
-
-        public SettingsPane()
+        public static SettingsPane Instance
         {
-           
-            InitializeComponent();
-            dataSource.Text = Properties.Settings.Default.dbConnSourceAddr.ToString();
+            get
+            {
+                if (instance == null || isClosed)
+                {
+                    instance = new SettingsPane();
+                    instance.FormClosed += (sender, e) =>
+                    {
+                        isClosed = true;
+                    };
+                    isClosed = false;
+                }
+                return instance;
+            }
         }
+
+
+        public SettingsPane(){
+            InitializeComponent();
+
+            dataSource.Text = Properties.Settings.Default.dbConnSourceAddr.ToString();
+            port.Text = Properties.Settings.Default.DBPort;
+            AcceptButton = saveState;
+            Focus();
+            Text = "Настройки";
+            
+        }
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         private void saveState_Click(object sender, EventArgs e)
         {
-            string connectionString = $"Data Source={Properties.Settings.Default.dbConnSourceAddr}; Initial Catalog={Properties.Settings.Default.dbConnSourceName}; Database ={ Properties.Settings.Default.ICatalog};;User Id=librarian; Password='123321'";
+            Properties.Settings.Default.dbConnSourceAddr = dataSource.Text.Replace(',','.').Replace(" ","");
+
+            Properties.Settings.Default.DBPort = port.Text;
+            //Properties.Settings.Default.dbConnSourceInstName = servName.Text;
+
+
+            
             try
             {
-          
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (TcpClient tcpClient = new TcpClient())
                 {
-                    connection.Open();
-     
+                    tcpClient.Connect(Properties.Settings.Default.dbConnSourceAddr, Int32.Parse(port.Text));
+                    tcpClient.Close();
                 }
+
+
                 Properties.Settings.Default.dbConnSourceAddr = dataSource.Text;
-                Properties.Settings.Default.dbConnSourceName = servName.Text;
+                //Properties.Settings.Default.dbConnSourceInstName = servName.Text;
                 Properties.Settings.Default.Save();
+                System.Windows.Forms.MessageBox.Show("Данные обновлены");
                 this.Close();
             }
-            catch (Exception ex)
+            catch
             {
-                System.Windows.MessageBox.Show(ex.Message);
+                System.Windows.Forms.MessageBox.Show("Ошибка!");
                 dataSource.Text = Properties.Settings.Default.dbConnSourceAddr.ToString();
+                //servName.Text = Properties.Settings.Default.dbConnSourceInstName.ToString();
             }
-           
-     
+
+
+
+
+
         }
 
-        
+
     }
 }

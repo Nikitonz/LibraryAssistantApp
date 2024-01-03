@@ -17,7 +17,7 @@ namespace LibA
             {
                 using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
                 {
-                    await connection.OpenAsync();
+                    
                     using (SqlCommand command = new SqlCommand(commandText, connection))
                     {
                         using (var reader = await command.ExecuteReaderAsync())
@@ -29,13 +29,12 @@ namespace LibA
                         }
                     }
                     connection.Close();
-
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-
+                throw;
             }
             return result.ToArray();
         }

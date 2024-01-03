@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -15,7 +16,7 @@ namespace LibA
         public UserPanel()
         {
 
-            ConnectionManager _ = new();
+            ConnectionManager _ = ConnectionManager.Instance;
             this.Size = new Size(200, 200);
             this.Refresh();
             this.AutoSize = false;
@@ -83,11 +84,9 @@ namespace LibA
 
         private void изУчетнойЗаписиToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /*if (AuthForm.Connection == null) return;
-            AuthForm.Connection.Close();
-            AuthForm.Disconnect();
+            ConnectionManager.Instance.Disconnect();
             this.statText.Text = "";
-         */
+        
             
         }
 
@@ -103,8 +102,9 @@ namespace LibA
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SettingsPane spane = new SettingsPane();
-            spane.Show();
+            Program.MakeFocus(SettingsPane.Instance);
+
+
         }
 
         private void выходToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -113,18 +113,11 @@ namespace LibA
             Dispose();
         }
 
-        private void администрированиеToolStripMenuItem_Click(object sender=null, EventArgs e = null)
+       
+        private void администрированиеToolStripMenuItem_Click(object sender=null, EventArgs e= null)
         {
-            if (AdminPanel.Instance == null || AdminPanel.Instance.IsDisposed)
-            {
-                AdminPanel admpane = new AdminPanel();
-                admpane.Show();
-            }
-            else
-            {
-              
-                AdminPanel.Instance.Focus();
-            }
+            Program.MakeFocus(AdminPanel.Instance);
+
         }
     }
 }

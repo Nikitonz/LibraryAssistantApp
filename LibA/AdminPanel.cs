@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Threading.Tasks;
@@ -10,29 +10,55 @@ namespace LibA
 
     public partial class AdminPanel : Form
     {
+        private static AdminPanel instance;
+        private static bool isClosed = true;
 
-        public static AdminPanel Instance { get; private set; }
-        public AdminPanel()
+        public static AdminPanel Instance
         {
-            InitializeComponent();
-            LoadTablesAsync();
-            Instance = this;
+            get
+            {
+                if (instance == null || isClosed)
+                {
+                    instance = new AdminPanel();
+                    instance.FormClosed += (sender, e) =>
+                    {
+                        isClosed = true;
+                    };
+                    isClosed = false;
+                }
+                
+                return instance;
+            }
         }
 
-
-
-        private async void LoadTablesAsync()
+        private AdminPanel()
         {
+            InitializeComponent();
+            this.Shown += LoadTablesAsync;
+        }
 
-            string[] tables = await DBWorker.BdGetDataMSSQL("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' order by table_name ASC");
+        
+
+        private async void LoadTablesAsync(object sender, EventArgs e)
+        {
+            string[] tables = null;
+            try
+            {
+                tables = await DBWorker.BdGetDataMSSQL("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' order by table_name ASC");
+                Console.WriteLine(1);
+            }
+            catch
+            {
+                this.Close();
+                return;
+            }
+
             if (tables != null)
             {
                 Tables.Items.AddRange(tables);
-
             }
 
             int maxHeight = 1;
-
 
             foreach (var item in Tables.Items)
             {
@@ -44,11 +70,13 @@ namespace LibA
                     maxHeight = itemHeight;
                 }
             }
+
             Tables.ItemHeight = maxHeight;
             int totalHeight = Tables.ItemHeight * Tables.Items.Count;
             Tables.Height = totalHeight;
+
             buttonTransact.Location = new Point(
-                Tables.Left, 
+                Tables.Left,
                 Tables.Bottom
             );
 
@@ -56,8 +84,8 @@ namespace LibA
                 buttonTransact.Left,
                 buttonTransact.Bottom
             );
-            this.Height = buttonRollback.Bottom+65;
 
+            this.Height = buttonRollback.Bottom + 65;
         }
 
         private async void Tables_SelectedIndexChanged(object sender, EventArgs e)
@@ -144,20 +172,20 @@ namespace LibA
 
             //DBWorker.RollbackTransaction();
 
-            buttonRollback.Enabled =false;
+            buttonRollback.Enabled = false;
             buttonRollback.BackColor = Color.Gray;
 
         }
 
-        public static implicit operator AdminPanel(ConnectionManager v)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AdminPanel adm = new();
-            adm.Show();
+            Program.MakeFocus(SettingsPane.Instance);
+
+            
         }
+
+
     }
 }

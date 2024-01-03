@@ -16,7 +16,7 @@ namespace SqlCreateUser
     {
         private TcpListener tcpListener;
         private CancellationTokenSource cancellationTokenSource;
-        private const string CRYPTOKEY = "ThisSecuredKey123";
+        private const string CRYPTOKEY = "ThisIsASecretKey1234567890123456";
         public SqlServerUserRegister()
         {
             InitializeComponent();
@@ -116,11 +116,11 @@ namespace SqlCreateUser
 
 
         }
-        /*private string EncryptString(string plainText, string key)
+        public static string EncryptString(string plainText)
         {
-            using (AesManaged aesAlg = new AesManaged())
+            using (Aes aesAlg = Aes.Create())
             {
-                aesAlg.Key = Encoding.UTF8.GetBytes(key);
+                aesAlg.Key = Encoding.UTF8.GetBytes(CRYPTOKEY);
                 aesAlg.IV = new byte[aesAlg.BlockSize / 8];
 
                 ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
@@ -137,10 +137,10 @@ namespace SqlCreateUser
                 }
             }
         }
-        */
-        private string DecryptString(string cipherText)
+
+        public static string DecryptString(string cipherText)
         {
-            using (AesManaged aesAlg = new AesManaged())
+            using (Aes aesAlg = Aes.Create())
             {
                 aesAlg.Key = Encoding.UTF8.GetBytes(CRYPTOKEY);
                 aesAlg.IV = new byte[aesAlg.BlockSize / 8];

@@ -3,13 +3,16 @@
   <Profiles />
   <Settings>
     <Setting Name="dbConnSourceAddr" Type="System.String" Scope="User">
-      <Value Profile="(Default)">192.168.100.2</Value>
+      <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="dbConnSourceName" Type="System.String" Scope="User">
+    <Setting Name="dbConnSourceInstName" Type="System.String" Scope="User">
       <Value Profile="(Default)">NIKNOTEBOOK</Value>
     </Setting>
     <Setting Name="ICatalog" Type="System.String" Scope="User">
       <Value Profile="(Default)">Библиотека</Value>
+    </Setting>
+    <Setting Name="DBPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1433</Value>
     </Setting>
   </Settings>
 </SettingsFile>

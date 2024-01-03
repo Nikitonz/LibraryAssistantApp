@@ -19,7 +19,7 @@ namespace LibA
     public partial class AuthForm : Form
     {
         public event EventHandler RegAuthSuccess;
-        private ProgressBar progressBar;
+        //private ProgressBar progressBar;
 
         List<string> accessLevels= new List<string>();
         public AuthForm(UserPanel userPanel)
@@ -43,7 +43,6 @@ namespace LibA
                 authbox.Visible = false;
                 regbox.Visible = true;
                 regbox.Location = new Point(5, 5);
-                regbox.AutoSize = true;
                 this.Text = "Окно регистрации";
                 
             }
@@ -59,22 +58,22 @@ namespace LibA
         }
 
 
-        private void AddProgressBarToRegBox()
+        /*private void AddProgressBarToRegBox()
         {
-            // Создание и настройка ProgressBar
+            
             progressBar = new ProgressBar();
-            progressBar.Visible = false; // Начально скрыт
-            progressBar.Dock = DockStyle.Bottom; // Занимает всю ширину внизу
+            progressBar.Visible = false; 
+            progressBar.Dock = DockStyle.Bottom; 
 
-            // Настраиваем внешний вид ProgressBar по вашему желанию
-            progressBar.BackColor = Color.Green; // Цвет фона
-            progressBar.ForeColor = Color.White; // Цвет полосы прогресса
+           
+            progressBar.BackColor = Color.Green; 
+            progressBar.ForeColor = Color.White; 
 
-            // Добавление ProgressBar в regbox
+          
             regbox.Controls.Add(progressBar);
         }
 
-
+        */
 
 
         private async void button1_Click(object sender, EventArgs e)
@@ -84,10 +83,11 @@ namespace LibA
                 string transfer = textBox1.Text;
                 transfer = transfer.Replace(' ', '_').TrimEnd('_');
                 transfer += "_" + comboBox1.Text;
-                AddProgressBarToRegBox();
+                //AddProgressBarToRegBox();
                 //await Task.Delay(10000);
-                //await ConnectionManager.Instance.SendRegData(transfer, textBox2.Text, textBox5.Text);
-                //await ConnectionManager.Instance.OpenConnection();
+                await ConnectionManager.Instance.SendRegData(transfer, textBox2.Text, textBox5.Text);
+                ConnectionManager.Instance.SetupConnectionString(textBox2.Text, textBox5.Text);
+                await ConnectionManager.Instance.OpenConnection();
                 //RegAuthSuccess?.Invoke(this, EventArgs.Empty);
             }
             catch (SqlException er)
@@ -112,6 +112,9 @@ namespace LibA
                 ConnectionManager.Instance.SetupConnectionString(textBox3.Text, textBox4.Text);
                 using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
                 {
+                    if (connection == null)
+                        throw new Exception();
+                       
                     if (connection.State is ConnectionState.Open)
                     {
                         MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
