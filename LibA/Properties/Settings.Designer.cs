@@ -25,7 +25,7 @@ namespace LibA.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public string dbConnSourceAddr {
             get {
                 return ((string)(this["dbConnSourceAddr"]));

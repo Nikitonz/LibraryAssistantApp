@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserPanel));
+            this.DBStat = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.регистрацияИАвторизацияToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,11 +46,26 @@
             this.разработчикToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.IsDBAliveTimer = new System.Windows.Forms.Timer(this.components);
             this.authFormBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.authFormBindingSource)).BeginInit();
             this.SuspendLayout();
+            // 
+            // DBStat
+            // 
+            this.DBStat.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+            this.DBStat.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
+            this.DBStat.Image = global::LibA.Properties.Resources.ok;
+            this.DBStat.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.DBStat.MergeAction = System.Windows.Forms.MergeAction.Replace;
+            this.DBStat.Name = "DBStat";
+            this.DBStat.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.DBStat.Size = new System.Drawing.Size(148, 24);
+            this.DBStat.Text = "База данных: OK";
             // 
             // menuStrip1
             // 
@@ -62,7 +78,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(815, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(815, 30);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -72,7 +88,7 @@
             this.регистрацияИАвторизацияToolStripMenuItem,
             this.выходToolStripMenuItem1});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // регистрацияИАвторизацияToolStripMenuItem
@@ -125,14 +141,14 @@
             // администрированиеToolStripMenuItem
             // 
             this.администрированиеToolStripMenuItem.Name = "администрированиеToolStripMenuItem";
-            this.администрированиеToolStripMenuItem.Size = new System.Drawing.Size(170, 24);
+            this.администрированиеToolStripMenuItem.Size = new System.Drawing.Size(170, 26);
             this.администрированиеToolStripMenuItem.Text = "Администрирование";
             this.администрированиеToolStripMenuItem.Click += new System.EventHandler(this.администрированиеToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 24);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 26);
             this.settingsToolStripMenuItem.Text = "Настройки";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -142,7 +158,7 @@
             this.справкаToolStripMenuItem,
             this.разработчикToolStripMenuItem});
             this.оПрограммеToolStripMenuItem.Name = "оПрограммеToolStripMenuItem";
-            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(118, 24);
+            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(118, 26);
             this.оПрограммеToolStripMenuItem.Text = "О программе";
             // 
             // справкаToolStripMenuItem
@@ -162,19 +178,28 @@
             // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.DBStat,
             this.statText});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 342);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 338);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 13, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(815, 26);
+            this.statusStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this.statusStrip1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.statusStrip1.Size = new System.Drawing.Size(815, 30);
             this.statusStrip1.TabIndex = 8;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // statText
             // 
             this.statText.Name = "statText";
-            this.statText.Size = new System.Drawing.Size(97, 20);
-            this.statText.Text = "Status: online";
+            this.statText.Size = new System.Drawing.Size(12, 24);
+            this.statText.Text = "·";
+            // 
+            // IsDBAliveTimer
+            // 
+            this.IsDBAliveTimer.Enabled = true;
+            this.IsDBAliveTimer.Interval = 6000;
+            this.IsDBAliveTimer.Tick += new System.EventHandler(this.IsDBAliveTimer_Tick);
             // 
             // authFormBindingSource
             // 
@@ -222,6 +247,8 @@
         public System.Windows.Forms.ToolStripStatusLabel statText;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem администрированиеToolStripMenuItem;
+        private System.Windows.Forms.Timer IsDBAliveTimer;
+        private System.Windows.Forms.ToolStripStatusLabel DBStat;
     }
 }
 

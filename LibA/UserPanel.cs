@@ -24,8 +24,9 @@ namespace LibA
             InitializeComponent();
             Screen screen = Screen.FromControl(this);
             this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
+          
             //администрированиеToolStripMenuItem_Click();
-            
+
 
         }
 
@@ -119,5 +120,37 @@ namespace LibA
             Program.MakeFocus(AdminPanel.Instance);
 
         }
+
+        private async void IsDBAliveTimer_Tick(object sender, EventArgs e)
+        {
+            
+
+            try
+            {
+              
+                bool isDBAlive = await ConnectionManager.CheckDBConnectionAsync();
+
+                
+                if (isDBAlive)
+                {
+                    this.DBStat.Image = Properties.Resources.ok;
+                    this.DBStat.Text = "База данных: ОК";
+                    IsDBAliveTimer.Interval = 60 * 1000;
+                }
+                else
+                {
+                    this.DBStat.Image = Properties.Resources.error;
+                    this.DBStat.Text = "База данных: ОШИБКА";
+                    IsDBAliveTimer.Interval = 10*1000;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при проверке базы данных: {ex.Message}");
+            }
+           
+        }
+
+        
     }
 }

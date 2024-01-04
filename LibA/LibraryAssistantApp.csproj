@@ -145,6 +145,9 @@
     <None Include="Resources\Image1.bmp" />
     <None Include="Resources\key.bmp" />
     <None Include="Resources\left.png" />
+    <None Include="Resources\1f7e2.png" />
+    <None Include="Resources\error.png" />
+    <None Include="Resources\ok.png" />
     <Content Include="Resources\pos_logo.ico" />
     <None Include="Resources\right.bmp" />
     <Content Include="Resources\userpic.bmp" />

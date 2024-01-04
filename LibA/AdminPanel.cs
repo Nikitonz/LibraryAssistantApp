@@ -147,23 +147,27 @@ namespace LibA
             dataGridViewMain.Dock = DockStyle.Fill;
         }
 
-        private void buttonTransact_Click(object sender, EventArgs e)
+        private async void buttonTransact_Click(object sender, EventArgs e)
         {
+            try
+            {
+                await DBWorker.BeginTransaction(dataGridViewMain);
 
-            DBWorker.BeginTransaction(dataGridViewMain);
+                buttonRollback.Enabled = true;
+                buttonRollback.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+                MessageBox.Show("Изменения сохранены в базе данных.");
+            }
+            catch {
 
-            buttonRollback.Enabled = true;
-            buttonRollback.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128))))); ;
+            }
         }
 
         private void buttonRollback_Click(object sender = null, EventArgs e = null)
         {
-
-            //DBWorker.RollbackTransaction();
-
+            dataGridViewMain.DataSource = DBWorker.RollbackTransaction();
             buttonRollback.Enabled = false;
             buttonRollback.BackColor = Color.Gray;
-
+            MessageBox.Show("Откат выполнен успешно");
         }
 
 

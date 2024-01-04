@@ -17,6 +17,7 @@ namespace LibA {
         Task<SqlConnection> OpenConnection();
         Task SendRegData(string name, string login, string password);
         Task<string> ReceiveResponceAsync(TcpClient tcpClient);
+        
     }
 
     public class ConnectionManager: IConnectionManager
@@ -110,6 +111,23 @@ namespace LibA {
             return null;
         }
 
+        public static async Task<bool> CheckDBConnectionAsync()
+        {
+
+            try
+            {
+                using (TcpClient tcpClient = new TcpClient())
+                {
+                    await tcpClient.ConnectAsync(Properties.Settings.Default.dbConnSourceAddr, short.Parse(Properties.Settings.Default.DBPort));
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    
 
 
 
@@ -127,8 +145,7 @@ namespace LibA {
 
 
 
-
-        public async Task SendRegData(string name, string login, string password)
+    public async Task SendRegData(string name, string login, string password)
         {
             TcpClient tcpClient = new TcpClient();
             try
@@ -211,7 +228,7 @@ namespace LibA {
             }
         }
 
-        private string DecryptString(string cipherText)
+        /*private string DecryptString(string cipherText)
         {
             using (Aes aesAlg = Aes.Create())
             {
@@ -230,6 +247,6 @@ namespace LibA {
                 }
             }
         }
-
+        */
     }
 }
