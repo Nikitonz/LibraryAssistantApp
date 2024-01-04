@@ -9,9 +9,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace LibA
-{
-    public class ConnectionManager
+namespace LibA {
+    public interface IConnectionManager
+    {
+        void Disconnect();
+        bool SetupConnectionString(string login = null, string password = null);
+        Task<SqlConnection> OpenConnection();
+        Task SendRegData(string name, string login, string password);
+        Task<string> ReceiveResponceAsync(TcpClient tcpClient);
+    }
+
+    public class ConnectionManager: IConnectionManager
     {
         private static ConnectionManager _instance;
         private String connectionString;
@@ -67,7 +75,7 @@ namespace LibA
             catch (Exception e)
             {
                 connectionString = backup;
-                MessageBox.Show("Ошибка создания соединения. Проверьте данные и попробуйте ещё раз");
+                //MessageBox.Show("Ошибка создания соединения. Проверьте данные и попробуйте ещё раз");
                 Console.WriteLine(e.Message);
                 return false;
 
@@ -93,9 +101,9 @@ namespace LibA
                 MessageBox.Show("Ошибка установки пользователя: " + ex.Message);
                 connection?.Dispose();
             }
-            catch (Exception e)
+            catch
             {
-                MessageBox.Show("Ошибка открытия сеодинения");
+                MessageBox.Show("Ошибка открытия соединения\n * Проверьте, включен ли сервер\n * Пользователь авторизован? ");
                 connection?.Dispose();
             }
 
@@ -139,7 +147,7 @@ namespace LibA
                 MessageBox.Show(responce);
                 tcpClient.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 MessageBox.Show("Ошибка регистрации");
             }
@@ -153,7 +161,7 @@ namespace LibA
 
 
 
-        public static async Task<string> ReceiveResponceAsync(TcpClient tcpClient)
+        public async Task<string> ReceiveResponceAsync(TcpClient tcpClient)
         {
             NetworkStream networkStream = tcpClient.GetStream();
             byte[] buffer = new byte[1024];

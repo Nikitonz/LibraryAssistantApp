@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Threading.Tasks;
@@ -26,7 +25,7 @@ namespace LibA
                     };
                     isClosed = false;
                 }
-                
+
                 return instance;
             }
         }
@@ -37,7 +36,7 @@ namespace LibA
             this.Shown += LoadTablesAsync;
         }
 
-        
+
 
         private async void LoadTablesAsync(object sender, EventArgs e)
         {
@@ -45,7 +44,7 @@ namespace LibA
             try
             {
                 tables = await DBWorker.BdGetDataMSSQL("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' order by table_name ASC");
-                Console.WriteLine(1);
+             
             }
             catch
             {
@@ -58,22 +57,10 @@ namespace LibA
                 Tables.Items.AddRange(tables);
             }
 
-            int maxHeight = 1;
 
-            foreach (var item in Tables.Items)
-            {
-                string text = item.ToString();
-                int itemHeight = (int)TextRenderer.MeasureText(text, Tables.Font).Height;
-
-                if (itemHeight > maxHeight)
-                {
-                    maxHeight = itemHeight;
-                }
-            }
-
-            Tables.ItemHeight = maxHeight;
-            int totalHeight = Tables.ItemHeight * Tables.Items.Count;
-            Tables.Height = totalHeight;
+            Tables.Height = Tables.ItemHeight * (Tables.Items.Count+1);
+        
+            
 
             buttonTransact.Location = new Point(
                 Tables.Left,
@@ -162,7 +149,9 @@ namespace LibA
 
         private void buttonTransact_Click(object sender, EventArgs e)
         {
-            //DBWorker.BeginTransaction(dataGridViewMain);
+
+            DBWorker.BeginTransaction(dataGridViewMain);
+
             buttonRollback.Enabled = true;
             buttonRollback.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128))))); ;
         }
@@ -177,15 +166,21 @@ namespace LibA
 
         }
 
-        
+
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Program.MakeFocus(SettingsPane.Instance);
 
-            
+
         }
 
+       
 
+        private void деавторизоватьсяToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ConnectionManager.Instance.Disconnect();
+            this.Close();
+        }
     }
 }

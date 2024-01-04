@@ -88,7 +88,7 @@ namespace LibA
                 await ConnectionManager.Instance.SendRegData(transfer, textBox2.Text, textBox5.Text);
                 ConnectionManager.Instance.SetupConnectionString(textBox2.Text, textBox5.Text);
                 await ConnectionManager.Instance.OpenConnection();
-                //RegAuthSuccess?.Invoke(this, EventArgs.Empty);
+                RegAuthSuccess?.Invoke(this, EventArgs.Empty);
             }
             catch (SqlException er)
             {
@@ -141,11 +141,12 @@ namespace LibA
                     }
                     
                     this.Close();
+                    
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка подключения: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                //MessageBox.Show("Ошибка подключения: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 textBox3.Text = "";
                 textBox4.Text = "";
                 textBox3.Focus();
