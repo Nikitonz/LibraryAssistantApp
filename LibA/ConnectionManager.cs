@@ -43,6 +43,7 @@ namespace LibA {
             {
                 _instance.connectionString = null;
                 _instance = null;
+                DBWorker.OldTable = null;
 
             }
 

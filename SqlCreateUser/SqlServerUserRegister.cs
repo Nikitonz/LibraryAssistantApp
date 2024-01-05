@@ -17,6 +17,7 @@ namespace SqlCreateUser
         private TcpListener tcpListener;
         private CancellationTokenSource cancellationTokenSource;
         private const string CRYPTOKEY = "ThisIsASecretKey1234567890123456";
+
         public SqlServerUserRegister()
         {
             InitializeComponent();
@@ -56,6 +57,7 @@ namespace SqlCreateUser
 
         private async Task HandleClientAsync(TcpClient tcpClient, CancellationToken cancellationToken)
         {
+            string responce = null;
             try
             {
                 NetworkStream networkStream = tcpClient.GetStream();
@@ -87,6 +89,7 @@ namespace SqlCreateUser
                             connectionTRUSTABLE.Open();
                             await command.ExecuteNonQueryAsync(cancellationToken);
                             // EventLog.WriteEntry("SQLSlujba", "создал", EventLogEntryType.Information);
+                            responce = ("200");
                         }
                     }
                     catch (Exception e)
@@ -94,13 +97,15 @@ namespace SqlCreateUser
                         EventLog.WriteEntry("SQLSlujba", "Ошибка в создании записи.\n" + e.Message, EventLogEntryType.Error);
 
 
-                        string errorMessage = $"500|{e.Message}";
-                        byte[] errorData = Encoding.UTF8.GetBytes(errorMessage);
+                        responce = $"500|{e.Message}";
+
+                    }
+                    finally { 
+                        networkStream.Close();
+                        byte[] errorData = Encoding.UTF8.GetBytes(responce);
                         await networkStream.WriteAsync(errorData, 0, errorData.Length, cancellationToken);
                     }
-
-                    byte[] responseData = BitConverter.GetBytes(200);
-                    await networkStream.WriteAsync(responseData, 0, responseData.Length, cancellationToken);
+                   
                 }
 
             }
@@ -156,6 +161,6 @@ namespace SqlCreateUser
                     }
                 }
             }
-        }
+        } 
     }
 }

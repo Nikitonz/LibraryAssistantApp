@@ -44,7 +44,7 @@ namespace LibA
             try
             {
                 tables = await DBWorker.BdGetDataMSSQL("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' order by table_name ASC");
-             
+
             }
             catch
             {
@@ -58,9 +58,9 @@ namespace LibA
             }
 
 
-            Tables.Height = Tables.ItemHeight * (Tables.Items.Count+1);
-        
-            
+            Tables.Height = Tables.ItemHeight * (Tables.Items.Count + 1);
+
+
 
             buttonTransact.Location = new Point(
                 Tables.Left,
@@ -72,15 +72,29 @@ namespace LibA
                 buttonTransact.Bottom
             );
 
-            this.Height = buttonRollback.Bottom + 65;
+            this.Height = dataGridViewMain.Bottom;
+            this.Width = dataGridViewMain.Right + (this.Width - this.ClientSize.Width);
         }
 
         private async void Tables_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (DBWorker.OldTable != null && !AreTablesEqual(dataGridViewMain.DataSource as DataTable, DBWorker.OldTable))
+            {
+                DialogResult dgv = MessageBox.Show("У вас есть несохранённые изменения. Вы хотите сохранить их?", "Предупреждение", MessageBoxButtons.YesNo, MessageBoxIcon.Hand);
+                if (dgv == DialogResult.Yes)
+                {
+                    await DBWorker.BeginTransaction(dataGridViewMain);
+                    return;
+                }
+            }
             string selectedTable = Tables.Items[Tables.SelectedIndex > 0 ? Tables.SelectedIndex : 0].ToString();
             DataTable datatable = await DBWorker.GetDataTable(selectedTable);
+            
+            
+
             if (datatable != null)
             {
+                DBWorker.OldTable = datatable.Copy();
                 dataGridViewMain.DataSource = datatable;
                 dataGridViewMain.Enabled = true;
                 dataGridViewMain.Visible = true;
@@ -88,14 +102,40 @@ namespace LibA
             }
         }
 
+        
+
         private void выходToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             this.Close();
-            this.Dispose();
+            this.Dispose();//11
         }
 
+        private bool AreTablesEqual(DataTable table1, DataTable table2)
+        {
+            if (table1 == null || table2 == null)
+            {
+                return table1 == table2;
+            }
 
+            if (table1.Rows.Count != table2.Rows.Count || table1.Columns.Count != table2.Columns.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < table1.Rows.Count; i++)
+            {
+                for (int j = 0; j < table1.Columns.Count; j++)
+                {
+                    if (!object.Equals(table1.Rows[i][j], table2.Rows[i][j]))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
 
 
 
@@ -151,20 +191,22 @@ namespace LibA
         {
             try
             {
-                await DBWorker.BeginTransaction(dataGridViewMain);
+                await DBWorker.RollbackTransaction();
 
                 buttonRollback.Enabled = true;
                 buttonRollback.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
                 MessageBox.Show("Изменения сохранены в базе данных.");
             }
-            catch {
+            catch
+            {
 
             }
         }
 
-        private void buttonRollback_Click(object sender = null, EventArgs e = null)
+        private async void buttonRollback_Click(object sender, EventArgs e)
         {
-            dataGridViewMain.DataSource = DBWorker.RollbackTransaction();
+            dataGridViewMain.DataSource = DBWorker.OldTable;
+            await DBWorker.BeginTransaction(dataGridViewMain);
             buttonRollback.Enabled = false;
             buttonRollback.BackColor = Color.Gray;
             MessageBox.Show("Откат выполнен успешно");
@@ -179,12 +221,19 @@ namespace LibA
 
         }
 
-       
+
 
         private void деавторизоватьсяToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ConnectionManager.Instance.Disconnect();
             this.Close();
         }
+
+        private void выходToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -12,6 +11,14 @@ namespace LibA
     internal class DBWorker
     {
         private static DataTable oldTable;
+        public static DataTable OldTable
+        {
+            set { oldTable = value; }
+            get { return oldTable!; }
+        }
+
+
+
         public static async Task<string[]> BdGetDataMSSQL(string commandText)
         {
             List<string> result = new List<string>();
@@ -72,7 +79,8 @@ namespace LibA
             return null;
 
         }
-        public static async Task BeginTransaction(DataGridView dgv) {
+        public static async Task BeginTransaction(DataGridView dgv)
+        {
             DataTable dataTable = dgv.DataSource as DataTable;
             oldTable = dataTable;
             await BeginTransaction(dataTable);
@@ -80,27 +88,24 @@ namespace LibA
 
         public static async Task BeginTransaction(DataTable dt)
         {
-            
-            
-            if (dt != null)
+            using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
             {
-                try
+                IEnumerable<string> userPermissions = await CheckTablePermissions(dt.TableName, connection);
+
+                if (!userPermissions.Except(new[] { "SELECT" }, StringComparer.OrdinalIgnoreCase).Any())
                 {
-                    using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
+
+                    MessageBox.Show("У вас нет прав на выполнение операций в данной таблице.");
+
+                    throw new Exception();
+                }
+
+                using (SqlTransaction transaction = connection.BeginTransaction())
+                {
+                    if (dt != null)
                     {
-
-                        IEnumerable<string> userPermissions = await CheckTablePermissions(dt.TableName, connection);
-
-                        if (!userPermissions.Any())
+                        try
                         {
-                            MessageBox.Show("У вас нет прав на выполнение операций в данной таблице.");
-
-                            throw new Exception();
-                        }
-
-                        using (SqlTransaction transaction = connection.BeginTransaction())
-                        {
-
                             using (SqlDataAdapter adapter = new SqlDataAdapter($"SELECT * FROM {dt.TableName}", connection))
                             {
                                 adapter.SelectCommand.Transaction = transaction;
@@ -115,42 +120,39 @@ namespace LibA
 
                                 if (userPermissions.Contains("DELETE", StringComparer.OrdinalIgnoreCase))
                                     adapter.DeleteCommand = commandBuilder.GetDeleteCommand();
-                                
-                                adapter.Update(dt);
 
-                                transaction.Commit();
+                                adapter.Update(dt);
                                 
+                                transaction.Commit();
                             }
+                        }
+                        catch(Exception ex)
+                        {
+                            transaction.Rollback();
+
+                            MessageBox.Show($"Ошибка при обновлении базы данных:{ex.Message}");
+                            throw;
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    
-                 
-                    MessageBox.Show($"Ошибка при обновлении базы данных: {ex.Message}");
-                    throw ex;
-                }
+
             }
         }
 
 
 
 
-        public static async Task<DataTable> RollbackTransaction()
+        public static async Task RollbackTransaction()
         {
             try
             {
-               await BeginTransaction(oldTable);
-               
-
+                await BeginTransaction(oldTable);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при транзакции: {ex.Message}");
-
             }
-            return oldTable;
+
         }
 
 
