@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -22,15 +22,15 @@ namespace LibA
             InitializeComponent();
             Screen screen = Screen.FromControl(this);
             this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
-            
+
 
 
 
         }
 
-        
 
-       
+
+
 
 
 
@@ -147,12 +147,15 @@ namespace LibA
 
         }
 
-        
 
-        private void ChangeStatus(object sender, EventArgs e)
+
+        private async void ChangeStatus(object sender, EventArgs e)
         {
-
-            statText.Text = $"Пользователь вошёл в систему. Роли базы данных:";
+            using (SqlConnection c = await ConnectionManager.Instance.OpenConnection())
+            {
+                var b = new SqlConnectionStringBuilder(c.ConnectionString);
+                statText.Text = $"Добро пожаловать, {b.UserID}";
+            }
         }
 
         private void UserPanel_SizeChanged(object sender = null, EventArgs e = null)
@@ -185,8 +188,8 @@ namespace LibA
             {
                 searchInput.Text = "Начните вводить что-нибудь...";
                 searchInput.ForeColor = SystemColors.GrayText;
-               
-               
+
+
                 UpdateSearchPanelLayout();
             }
         }
@@ -215,25 +218,25 @@ namespace LibA
             searchInput.TextAlign = HorizontalAlignment.Left;
             searchInput.Select(0, 0);
 
-   
-            int dataGridViewMargin = 10; 
+
+            int dataGridViewMargin = 10;
             int dataGridViewTopMargin = searchPanel.Bottom + dataGridViewMargin;
 
-            dataGridViewMain.Location = new Point(searchPanel.Left, searchPanel.Bottom +10);
+            dataGridViewMain.Location = new Point(searchPanel.Left, searchPanel.Bottom + 10);
             dataGridViewMain.Width = searchPanel.Width;
             dataGridViewMain.Height = this.ClientSize.Height - dataGridViewMain.Top - statusStrip1.Height;
-            
+
         }
 
         private async void doSearch_Click(object sender, EventArgs e)
         {
-            
-            
+
+
             using (SqlCommand command = new SqlCommand("SearchBooks", await ConnectionManager.Instance.OpenConnection()))
             {
                 try
                 {
-                   
+
                     command.CommandType = CommandType.StoredProcedure;
                     if (searchInput.Text == string.Empty || searchInput.Text.Equals("Начните вводить что-нибудь..."))
                         throw new Exception();
@@ -247,7 +250,7 @@ namespace LibA
                     dataGridViewMain.Columns["Год выпуска"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                     dataGridViewMain.Columns["Число страниц"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
-                    
+
                     foreach (DataGridViewColumn column in dataGridViewMain.Columns)
                     {
                         if (column.AutoSizeMode != DataGridViewAutoSizeColumnMode.AllCells)
@@ -262,11 +265,11 @@ namespace LibA
                 }
                 catch
                 {
-                  dataGridViewMain.Visible=false;
+                    dataGridViewMain.Visible = false;
                 }
             }
         }
 
-       
+
     }
 }

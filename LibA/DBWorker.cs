@@ -126,11 +126,11 @@ namespace LibA
                                 transaction.Commit();
                             }
                         }
-                        catch(Exception ex)
+                        catch
                         {
                             transaction.Rollback();
 
-                            MessageBox.Show($"Ошибка при обновлении базы данных:{ex.Message}");
+                            MessageBox.Show($"Ошибка при обновлении базы данных");
                             throw;
                         }
                     }
@@ -169,26 +169,42 @@ namespace LibA
                 return Enumerable.Empty<string>();
             }
 
-            string query = $@"
-        SELECT dp.permission_name
-        FROM sys.database_permissions dp
-        JOIN sys.database_principals dpn ON dp.grantee_principal_id = dpn.principal_id
-        WHERE dpn.name = (SELECT dp.name AS DatabaseUserName
-        FROM sys.database_principals dp
-        JOIN sys.server_principals sp ON dp.sid = sp.sid
-        WHERE sp.name = '{currentUsername}') AND dp.major_id = OBJECT_ID('{tableName}')";
-
             List<string> userPermissions = new List<string>();
 
             try
             {
-                using (SqlCommand command = new SqlCommand(query, connection))
+               
+                string getRolesQuery = "EXEC GetUserRoles @LoginName";
+                using (SqlCommand rolesCommand = new SqlCommand(getRolesQuery, connection))
                 {
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    rolesCommand.Parameters.AddWithValue("@LoginName", currentUsername);
+
+                    using (SqlDataReader rolesReader = await rolesCommand.ExecuteReaderAsync())
                     {
-                        while (reader.Read())
+                        while (rolesReader.Read())
                         {
-                            string permission = reader.GetString(0);
+                            string role = rolesReader.GetString(0);
+
+                            if (role.Equals("db_owner"))
+                            {
+                                return new List<string> { "SELECT", "INSERT", "UPDATE", "DELETE", "ALTER", "CREATE", "DROP", "EXECUTE", "GRANT", "REFERENCES", "VIEW DEFINITION", /* и другие операции */ };
+                            }
+                        }
+                    }
+                }
+
+                
+                string getPermissionsQuery = "EXEC GetUserTablePermissions @DatabaseUserName, @TableName";
+                using (SqlCommand permissionsCommand = new SqlCommand(getPermissionsQuery, connection))
+                {
+                    permissionsCommand.Parameters.AddWithValue("@DatabaseUserName", currentUsername);
+                    permissionsCommand.Parameters.AddWithValue("@TableName", tableName);
+
+                    using (SqlDataReader permissionsReader = await permissionsCommand.ExecuteReaderAsync())
+                    {
+                        while (permissionsReader.Read())
+                        {
+                            string permission = permissionsReader.GetString(0);
                             userPermissions.Add(permission);
                         }
                     }

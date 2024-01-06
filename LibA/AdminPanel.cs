@@ -88,6 +88,7 @@ namespace LibA
                     return;
                 }
             }
+            
             string selectedTable = Tables.Items[Tables.SelectedIndex > 0 ? Tables.SelectedIndex : 0].ToString();
             DataTable datatable = await DBWorker.GetDataTable(selectedTable);
             
@@ -95,6 +96,8 @@ namespace LibA
 
             if (datatable != null)
             {
+                buttonRollback.Enabled = false;
+                buttonRollback.BackColor = Color.Gray;
                 DBWorker.OldTable = datatable.Copy();
                 dataGridViewMain.DataSource = datatable;
                 dataGridViewMain.Enabled = true;
@@ -196,11 +199,13 @@ namespace LibA
         {
             try
             {
-                await DBWorker.RollbackTransaction();
-
+                await DBWorker.BeginTransaction(dataGridViewMain);
                 buttonRollback.Enabled = true;
+
                 buttonRollback.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+                dataGridViewMain.Refresh();
                 MessageBox.Show("Изменения сохранены в базе данных.");
+                dataGridViewMain.Refresh();
             }
             catch
             {
@@ -210,11 +215,18 @@ namespace LibA
 
         private async void buttonRollback_Click(object sender, EventArgs e)
         {
-            dataGridViewMain.DataSource = DBWorker.OldTable;
-            await DBWorker.BeginTransaction(dataGridViewMain);
-            buttonRollback.Enabled = false;
-            buttonRollback.BackColor = Color.Gray;
-            MessageBox.Show("Откат выполнен успешно");
+            try
+            {
+                dataGridViewMain.DataSource = DBWorker.OldTable;
+                
+                await DBWorker.BeginTransaction(DBWorker.OldTable);
+                buttonRollback.Enabled = false;
+                buttonRollback.BackColor = Color.Gray;
+                MessageBox.Show("Откат выполнен успешно");
+            }
+            catch {
+                MessageBox.Show("Ошибка отката");
+            }
         }
 
 
