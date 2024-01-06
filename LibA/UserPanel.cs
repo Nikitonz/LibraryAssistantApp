@@ -1,42 +1,36 @@
 ﻿using System;
-using System.Data;
 using System.Data.SqlClient;
+using System.Data;
 using System.Drawing;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
 namespace LibA
 {
 
-    public partial class UserPanel : Form { 
-       
+    public partial class UserPanel : Form
+    {
+
         private AuthForm authForm;
         public UserPanel()
         {
 
-            ConnectionManager _ = ConnectionManager.Instance;
             this.Size = new Size(200, 200);
             this.Refresh();
             this.AutoSize = false;
-         
+
             InitializeComponent();
             Screen screen = Screen.FromControl(this);
             this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
-          
-            //администрированиеToolStripMenuItem_Click();
-
-
-        }
-
-
-        private void ChangeStatus(object sender, EventArgs e)
-        {
             
-            statText.Text = $"Пользователь вошёл в систему. Роли базы данных:";
+
+
+
         }
 
+        
+
+       
 
 
 
@@ -46,36 +40,37 @@ namespace LibA
             DialogResult = MessageBox.Show("Developer: Никита Обухов\nemail: nikitoniy2468@gmail.com\nAll rights reserved.", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        
-        
+
+
         private void зарегистрироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
 
             authForm = new AuthForm(this);
             authForm.RegAuthSuccess += ChangeStatus;
             authForm.WhichWindow(WindowType.REGISTER);
             authForm.ShowDialog();
-            
+
         }
         private void авторизироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
             try
             {
-                
+
                 authForm = new AuthForm(this);
                 authForm.RegAuthSuccess += ChangeStatus;
                 authForm.WhichWindow(WindowType.AUTHORIZE);
                 authForm.ShowDialog();
-                
+
             }
-            catch (Exception ex){
-                MessageBox.Show(ex.Message,"an error occured. At regauth form" , MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }            
-            
-                
-           
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "an error occured. At regauth form", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
+
         }
 
         private void изПриложенияToolStripMenuItem_Click(object sender, EventArgs e)
@@ -87,19 +82,20 @@ namespace LibA
         {
             ConnectionManager.Instance.Disconnect();
             this.statText.Text = "";
-        
-            
+
+
         }
 
 
-        
 
-        public void newTSSLabel(string ctext) {
-            
+
+        public void newTSSLabel(string ctext)
+        {
+
             this.statText.Text = ctext;
         }
 
-        
+
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -114,8 +110,8 @@ namespace LibA
             Dispose();
         }
 
-       
-        private void администрированиеToolStripMenuItem_Click(object sender=null, EventArgs e= null)
+
+        private void администрированиеToolStripMenuItem_Click(object sender = null, EventArgs e = null)
         {
             Program.MakeFocus(AdminPanel.Instance);
 
@@ -123,14 +119,14 @@ namespace LibA
 
         private async void IsDBAliveTimer_Tick(object sender, EventArgs e)
         {
-            
+
 
             try
             {
-              
+
                 bool isDBAlive = await ConnectionManager.CheckDBConnectionAsync();
 
-                
+
                 if (isDBAlive)
                 {
                     this.DBStat.Image = Properties.Resources.ok;
@@ -141,16 +137,136 @@ namespace LibA
                 {
                     this.DBStat.Image = Properties.Resources.error;
                     this.DBStat.Text = "База данных: ОШИБКА";
-                    IsDBAliveTimer.Interval = 10*1000;
+                    IsDBAliveTimer.Interval = 10 * 1000;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка при проверке базы данных: {ex.Message}");
             }
-           
+
         }
 
         
+
+        private void ChangeStatus(object sender, EventArgs e)
+        {
+
+            statText.Text = $"Пользователь вошёл в систему. Роли базы данных:";
+        }
+
+        private void UserPanel_SizeChanged(object sender = null, EventArgs e = null)
+        {
+            int leftMargin = (int)(Width * 0.1);
+            int topMargin = (int)(Height * 0.05);
+            int rightMargin = (int)(Width * 0.1);
+
+            int topMarginWithMenuStrip = topMargin + menuStrip1.Height;
+
+            searchPanel.Location = new Point(leftMargin, topMarginWithMenuStrip);
+            searchPanel.Width = Width - leftMargin - rightMargin;
+
+            UpdateSearchPanelLayout();
+        }
+
+        private void searchInput_Enter(object sender, EventArgs e)
+        {
+            if (searchInput.Text == "Начните вводить что-нибудь...")
+            {
+                searchInput.Text = "";
+                searchInput.ForeColor = SystemColors.WindowText;
+                UpdateSearchPanelLayout();
+            }
+        }
+
+        private void searchInput_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(searchInput.Text))
+            {
+                searchInput.Text = "Начните вводить что-нибудь...";
+                searchInput.ForeColor = SystemColors.GrayText;
+               
+               
+                UpdateSearchPanelLayout();
+            }
+        }
+
+        private void UpdateSearchPanelLayout()
+        {
+            int panelWidth = searchPanel.Width;
+            int panelHeight = searchPanel.Height;
+
+            int doSearchSize = panelHeight;
+            doSearch.Size = new Size(doSearchSize, doSearchSize);
+            doSearch.Location = new Point(panelWidth - doSearchSize, 0);
+
+            int searchInputWidth = panelWidth - doSearchSize;
+            int searchInputHeight = panelHeight;
+            searchInput.Size = new Size(searchInputWidth, searchInputHeight);
+            searchInput.Location = new Point(0, 0);
+
+            float fontSize = searchInputHeight * 0.7f;
+            if (fontSize > searchInputHeight)
+                fontSize = searchInputHeight;
+
+            Font font = new Font("Arial", fontSize);
+
+            searchInput.Font = font;
+            searchInput.TextAlign = HorizontalAlignment.Left;
+            searchInput.Select(0, 0);
+
+   
+            int dataGridViewMargin = 10; 
+            int dataGridViewTopMargin = searchPanel.Bottom + dataGridViewMargin;
+
+            dataGridViewMain.Location = new Point(searchPanel.Left, searchPanel.Bottom +10);
+            dataGridViewMain.Width = searchPanel.Width;
+            dataGridViewMain.Height = this.ClientSize.Height - dataGridViewMain.Top - statusStrip1.Height;
+            
+        }
+
+        private async void doSearch_Click(object sender, EventArgs e)
+        {
+            
+            
+            using (SqlCommand command = new SqlCommand("SearchBooks", await ConnectionManager.Instance.OpenConnection()))
+            {
+                try
+                {
+                   
+                    command.CommandType = CommandType.StoredProcedure;
+                    if (searchInput.Text == string.Empty || searchInput.Text.Equals("Начните вводить что-нибудь..."))
+                        throw new Exception();
+                    command.Parameters.AddWithValue("@SearchTerm", searchInput.Text);
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+                    dataGridViewMain.DataSource = dataTable;
+                    dataGridViewMain.Visible = true;
+                    dataGridViewMain.RowHeadersVisible = false;
+                    dataGridViewMain.Columns["Год выпуска"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                    dataGridViewMain.Columns["Число страниц"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+
+                    
+                    foreach (DataGridViewColumn column in dataGridViewMain.Columns)
+                    {
+                        if (column.AutoSizeMode != DataGridViewAutoSizeColumnMode.AllCells)
+                        {
+                            column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                        }
+                    }
+
+
+
+
+                }
+                catch
+                {
+                  dataGridViewMain.Visible=false;
+                }
+            }
+        }
+
+       
     }
 }

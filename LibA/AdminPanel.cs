@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -108,7 +109,7 @@ namespace LibA
         {
 
             this.Close();
-            this.Dispose();//11
+            this.Dispose();
         }
 
         private bool AreTablesEqual(DataTable table1, DataTable table2)
@@ -136,6 +137,10 @@ namespace LibA
 
             return true;
         }
+       
+       
+
+
 
 
 
@@ -234,6 +239,32 @@ namespace LibA
             this.Close();
         }
 
-
+        private void dataGridViewMain_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (dataGridViewMain.Columns[e.ColumnIndex] is DataGridViewTextBoxColumn column &&
+                    column.DefaultCellStyle.Format == "dd.MM.yyyy")
+                {
+                    if (DateTime.TryParseExact(
+                        dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(),
+                        "dd.MM.yyyy",
+                        CultureInfo.InvariantCulture,
+                        DateTimeStyles.None,
+                        out DateTime date))
+                    {
+                        dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = date.ToString("dd.MM.yyyy");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Неверный формат даты!");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при редактировании: {ex.Message}");
+            }
+        }
     }
 }

@@ -150,6 +150,7 @@
     <None Include="Resources\ok.png" />
     <Content Include="Resources\pos_logo.ico" />
     <None Include="Resources\right.bmp" />
+    <None Include="Resources\search.png" />
     <Content Include="Resources\userpic.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -30,6 +30,7 @@
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.деавторизоватьсяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Tables = new System.Windows.Forms.ListBox();
@@ -37,7 +38,6 @@
             this.lPane = new System.Windows.Forms.SplitContainer();
             this.buttonRollback = new System.Windows.Forms.Button();
             this.buttonTransact = new System.Windows.Forms.Button();
-            this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lPane)).BeginInit();
@@ -67,6 +67,13 @@
             this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
+            // выходToolStripMenuItem
+            // 
+            this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
+            this.выходToolStripMenuItem.Size = new System.Drawing.Size(280, 26);
+            this.выходToolStripMenuItem.Text = "Выход";
+            this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click_1);
+            // 
             // деавторизоватьсяToolStripMenuItem
             // 
             this.деавторизоватьсяToolStripMenuItem.Name = "деавторизоватьсяToolStripMenuItem";
@@ -77,7 +84,7 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 26);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 24);
             this.settingsToolStripMenuItem.Text = "Настройки";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -112,7 +119,7 @@
             this.dataGridViewMain.Size = new System.Drawing.Size(600, 573);
             this.dataGridViewMain.TabIndex = 14;
             this.dataGridViewMain.Visible = false;
-          
+            this.dataGridViewMain.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewMain_CellEndEdit);
             // 
             // lPane
             // 
@@ -178,13 +185,6 @@
             this.buttonTransact.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.buttonTransact.UseVisualStyleBackColor = false;
             this.buttonTransact.Click += new System.EventHandler(this.buttonTransact_Click);
-            // 
-            // выходToolStripMenuItem
-            // 
-            this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
-            this.выходToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.выходToolStripMenuItem.Text = "Выход";
-            this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click_1);
             // 
             // AdminPanel
             // 
