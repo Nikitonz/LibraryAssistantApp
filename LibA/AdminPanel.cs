@@ -141,13 +141,70 @@ namespace LibA
             return true;
         }
        
-       
+        
+
+        private async void buttonTransact_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                await DBWorker.BeginTransaction(dataGridViewMain);
+                buttonRollback.Enabled = true;
+                buttonRollback.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+                MessageBox.Show("Изменения сохранены в базе данных.");
+            }
+            catch(Exception er)
+            {
+                MessageBox.Show("Непредвиденная ошибка при обновлении данных:\n"+er.Message);
+            }
+        }
+
+        private async void buttonRollback_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dataGridViewMain.DataSource = DBWorker.OldTable;
+                
+                await DBWorker.BeginTransaction(DBWorker.OldTable);
+                buttonRollback.Enabled = false;
+                buttonRollback.BackColor = Color.Gray;
+                MessageBox.Show("Откат выполнен успешно");
+            }
+            catch {
+                MessageBox.Show("Ошибка отката");
+            }
+        }
 
 
 
+        
 
-
-
+        private void dataGridViewMain_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (dataGridViewMain.Columns[e.ColumnIndex] is DataGridViewTextBoxColumn column &&
+                    column.DefaultCellStyle.Format == "dd.MM.yyyy")
+                {
+                    if (DateTime.TryParseExact(
+                        dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(),
+                        "dd.MM.yyyy",
+                        CultureInfo.InvariantCulture,
+                        DateTimeStyles.None,
+                        out DateTime date))
+                    {
+                        dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = date.ToString("dd.MM.yyyy");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Неверный формат даты!");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при редактировании: {ex.Message}");
+            }
+        }
 
 
         private async void lPane_Panel2_Click(object sender, EventArgs e)
@@ -195,42 +252,6 @@ namespace LibA
             dataGridViewMain.Dock = DockStyle.Fill;
         }
 
-        private async void buttonTransact_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                await DBWorker.BeginTransaction(dataGridViewMain);
-                buttonRollback.Enabled = true;
-
-                buttonRollback.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-                dataGridViewMain.Refresh();
-                MessageBox.Show("Изменения сохранены в базе данных.");
-                dataGridViewMain.Refresh();
-            }
-            catch
-            {
-
-            }
-        }
-
-        private async void buttonRollback_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                dataGridViewMain.DataSource = DBWorker.OldTable;
-                
-                await DBWorker.BeginTransaction(DBWorker.OldTable);
-                buttonRollback.Enabled = false;
-                buttonRollback.BackColor = Color.Gray;
-                MessageBox.Show("Откат выполнен успешно");
-            }
-            catch {
-                MessageBox.Show("Ошибка отката");
-            }
-        }
-
-
-
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Program.MakeFocus(SettingsPane.Instance);
@@ -249,34 +270,6 @@ namespace LibA
         private void выходToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void dataGridViewMain_CellEndEdit(object sender, DataGridViewCellEventArgs e)
-        {
-            try
-            {
-                if (dataGridViewMain.Columns[e.ColumnIndex] is DataGridViewTextBoxColumn column &&
-                    column.DefaultCellStyle.Format == "dd.MM.yyyy")
-                {
-                    if (DateTime.TryParseExact(
-                        dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(),
-                        "dd.MM.yyyy",
-                        CultureInfo.InvariantCulture,
-                        DateTimeStyles.None,
-                        out DateTime date))
-                    {
-                        dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = date.ToString("dd.MM.yyyy");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Неверный формат даты!");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при редактировании: {ex.Message}");
-            }
         }
     }
 }

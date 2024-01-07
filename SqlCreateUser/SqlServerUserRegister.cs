@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
@@ -79,8 +80,8 @@ namespace SqlCreateUser
 
                     string query = $"CREATE LOGIN {login} WITH PASSWORD = '{password}'; " +
                                    $"CREATE USER {userName} FOR LOGIN {login}; " +
-                                   $"GRANT SELECT ON dbo.Авторы TO {userName}; " +
-                                   $"GRANT SELECT ON dbo.Книга TO {userName};";
+                                   $"GRANT EXECUTE ON [dbo].[SearchBooks] TO {userName}";
+                    
                     try
                     {
                         using (SqlConnection connectionTRUSTABLE = new SqlConnection(connectionString))

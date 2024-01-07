@@ -18,22 +18,16 @@ namespace LibA
             this.Size = new Size(200, 200);
             this.Refresh();
             this.AutoSize = false;
-
             InitializeComponent();
             Screen screen = Screen.FromControl(this);
             this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
-
+            ConnectionManager.Instance.Disconnection += (sender, e) => {
+                администрированиеToolStripMenuItem.Visible = false;
+            };
 
 
 
         }
-
-
-
-
-
-
-
 
         private void разработчикToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -48,6 +42,7 @@ namespace LibA
 
             authForm = new AuthForm(this);
             authForm.RegAuthSuccess += ChangeStatus;
+            
             authForm.WhichWindow(WindowType.REGISTER);
             authForm.ShowDialog();
 
@@ -60,6 +55,9 @@ namespace LibA
 
                 authForm = new AuthForm(this);
                 authForm.RegAuthSuccess += ChangeStatus;
+                authForm.HasRights += (sender, e) => {
+                    администрированиеToolStripMenuItem.Visible = true;
+                };
                 authForm.WhichWindow(WindowType.AUTHORIZE);
                 authForm.ShowDialog();
 
@@ -269,6 +267,9 @@ namespace LibA
                 }
             }
         }
+
+
+        
 
 
     }

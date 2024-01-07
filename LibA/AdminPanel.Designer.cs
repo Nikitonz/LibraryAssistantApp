@@ -168,6 +168,7 @@
             this.buttonRollback.Text = "Отменить изменения";
             this.buttonRollback.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.buttonRollback.UseVisualStyleBackColor = false;
+            this.buttonRollback.Visible = false;
             this.buttonRollback.Click += new System.EventHandler(this.buttonRollback_Click);
             // 
             // buttonTransact

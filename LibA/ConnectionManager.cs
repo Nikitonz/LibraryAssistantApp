@@ -25,6 +25,7 @@ namespace LibA {
         private static ConnectionManager _instance;
         private String connectionString;
         private const String CRYPTOKEY = "ThisIsASecretKey1234567890123456";
+        public event EventHandler Disconnection;
         private ConnectionManager() { }
         public static ConnectionManager Instance
         {
@@ -44,7 +45,7 @@ namespace LibA {
                 _instance.connectionString = null;
                 _instance = null;
                 DBWorker.OldTable = null;
-
+                Disconnection?.Invoke(this, EventArgs.Empty);
             }
 
         }

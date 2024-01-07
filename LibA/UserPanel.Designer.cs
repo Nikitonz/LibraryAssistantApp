@@ -84,7 +84,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(815, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(815, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -94,7 +94,7 @@
             this.регистрацияИАвторизацияToolStripMenuItem,
             this.выходToolStripMenuItem1});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // регистрацияИАвторизацияToolStripMenuItem
@@ -147,14 +147,15 @@
             // администрированиеToolStripMenuItem
             // 
             this.администрированиеToolStripMenuItem.Name = "администрированиеToolStripMenuItem";
-            this.администрированиеToolStripMenuItem.Size = new System.Drawing.Size(170, 26);
+            this.администрированиеToolStripMenuItem.Size = new System.Drawing.Size(170, 24);
             this.администрированиеToolStripMenuItem.Text = "Администрирование";
+            this.администрированиеToolStripMenuItem.Visible = false;
             this.администрированиеToolStripMenuItem.Click += new System.EventHandler(this.администрированиеToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 26);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 24);
             this.settingsToolStripMenuItem.Text = "Настройки";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -164,7 +165,7 @@
             this.справкаToolStripMenuItem,
             this.разработчикToolStripMenuItem});
             this.оПрограммеToolStripMenuItem.Name = "оПрограммеToolStripMenuItem";
-            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(118, 26);
+            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(118, 24);
             this.оПрограммеToolStripMenuItem.Text = "О программе";
             // 
             // справкаToolStripMenuItem

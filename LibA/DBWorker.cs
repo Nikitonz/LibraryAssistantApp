@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO.Packaging;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -106,7 +107,7 @@ namespace LibA
                     {
                         try
                         {
-                            using (SqlDataAdapter adapter = new SqlDataAdapter($"SELECT * FROM {dt.TableName}", connection))
+                            using (SqlDataAdapter adapter = new SqlDataAdapter($"SELECT * FROM [{dt.TableName}]", connection))
                             {
                                 adapter.SelectCommand.Transaction = transaction;
 
@@ -122,7 +123,7 @@ namespace LibA
                                     adapter.DeleteCommand = commandBuilder.GetDeleteCommand();
 
                                 adapter.Update(dt);
-                                
+
                                 transaction.Commit();
                             }
                         }
@@ -130,7 +131,7 @@ namespace LibA
                         {
                             transaction.Rollback();
 
-                            MessageBox.Show($"Ошибка при обновлении базы данных");
+                            //MessageBox.Show($"Ошибка при обновлении базы данных");
                             throw;
                         }
                     }
@@ -173,27 +174,12 @@ namespace LibA
 
             try
             {
-               
-                string getRolesQuery = "EXEC GetUserRoles @LoginName";
-                using (SqlCommand rolesCommand = new SqlCommand(getRolesQuery, connection))
-                {
-                    rolesCommand.Parameters.AddWithValue("@LoginName", currentUsername);
 
-                    using (SqlDataReader rolesReader = await rolesCommand.ExecuteReaderAsync())
-                    {
-                        while (rolesReader.Read())
-                        {
-                            string role = rolesReader.GetString(0);
+                if (await CheckUserRights(connection))
+                    return new List<string> { "SELECT", "INSERT", "UPDATE", "DELETE", "ALTER", "CREATE", "DROP", "EXECUTE", "GRANT", "REFERENCES", "VIEW DEFINITION", /* и другие операции */ };
+              
 
-                            if (role.Equals("db_owner"))
-                            {
-                                return new List<string> { "SELECT", "INSERT", "UPDATE", "DELETE", "ALTER", "CREATE", "DROP", "EXECUTE", "GRANT", "REFERENCES", "VIEW DEFINITION", /* и другие операции */ };
-                            }
-                        }
-                    }
-                }
 
-                
                 string getPermissionsQuery = "EXEC GetUserTablePermissions @DatabaseUserName, @TableName";
                 using (SqlCommand permissionsCommand = new SqlCommand(getPermissionsQuery, connection))
                 {
@@ -219,5 +205,61 @@ namespace LibA
             return userPermissions;
         }
 
+
+
+        public static async Task<bool> CheckUserRights(SqlConnection connection)
+        {
+            var builder = new SqlConnectionStringBuilder(connection.ConnectionString);
+            string userID = builder.UserID;
+            string getRolesQuery = "EXEC GetUserRoles @LoginName";
+
+            using (SqlCommand rolesCommand = new SqlCommand(getRolesQuery, connection))
+            {
+                rolesCommand.Parameters.AddWithValue("@LoginName", userID);
+
+                using (SqlDataReader rolesReader = await rolesCommand.ExecuteReaderAsync())
+                {
+                    while (rolesReader.Read())
+                    {
+                        string roleName = rolesReader.GetString(0);
+
+                      
+                        if (Enum.TryParse<DatabaseRoles>(roleName, out DatabaseRoles role))
+                        {
+                          
+                            if (role != DatabaseRoles.None)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+
+        public enum DatabaseRoles
+        {
+            None,
+            db_securityadmin,
+            db_owner,
+            db_denydatawriter,
+            db_denydatareader,
+            db_ddladmin,
+            db_datawriter,
+            db_datareader,
+            db_backupoperator,
+            db_accessadmin,
+            db_executor,
+            db_owner_sid,
+            db_securityadmin_sid,
+            db_accessadmin_sid,
+            db_backupoperator_sid,
+            db_ddladmin_sid,
+            db_datareader_sid,
+            db_datawriter_sid,
+            db_denydatareader_sid
+        }
     }
+    
 }

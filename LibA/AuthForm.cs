@@ -19,9 +19,9 @@ namespace LibA
     public partial class AuthForm : Form
     {
         public event EventHandler RegAuthSuccess;
+        public event EventHandler HasRights;
         //private ProgressBar progressBar;
 
-        List<string> accessLevels= new List<string>();
         public AuthForm(UserPanel userPanel)
         {
             InitializeComponent();
@@ -87,6 +87,8 @@ namespace LibA
                 //await Task.Delay(10000);
                 await ConnectionManager.Instance.SendRegData(transfer, textBox2.Text, textBox5.Text);
                 ConnectionManager.Instance.SetupConnectionString(textBox2.Text, textBox5.Text);
+
+
                 await ConnectionManager.Instance.OpenConnection();
                 RegAuthSuccess?.Invoke(this, EventArgs.Empty);
             }
@@ -120,29 +122,20 @@ namespace LibA
                         MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else throw new Exception();
-                    string query = $"USE Библиотека SELECT DP2.name as DatabaseRoleName FROM sys.server_principals AS SP JOIN sys.database_principals AS DP ON SP.sid = DP.sid JOIN sys.database_role_members AS DRM ON DP.principal_id = DRM.member_principal_id JOIN sys.database_principals AS DP2 ON DRM.role_principal_id = DP2.principal_id WHERE SP.name = '{textBox3.Text}' ORDER BY DP2.name;";
 
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    if (await DBWorker.CheckUserRights(await ConnectionManager.Instance.OpenConnection()))
                     {
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                        {
-                            
-
-                            while (await reader.ReadAsync()){
-                                string roleName = reader["DatabaseRoleName"].ToString();
-                                accessLevels.Add(roleName);
-                            }
-
-
-                            RegAuthSuccess?.Invoke(this, EventArgs.Empty);
-         
-                            
-                        }
+                        HasRights?.Invoke(this, EventArgs.Empty);
                     }
-                    
-                    this.Close();
-                    
+                    RegAuthSuccess?.Invoke(this, EventArgs.Empty);
+
+
                 }
+                    
+                    
+                this.Close();
+                    
+               
             }
             catch (Exception)
             {
@@ -157,28 +150,7 @@ namespace LibA
     }
     
 
-    file enum AcсessLevelsPrivelegued
-    {
-        db_owner,
-        db_securityadmin,
-        db_accessadmin,
-        db_backupoperator,
-        db_ddladmin,
-        db_datareader,
-        db_datawriter,
-        db_denydatareader,
-        db_denydatawriter,
-        db_executor,
-        db_owner_sid,
-        db_securityadmin_sid,
-        db_accessadmin_sid,
-        db_backupoperator_sid,
-        db_ddladmin_sid,
-        db_datareader_sid,
-        db_datawriter_sid,
-        db_denydatareader_sid,
-        none
-    }
+    
     
 
        
