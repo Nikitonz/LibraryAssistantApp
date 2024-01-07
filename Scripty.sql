@@ -8,6 +8,8 @@ DROP PROCEDURE УвеличитьКурсГрупп;
 DROP TRIGGER trg_УдалитьЧитателейПриОбновленииГруппы;
 DROP FUNCTION dbo.GetPercentageUsersByGroupAndFaculty;
 DROP FUNCTION dbo.GetDebtorsReport
+drop function dbo.GetBookStatusAndDueDate
+
 GO
 alter table Книга
 drop constraint FK_Книга_Издательство,
@@ -588,9 +590,40 @@ RETURN
 
 go
 
+CREATE FUNCTION dbo.GetBookStatusAndDueDate
+(
+    @ReaderID INT,
+    @BookID INT
+)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT
+        CASE
+            WHEN EXISTS (
+                SELECT 1
+                FROM [Выдача и возврат]
+                WHERE [Код читателя] = @ReaderID
+                AND [Код книги] = @BookID
+                AND [Дата возврата] IS NULL
+            ) THEN 'Книга на руках'
+            ELSE 'Книга сдана'
+        END AS [Статус книги],
+        DATEADD(MONTH, 1, [Выдача и возврат].[Дата выдачи]) AS [Ближайшая дата сдачи]--MIN(ISNULL([Дата возврата], '9999-12-31'))
+    FROM [Выдача и возврат]
+    WHERE [Код читателя] = @ReaderID
+    AND [Код книги] = @BookID
+);
+go
+
+select * from dbo.GetBookStatusAndDueDate(1,1)
+
 --o1
 SELECT * FROM dbo.GetPercentageUsersByGroupAndFaculty('2020-01-01', '2024-12-31');
 --o2
 SELECT * FROM dbo.GetDebtorsReport('2020-01-01', '2024-12-31');
+--o3
+select * from dbo.GetBookStatusAndDueDate(3,2)
 --y++
 exec УвеличитьКурсГрупп
