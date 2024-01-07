@@ -21,7 +21,8 @@ namespace LibA
             InitializeComponent();
             Screen screen = Screen.FromControl(this);
             this.Location = new Point(screen.WorkingArea.Right - this.Width, screen.WorkingArea.Bottom - this.Height);
-            ConnectionManager.Instance.Disconnection += (sender, e) => {
+            ConnectionManager.Instance.Disconnection += (sender, e) =>
+            {
                 администрированиеToolStripMenuItem.Visible = false;
             };
 
@@ -42,7 +43,7 @@ namespace LibA
 
             authForm = new AuthForm(this);
             authForm.RegAuthSuccess += ChangeStatus;
-            
+
             authForm.WhichWindow(WindowType.REGISTER);
             authForm.ShowDialog();
 
@@ -50,25 +51,15 @@ namespace LibA
         private void авторизироватьсяToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            try
+
+            authForm = new AuthForm(this);
+            authForm.RegAuthSuccess += ChangeStatus;
+            authForm.HasRights += (sender, e) =>
             {
-
-                authForm = new AuthForm(this);
-                authForm.RegAuthSuccess += ChangeStatus;
-                authForm.HasRights += (sender, e) => {
-                    администрированиеToolStripMenuItem.Visible = true;
-                };
-                authForm.WhichWindow(WindowType.AUTHORIZE);
-                authForm.ShowDialog();
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "an error occured. At regauth form", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-
-
+                администрированиеToolStripMenuItem.Visible = true;
+            };
+            authForm.WhichWindow(WindowType.AUTHORIZE);
+            authForm.ShowDialog();
         }
 
         private void изПриложенияToolStripMenuItem_Click(object sender, EventArgs e)
@@ -151,8 +142,8 @@ namespace LibA
         {
             using (SqlConnection c = await ConnectionManager.Instance.OpenConnection())
             {
-                var b = new SqlConnectionStringBuilder(c.ConnectionString);
-                statText.Text = $"Добро пожаловать, {b.UserID}";
+                var b = new SqlConnectionStringBuilder(c?.ConnectionString);
+                statText.Text = $"Добро пожаловать, {b?.UserID}";
             }
         }
 
@@ -269,7 +260,7 @@ namespace LibA
         }
 
 
-        
+
 
 
     }

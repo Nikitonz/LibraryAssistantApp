@@ -85,18 +85,29 @@ namespace LibA
                 transfer += "_" + comboBox1.Text;
                 //AddProgressBarToRegBox();
                 //await Task.Delay(10000);
-                await ConnectionManager.Instance.SendRegData(transfer, textBox2.Text, textBox5.Text);
-                ConnectionManager.Instance.SetupConnectionString(textBox2.Text, textBox5.Text);
+                string response = await ConnectionManager.Instance.SendRegData(transfer, textBox2.Text, textBox5.Text);
+                if (response == "200")
+                {
+                    ConnectionManager.Instance.SetupConnectionString(textBox2.Text, textBox5.Text);
 
 
-                await ConnectionManager.Instance.OpenConnection();
-                RegAuthSuccess?.Invoke(this, EventArgs.Empty);
+                    await ConnectionManager.Instance.OpenConnection();
+                    RegAuthSuccess?.Invoke(this, EventArgs.Empty);
+                }
+                else {
+                   
+                    throw new Exception($"{response.Split('|')[1]}");
+                }
             }
             catch (SqlException er)
             {
-                MessageBox.Show($"Невозможно добавить такого пользователя\n" + er, "RegErr", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Невозможно добавить такого пользователя\n" + er.Message, "RegErr", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-           
+            catch (Exception er)
+            {
+                MessageBox.Show($"Невозможно добавить такого пользователя\n" + er.Message, "RegErr", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -137,9 +148,9 @@ namespace LibA
                     
                
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //MessageBox.Show("Ошибка подключения: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Ошибка подключения: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 //textBox3.Text = "";
                 textBox4.Text = "";
                 textBox3.Focus();

@@ -84,7 +84,7 @@ namespace LibA
                 DialogResult dgv = MessageBox.Show("У вас есть несохранённые изменения. Вы хотите сохранить их?", "Предупреждение", MessageBoxButtons.YesNo, MessageBoxIcon.Hand);
                 if (dgv == DialogResult.Yes)
                 {
-                    await DBWorker.BeginTransaction(dataGridViewMain);
+                    buttonTransact_Click(sender, e);
                     return;
                 }
             }

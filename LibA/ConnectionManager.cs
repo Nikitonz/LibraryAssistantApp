@@ -16,11 +16,11 @@ namespace LibA {
         bool SetupConnectionString(string login = null, string password = null);
         Task<SqlConnection> OpenConnection();
         Task SendRegData(string name, string login, string password);
-        Task<string> ReceiveResponceAsync(TcpClient tcpClient);
+        string ReceiveResponce(TcpClient tcpClient);
         
     }
 
-    public class ConnectionManager: IConnectionManager
+    public class ConnectionManager
     {
         private static ConnectionManager _instance;
         private String connectionString;
@@ -129,42 +129,25 @@ namespace LibA {
                 return false;
             }
         }
-    
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public async Task SendRegData(string name, string login, string password)
+        public async Task<string> SendRegData(string name, string login, string password)
         {
+            string response = null;
             TcpClient tcpClient = new TcpClient();
             try
             {
-
                 await tcpClient.ConnectAsync(Properties.Settings.Default.dbConnSourceAddr, 8888);
-
-
 
                 string credentials = $"{name},{EncryptString(login)},{EncryptString(password)}";
                 NetworkStream networkStream = tcpClient.GetStream();
                 byte[] bytes = Encoding.UTF8.GetBytes(credentials);
+
                 await networkStream.WriteAsync(bytes, 0, bytes.Length);
 
-                string responce = await ReceiveResponceAsync(tcpClient);
-                MessageBox.Show(responce);
-                tcpClient.Close();
+                
+                response = await ReceiveResponceAsync(tcpClient);
+                
             }
             catch (Exception)
             {
@@ -173,12 +156,9 @@ namespace LibA {
             finally
             {
                 tcpClient.Close();
-
             }
+            return response;
         }
-
-
-
 
         public async Task<string> ReceiveResponceAsync(TcpClient tcpClient)
         {
@@ -186,26 +166,42 @@ namespace LibA {
             byte[] buffer = new byte[1024];
             StringBuilder responseBuilder = new StringBuilder();
 
-            CancellationTokenSource cts = new CancellationTokenSource();
-
-            cts.CancelAfter(TimeSpan.FromMinutes(1));
-
-            int bytesRead;
             try
             {
+                int bytesRead;
                 do
                 {
-                    bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
-                    responseBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-                } while (networkStream.DataAvailable);
+                    bytesRead = await networkStream.ReadAsync(buffer, 0, buffer.Length);
+                    if (bytesRead > 0)
+                    {
+                        responseBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
+                    }
+                } while (bytesRead > 0);
             }
-            catch (OperationCanceledException)
+            catch (Exception)
             {
-
+                // Обработка исключений
             }
 
             return responseBuilder.ToString();
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         private string EncryptString(string plainText)

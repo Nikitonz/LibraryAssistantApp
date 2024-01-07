@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
@@ -80,8 +79,8 @@ namespace SqlCreateUser
 
                     string query = $"CREATE LOGIN {login} WITH PASSWORD = '{password}'; " +
                                    $"CREATE USER {userName} FOR LOGIN {login}; " +
-                                   $"GRANT EXECUTE ON [dbo].[SearchBooks] TO {userName}";
-                    
+                                   $"GRANT EXECUTE ON [SearchBooks] TO {userName}";
+
                     try
                     {
                         using (SqlConnection connectionTRUSTABLE = new SqlConnection(connectionString))
@@ -89,8 +88,21 @@ namespace SqlCreateUser
                             SqlCommand command = new SqlCommand(query, connectionTRUSTABLE);
                             connectionTRUSTABLE.Open();
                             await command.ExecuteNonQueryAsync(cancellationToken);
-                            // EventLog.WriteEntry("SQLSlujba", "создал", EventLogEntryType.Information);
-                            responce = ("200");
+
+                            string[] ui = userName.Split('_');
+
+
+                            command.CommandText = "INSERT INTO Читатель ([Фамилия], [Имя], [Отчество], [Имя для входа]) VALUES (@Фамилия, @Имя, @Отчество, @ИмяДляВхода)";
+                            command.Parameters.Clear();
+                            command.Parameters.AddWithValue("@Фамилия", ui[0]);
+                            command.Parameters.AddWithValue("@Имя", ui[1]);
+                            command.Parameters.AddWithValue("@Отчество", ui[2]);
+                            command.Parameters.AddWithValue("@ИмяДляВхода", login);
+
+                     
+                            await command.ExecuteNonQueryAsync(cancellationToken);
+
+                            
                         }
                     }
                     catch (Exception e)
@@ -101,12 +113,17 @@ namespace SqlCreateUser
                         responce = $"500|{e.Message}";
 
                     }
-                    finally { 
-                        networkStream.Close();
-                        byte[] errorData = Encoding.UTF8.GetBytes(responce);
-                        await networkStream.WriteAsync(errorData, 0, errorData.Length, cancellationToken);
-                    }
-                   
+                    if (responce is null)
+                        responce = "200";
+                    EventLog.WriteEntry("SQLSlujba", "Ответ сервера:\n" + responce, EventLogEntryType.Warning);
+
+                    byte[] responseData = Encoding.UTF8.GetBytes(responce);
+                    await networkStream.WriteAsync(responseData, 0, responseData.Length);
+                    await networkStream.FlushAsync();
+
+
+                    networkStream.Close();
+                    tcpClient.Close();
                 }
 
             }
@@ -115,10 +132,7 @@ namespace SqlCreateUser
 
                 Console.WriteLine("finally:" + ex.Message);
             }
-            finally
-            {
-                tcpClient.Close();
-            }
+           
 
 
         }
@@ -162,6 +176,6 @@ namespace SqlCreateUser
                     }
                 }
             }
-        } 
+        }
     }
 }
