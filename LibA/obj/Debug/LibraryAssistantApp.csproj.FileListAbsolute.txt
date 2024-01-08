@@ -63,3 +63,4 @@ E:\LibraryAssistantApp\LibA\obj\Debug\LibA.exe
 E:\LibraryAssistantApp\LibA\obj\Debug\LibA.pdb
 E:\LibraryAssistantApp\LibA\obj\Debug\LibA.AdminPanel.resources
 C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Debug\LibA.AdminPanel.resources
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Debug\LibA.DynamicLinkerAndReports.resources

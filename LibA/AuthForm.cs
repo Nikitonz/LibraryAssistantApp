@@ -150,7 +150,7 @@ namespace LibA
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка подключения: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                //MessageBox.Show("Ошибка подключения: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 //textBox3.Text = "";
                 textBox4.Text = "";
                 textBox3.Focus();

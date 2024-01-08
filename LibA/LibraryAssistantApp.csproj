@@ -81,6 +81,12 @@
     </Compile>
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="DBWorker.cs" />
+    <Compile Include="DynamicLinkerAndReports.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DynamicLinkerAndReports.Designer.cs">
+      <DependentUpon>DynamicLinkerAndReports.cs</DependentUpon>
+    </Compile>
     <Compile Include="SettingsPane.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -106,6 +112,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AuthForm.resx">
       <DependentUpon>AuthForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DynamicLinkerAndReports.resx">
+      <DependentUpon>DynamicLinkerAndReports.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsPane.resx">
       <DependentUpon>SettingsPane.cs</DependentUpon>
@@ -151,6 +160,7 @@
     <Content Include="Resources\pos_logo.ico" />
     <None Include="Resources\right.bmp" />
     <None Include="Resources\search.png" />
+    <None Include="Resources\up.png" />
     <Content Include="Resources\userpic.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -88,12 +90,9 @@ namespace LibA
                     return;
                 }
             }
-            
+
             string selectedTable = Tables.Items[Tables.SelectedIndex > 0 ? Tables.SelectedIndex : 0].ToString();
             DataTable datatable = await DBWorker.GetDataTable(selectedTable);
-            
-            
-
             if (datatable != null)
             {
                 buttonRollback.Enabled = false;
@@ -103,10 +102,12 @@ namespace LibA
                 dataGridViewMain.Enabled = true;
                 dataGridViewMain.Visible = true;
                 dataGridViewMain.Columns[0].Visible = false;
+                dataGridViewMain.AutoGenerateColumns = true;
+
             }
         }
 
-        
+
 
         private void выходToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -117,31 +118,38 @@ namespace LibA
 
         private bool AreTablesEqual(DataTable table1, DataTable table2)
         {
-            if (table1 == null || table2 == null)
+            try
             {
-                return table1 == table2;
-            }
+                if (table1 == null || table2 == null)
+                {
+                    return table1 == table2;
+                }
 
-            if (table1.Rows.Count != table2.Rows.Count || table1.Columns.Count != table2.Columns.Count)
+                if (table1.Rows.Count != table2.Rows.Count || table1.Columns.Count != table2.Columns.Count)
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < table1.Rows.Count; i++)
+                {
+                    for (int j = 0; j < table1.Columns.Count; j++)
+                    {
+                        if (!object.Equals(table1.Rows[i][j], table2.Rows[i][j]))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            catch
             {
                 return false;
             }
 
-            for (int i = 0; i < table1.Rows.Count; i++)
-            {
-                for (int j = 0; j < table1.Columns.Count; j++)
-                {
-                    if (!object.Equals(table1.Rows[i][j], table2.Rows[i][j]))
-                    {
-                        return false;
-                    }
-                }
-            }
-
             return true;
         }
-       
-        
+
+
 
         private async void buttonTransact_Click(object sender, EventArgs e)
         {
@@ -152,9 +160,9 @@ namespace LibA
                 buttonRollback.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
                 MessageBox.Show("Изменения сохранены в базе данных.");
             }
-            catch(Exception er)
+            catch (Exception er)
             {
-                MessageBox.Show("Непредвиденная ошибка при обновлении данных:\n"+er.Message);
+                MessageBox.Show("Непредвиденная ошибка при обновлении данных:\n" + er.Message);
             }
         }
 
@@ -163,20 +171,21 @@ namespace LibA
             try
             {
                 dataGridViewMain.DataSource = DBWorker.OldTable;
-                
+
                 await DBWorker.BeginTransaction(DBWorker.OldTable);
                 buttonRollback.Enabled = false;
                 buttonRollback.BackColor = Color.Gray;
                 MessageBox.Show("Откат выполнен успешно");
             }
-            catch {
+            catch
+            {
                 MessageBox.Show("Ошибка отката");
             }
         }
 
 
 
-        
+
 
         private void dataGridViewMain_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
@@ -271,5 +280,98 @@ namespace LibA
         {
             this.Close();
         }
+
+        private async void статистикаИспользованияToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DynamicLinkerAndReports dln = new DynamicLinkerAndReports();
+            DataTable data = await DBWorker.GetDataTable("SELECT * FROM dbo.GetPercentageUsersByGroupAndFaculty('2020-01-01', '2024-12-31')");
+            dln.MakeData(data);
+            dln.ShowDialog();
+        }
+
+        private async void проверитьКнигиУЧитателяToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DynamicLinkerAndReports dln = new DynamicLinkerAndReports();
+            DataTable data = await DBWorker.GetDataTable("SELECT * FROM dbo.GetDebtorsReport('2020-01-01', '2024-12-31');");
+            dln.MakeData(data);
+            dln.ShowDialog();
+        }
+
+        private async void должникиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DynamicLinkerAndReports dln = new DynamicLinkerAndReports();
+            DataTable data = await DBWorker.GetDataTable("SELECT * from dbo.GetBookStatusAndDueDate(3,2)");
+            dln.MakeData(data);
+            dln.ShowDialog();
+        }
+
+        private async void перевестиГруппыНаСледующийГодToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await DBWorker.ExecProcedure("УвеличитьКурсГрупп");
+        }
+
+
+       
+
+        private async void dataGridViewMain_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+              
+                string columnName = dataGridViewMain.Columns[e.ColumnIndex].Name;
+
+             
+                if (columnName.ToLower().StartsWith("код") || columnName.ToLower().StartsWith("id"))
+                {
+
+                    int selectedRow = 0;
+                    DataTable dataTable = await GetDataForTable(columnName);
+                    using (DynamicLinkerAndReports linkerAndReports = new DynamicLinkerAndReports()) {
+                        
+                        linkerAndReports.MakeData(dataTable);
+                        linkerAndReports.ShowDialog();
+                        selectedRow = linkerAndReports.selectedRowCode;
+                    }
+                    dataGridViewMain.EndEdit();
+                    dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = selectedRow;
+                    dataGridViewMain.InvalidateCell(e.ColumnIndex, e.RowIndex);
+
+                }
+            }
+        }
+
+        
+
+
+        private async Task<DataTable> GetDataForTable(string columnName)
+        {
+            DataTable dataTable = new DataTable();
+
+          
+            string lowerColumnName = columnName.ToLower();
+
+            string[] tablesSM = await DBWorker.BdGetDataMSSQL("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' order by table_name ASC");
+            List<string> tables = new List<string>(tablesSM);
+
+            
+
+            
+
+
+
+            string matchingTableName = DBWorker.FindMatchingTableName(lowerColumnName, tables);
+
+            if (!string.IsNullOrEmpty(matchingTableName))
+            {
+                dataTable = await DBWorker.GetDataTable(matchingTableName);
+            }
+
+            return dataTable;
+        }
+
+        
+
+        
     }
 }

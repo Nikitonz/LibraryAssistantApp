@@ -33,6 +33,12 @@
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.деавторизоватьсяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.отчётыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.статистикаИспользованияToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.проверитьКнигиУЧитателяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.должникиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.операцииToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.перевестиГруппыНаСледующийГодToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Tables = new System.Windows.Forms.ListBox();
             this.dataGridViewMain = new System.Windows.Forms.DataGridView();
             this.lPane = new System.Windows.Forms.SplitContainer();
@@ -50,7 +56,9 @@
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.файлToolStripMenuItem,
-            this.settingsToolStripMenuItem});
+            this.settingsToolStripMenuItem,
+            this.отчётыToolStripMenuItem,
+            this.операцииToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
@@ -88,6 +96,52 @@
             this.settingsToolStripMenuItem.Text = "Настройки";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
+            // отчётыToolStripMenuItem
+            // 
+            this.отчётыToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.статистикаИспользованияToolStripMenuItem,
+            this.проверитьКнигиУЧитателяToolStripMenuItem,
+            this.должникиToolStripMenuItem});
+            this.отчётыToolStripMenuItem.Name = "отчётыToolStripMenuItem";
+            this.отчётыToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
+            this.отчётыToolStripMenuItem.Text = "Отчёты";
+            // 
+            // статистикаИспользованияToolStripMenuItem
+            // 
+            this.статистикаИспользованияToolStripMenuItem.Name = "статистикаИспользованияToolStripMenuItem";
+            this.статистикаИспользованияToolStripMenuItem.Size = new System.Drawing.Size(289, 26);
+            this.статистикаИспользованияToolStripMenuItem.Text = "Статистика использования";
+            this.статистикаИспользованияToolStripMenuItem.Click += new System.EventHandler(this.статистикаИспользованияToolStripMenuItem_Click);
+            // 
+            // проверитьКнигиУЧитателяToolStripMenuItem
+            // 
+            this.проверитьКнигиУЧитателяToolStripMenuItem.Name = "проверитьКнигиУЧитателяToolStripMenuItem";
+            this.проверитьКнигиУЧитателяToolStripMenuItem.Size = new System.Drawing.Size(289, 26);
+            this.проверитьКнигиУЧитателяToolStripMenuItem.Text = "Проверить книги у читателя";
+            this.проверитьКнигиУЧитателяToolStripMenuItem.Click += new System.EventHandler(this.проверитьКнигиУЧитателяToolStripMenuItem_Click);
+            // 
+            // должникиToolStripMenuItem
+            // 
+            this.должникиToolStripMenuItem.Name = "должникиToolStripMenuItem";
+            this.должникиToolStripMenuItem.Size = new System.Drawing.Size(289, 26);
+            this.должникиToolStripMenuItem.Text = "Должники";
+            this.должникиToolStripMenuItem.Click += new System.EventHandler(this.должникиToolStripMenuItem_Click);
+            // 
+            // операцииToolStripMenuItem
+            // 
+            this.операцииToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.перевестиГруппыНаСледующийГодToolStripMenuItem});
+            this.операцииToolStripMenuItem.Name = "операцииToolStripMenuItem";
+            this.операцииToolStripMenuItem.Size = new System.Drawing.Size(95, 24);
+            this.операцииToolStripMenuItem.Text = "Операции";
+            // 
+            // перевестиГруппыНаСледующийГодToolStripMenuItem
+            // 
+            this.перевестиГруппыНаСледующийГодToolStripMenuItem.Name = "перевестиГруппыНаСледующийГодToolStripMenuItem";
+            this.перевестиГруппыНаСледующийГодToolStripMenuItem.Size = new System.Drawing.Size(353, 26);
+            this.перевестиГруппыНаСледующийГодToolStripMenuItem.Text = "Перевести группы на следующий год";
+            this.перевестиГруппыНаСледующийГодToolStripMenuItem.Click += new System.EventHandler(this.перевестиГруппыНаСледующийГодToolStripMenuItem_Click);
+            // 
             // Tables
             // 
             this.Tables.Dock = System.Windows.Forms.DockStyle.Top;
@@ -108,18 +162,16 @@
             this.dataGridViewMain.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
             this.dataGridViewMain.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridViewMain.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnF2;
-            this.dataGridViewMain.ImeMode = System.Windows.Forms.ImeMode.On;
             this.dataGridViewMain.Location = new System.Drawing.Point(200, 28);
             this.dataGridViewMain.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridViewMain.Name = "dataGridViewMain";
             this.dataGridViewMain.RowHeadersWidth = 51;
             this.dataGridViewMain.RowTemplate.Height = 24;
-            this.dataGridViewMain.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dataGridViewMain.Size = new System.Drawing.Size(600, 573);
             this.dataGridViewMain.TabIndex = 14;
             this.dataGridViewMain.Visible = false;
             this.dataGridViewMain.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewMain_CellEndEdit);
+            this.dataGridViewMain.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewMain_CellMouseDoubleClick);
             // 
             // lPane
             // 
@@ -222,5 +274,11 @@
         private System.Windows.Forms.Button buttonTransact;
         private System.Windows.Forms.Button buttonRollback;
         private System.Windows.Forms.ToolStripMenuItem выходToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem отчётыToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem должникиToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem операцииToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem перевестиГруппыНаСледующийГодToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem статистикаИспользованияToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem проверитьКнигиУЧитателяToolStripMenuItem;
     }
 }

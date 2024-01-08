@@ -25,7 +25,7 @@ namespace LibA
             {
                 администрированиеToolStripMenuItem.Visible = false;
             };
-
+           
 
 
         }
@@ -219,7 +219,7 @@ namespace LibA
 
         private async void doSearch_Click(object sender, EventArgs e)
         {
-
+            
 
             using (SqlCommand command = new SqlCommand("SearchBooks", await ConnectionManager.Instance.OpenConnection()))
             {

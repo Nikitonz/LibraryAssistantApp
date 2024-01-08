@@ -51,7 +51,12 @@ namespace LibA
 
         public static async Task<DataTable> GetDataTable(string tableName)
         {
-            string commandText = $"SELECT * FROM [{tableName}]";
+            string commandText = null;
+            if (tableName.ToLower().StartsWith("select"))
+                commandText = tableName;
+            
+            else
+                commandText = $"SELECT * FROM [{tableName}]";
             try
             {
 
@@ -73,13 +78,36 @@ namespace LibA
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
                 MessageBox.Show(e.ToString());
 
             }
             return null;
 
         }
+
+        public static async Task ExecProcedure(string procname, params SqlParameter[] parameters) {
+            try
+            {
+                using (SqlCommand command = new SqlCommand(procname, await ConnectionManager.Instance.OpenConnection()))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    foreach (var parameter in parameters)
+                    {
+                        command.Parameters.Add(parameter);
+                    }
+
+                    await command.ExecuteNonQueryAsync();
+                }
+                MessageBox.Show($"Выполнение процедуры {procname} успешно");
+            }
+            catch (Exception e)
+            {
+               
+                MessageBox.Show($"Ошибка выполнения процедуры {procname}: {e.Message}");
+            }
+        }
+
         public static async Task BeginTransaction(DataGridView dgv)
         {
             DataTable dataTable = dgv.DataSource as DataTable;
@@ -205,7 +233,68 @@ namespace LibA
             return userPermissions;
         }
 
+        public static string FindMatchingTableName(string columnName, List<string> tableNames)
+        {
 
+            string matchingTableName = string.Empty;
+            double maxSimilarity = 0;
+
+            foreach (string tableName in tableNames)
+            {
+                double similarity = CalculateSimilarity(columnName, tableName.ToLower());
+                if (similarity > maxSimilarity)
+                {
+                    maxSimilarity = similarity;
+                    matchingTableName = tableName;
+                }
+            }
+
+            return matchingTableName;
+        }
+
+        private static int CalculateLevenshteinDistance(string str1, string str2)
+        {
+            int[,] matrix = new int[str1.Length + 1, str2.Length + 1];
+
+            for (int i = 0; i <= str1.Length; i++)
+            {
+                matrix[i, 0] = i;
+            }
+
+            for (int j = 0; j <= str2.Length; j++)
+            {
+                matrix[0, j] = j;
+            }
+
+            for (int i = 1; i <= str1.Length; i++)
+            {
+                for (int j = 1; j <= str2.Length; j++)
+                {
+                    int cost = (str1[i - 1] == str2[j - 1]) ? 0 : 1;
+
+                    matrix[i, j] = Math.Min(
+                        Math.Min(matrix[i - 1, j] + 1, matrix[i, j - 1] + 1),
+                        matrix[i - 1, j - 1] + cost
+                    );
+                }
+            }
+
+            return matrix[str1.Length, str2.Length];
+        }
+
+        private static double CalculateSimilarity(string str1, string str2)
+        {
+            int distance = CalculateLevenshteinDistance(str1, str2);
+            int maxLength = Math.Max(str1.Length, str2.Length);
+            if (maxLength == 0)
+            {
+                return 1.0;  // Специальный случай: две пустые строки считаются полностью схожими
+            }
+            else
+            {
+                return 1.0 - (double)distance / maxLength;
+            }
+        }
 
         public static async Task<bool> CheckUserRights(SqlConnection connection)
         {
