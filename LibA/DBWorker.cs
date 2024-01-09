@@ -48,12 +48,23 @@ namespace LibA
             }
             return result.ToArray();
         }
+        public static DataTable GetDataTable(SqlCommand command) {
+            using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+            {
 
+                DataTable dataTable = new();
+                adapter.Fill(dataTable);
+                return dataTable;
+
+            }
+
+        }
         public static async Task<DataTable> GetDataTable(string tableName)
         {
             string commandText = null;
             if (tableName.ToLower().StartsWith("select"))
                 commandText = tableName;
+            
             
             else
                 commandText = $"SELECT * FROM [{tableName}]";
@@ -233,19 +244,22 @@ namespace LibA
             return userPermissions;
         }
 
-        public static string FindMatchingTableName(string columnName, List<string> tableNames)
+        public static string FindMatchingTableName(string columnName, List<string> tableNames, string selectedTableName)
         {
-
             string matchingTableName = string.Empty;
             double maxSimilarity = 0;
 
             foreach (string tableName in tableNames)
             {
-                double similarity = CalculateSimilarity(columnName, tableName.ToLower());
-                if (similarity > maxSimilarity)
+                // Проверяем, что текущая таблица не совпадает с выбранной таблицей
+                if (!tableName.Equals(selectedTableName, StringComparison.OrdinalIgnoreCase))
                 {
-                    maxSimilarity = similarity;
-                    matchingTableName = tableName;
+                    double similarity = CalculateSimilarity(columnName, tableName.ToLower());
+                    if (similarity > maxSimilarity)
+                    {
+                        maxSimilarity = similarity;
+                        matchingTableName = tableName;
+                    }
                 }
             }
 

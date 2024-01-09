@@ -39,6 +39,7 @@
             this.должникиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.операцииToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.перевестиГруппыНаСледующийГодToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.загрузкаПервокурсниковToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Tables = new System.Windows.Forms.ListBox();
             this.dataGridViewMain = new System.Windows.Forms.DataGridView();
             this.lPane = new System.Windows.Forms.SplitContainer();
@@ -72,7 +73,7 @@
             this.выходToolStripMenuItem,
             this.деавторизоватьсяToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // выходToolStripMenuItem
@@ -92,7 +93,7 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 24);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 26);
             this.settingsToolStripMenuItem.Text = "Настройки";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -103,7 +104,7 @@
             this.проверитьКнигиУЧитателяToolStripMenuItem,
             this.должникиToolStripMenuItem});
             this.отчётыToolStripMenuItem.Name = "отчётыToolStripMenuItem";
-            this.отчётыToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
+            this.отчётыToolStripMenuItem.Size = new System.Drawing.Size(73, 26);
             this.отчётыToolStripMenuItem.Text = "Отчёты";
             // 
             // статистикаИспользованияToolStripMenuItem
@@ -130,9 +131,10 @@
             // операцииToolStripMenuItem
             // 
             this.операцииToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.перевестиГруппыНаСледующийГодToolStripMenuItem});
+            this.перевестиГруппыНаСледующийГодToolStripMenuItem,
+            this.загрузкаПервокурсниковToolStripMenuItem});
             this.операцииToolStripMenuItem.Name = "операцииToolStripMenuItem";
-            this.операцииToolStripMenuItem.Size = new System.Drawing.Size(95, 24);
+            this.операцииToolStripMenuItem.Size = new System.Drawing.Size(95, 26);
             this.операцииToolStripMenuItem.Text = "Операции";
             // 
             // перевестиГруппыНаСледующийГодToolStripMenuItem
@@ -141,6 +143,13 @@
             this.перевестиГруппыНаСледующийГодToolStripMenuItem.Size = new System.Drawing.Size(353, 26);
             this.перевестиГруппыНаСледующийГодToolStripMenuItem.Text = "Перевести группы на следующий год";
             this.перевестиГруппыНаСледующийГодToolStripMenuItem.Click += new System.EventHandler(this.перевестиГруппыНаСледующийГодToolStripMenuItem_Click);
+            // 
+            // загрузкаПервокурсниковToolStripMenuItem
+            // 
+            this.загрузкаПервокурсниковToolStripMenuItem.Name = "загрузкаПервокурсниковToolStripMenuItem";
+            this.загрузкаПервокурсниковToolStripMenuItem.Size = new System.Drawing.Size(353, 26);
+            this.загрузкаПервокурсниковToolStripMenuItem.Text = "Загрузка первокурсников";
+            this.загрузкаПервокурсниковToolStripMenuItem.Click += new System.EventHandler(this.загрузкаПервокурсниковToolStripMenuItem_Click);
             // 
             // Tables
             // 
@@ -280,5 +289,6 @@
         private System.Windows.Forms.ToolStripMenuItem перевестиГруппыНаСледующийГодToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem статистикаИспользованияToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem проверитьКнигиУЧитателяToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem загрузкаПервокурсниковToolStripMenuItem;
     }
 }

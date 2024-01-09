@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -281,28 +282,44 @@ namespace LibA
             this.Close();
         }
 
-        private async void статистикаИспользованияToolStripMenuItem_Click(object sender, EventArgs e)
+        private void статистикаИспользованияToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DynamicLinkerAndReports dln = new DynamicLinkerAndReports();
-            DataTable data = await DBWorker.GetDataTable("SELECT * FROM dbo.GetPercentageUsersByGroupAndFaculty('2020-01-01', '2024-12-31')");
-            dln.MakeData(data);
+            dln.MakeData("SELECT * FROM dbo.GetPercentageUsersByGroupAndFaculty(@startdate, @enddate)");
             dln.ShowDialog();
         }
 
-        private async void проверитьКнигиУЧитателяToolStripMenuItem_Click(object sender, EventArgs e)
+        private void проверитьКнигиУЧитателяToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DynamicLinkerAndReports dln = new DynamicLinkerAndReports();
-            DataTable data = await DBWorker.GetDataTable("SELECT * FROM dbo.GetDebtorsReport('2020-01-01', '2024-12-31');");
-            dln.MakeData(data);
+
+            dln.MakeData("SELECT * FROM dbo.GetDebtorsReport(@startdate, @enddate)");
             dln.ShowDialog();
         }
 
         private async void должникиToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DynamicLinkerAndReports dln = new DynamicLinkerAndReports();
-            DataTable data = await DBWorker.GetDataTable("SELECT * from dbo.GetBookStatusAndDueDate(3,2)");
-            dln.MakeData(data);
-            dln.ShowDialog();
+            try
+            {
+                int selectedRow = 0;
+                using (DynamicLinkerAndReports dln = new DynamicLinkerAndReports())
+                {
+
+                    DataTable data = await DBWorker.GetDataTable("SELECT * from Читатель");
+                    dln.MakeData(data);
+                    dln.ShowDialog();
+                    selectedRow = dln.selectedRowCode;
+                }
+                if (selectedRow == 0)
+                    return;
+                using (DynamicLinkerAndReports dln = new DynamicLinkerAndReports())
+                {
+                    DataTable data = await DBWorker.GetDataTable($"select * from dbo.GetBookStatusAndDueDate({selectedRow})");
+                    dln.MakeData(data);
+                    dln.ShowDialog();
+                }
+            }
+            catch { }
         }
 
         private async void перевестиГруппыНаСледующийГодToolStripMenuItem_Click(object sender, EventArgs e)
@@ -311,56 +328,60 @@ namespace LibA
         }
 
 
-       
+
 
         private async void dataGridViewMain_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            
+            string tableName = null;
+            if (dataGridViewMain.DataSource is DataTable dataTable1)
+            {
+                tableName = dataTable1.TableName;
+            }
+
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-              
+
                 string columnName = dataGridViewMain.Columns[e.ColumnIndex].Name;
 
-             
+
                 if (columnName.ToLower().StartsWith("код") || columnName.ToLower().StartsWith("id"))
                 {
 
                     int selectedRow = 0;
-                    DataTable dataTable = await GetDataForTable(columnName);
-                    using (DynamicLinkerAndReports linkerAndReports = new DynamicLinkerAndReports()) {
-                        
+
+                    DataTable dataTable = await GetDataForTable(columnName, tableName);
+                    using (DynamicLinkerAndReports linkerAndReports = new DynamicLinkerAndReports())
+                    {
+
                         linkerAndReports.MakeData(dataTable);
                         linkerAndReports.ShowDialog();
-                        selectedRow = linkerAndReports.selectedRowCode;
-                    }
-                    dataGridViewMain.EndEdit();
-                    dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = selectedRow;
-                    dataGridViewMain.InvalidateCell(e.ColumnIndex, e.RowIndex);
 
+                        selectedRow = linkerAndReports.selectedRowCode;
+
+                    }
+                    if (selectedRow != 0)
+                    {
+                        dataGridViewMain.EndEdit();
+                        dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = selectedRow;
+                        dataGridViewMain.InvalidateCell(e.ColumnIndex, e.RowIndex);
+                    }
                 }
             }
         }
 
-        
 
 
-        private async Task<DataTable> GetDataForTable(string columnName)
+
+        private async Task<DataTable> GetDataForTable(string columnName, string selectedTable)
         {
             DataTable dataTable = new DataTable();
-
-          
             string lowerColumnName = columnName.ToLower();
 
             string[] tablesSM = await DBWorker.BdGetDataMSSQL("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' order by table_name ASC");
             List<string> tables = new List<string>(tablesSM);
 
-            
 
-            
-
-
-
-            string matchingTableName = DBWorker.FindMatchingTableName(lowerColumnName, tables);
+            string matchingTableName = DBWorker.FindMatchingTableName(lowerColumnName, tables, selectedTable);
 
             if (!string.IsNullOrEmpty(matchingTableName))
             {
@@ -370,8 +391,145 @@ namespace LibA
             return dataTable;
         }
 
-        
+        private async void загрузкаПервокурсниковToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.InitialDirectory = "desktop";
+            openFileDialog.Filter = "CSV|*.csv|txt|*.txt|CSV или TXT|*.*";
+            openFileDialog.Title = "Открытие файла...";
 
-        
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                
+                string selectedFileName = openFileDialog.FileName;
+
+                using (StreamReader reader = new StreamReader(selectedFileName))
+                {
+                    bool firstLine = true;
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine().Split(';');
+                        if (firstLine)
+                        {
+
+                            firstLine = false;
+                            continue;
+                        }
+
+                        var f = line[1];
+                        var i = line[2];
+                        var o = line[3];
+                        var date = DateTime.ParseExact(line[4], "dd.MM.yyyy", CultureInfo.InvariantCulture);
+                        var number = line[5];
+                        var adress = line[6];
+                        var passport = line[7];
+                        var readerId = line[8];
+                        var gName = line[9];
+                        var login = line[10];
+
+                        string checkReaderQuery = $"Select 1 Where Exists (Select 1 From Читатель Where Фамилия = '{f}' and Имя = '{i}' and Отчество = '{o}')";
+                        string insertReaderQuery = $"INSERT INTO Читатель VALUES (@Фамилия, @Имя, @Отчество, @Дата_рождения, @Контактный_номер, @Адрес_проживания, @Данные_паспорта, @Номер_читательского_билета, @Код_группы, @Имя_для_входа)";
+                        string updateReaderQuery = $"UPDATE Читатель SET [Фамилия] = @Фамилия, [Имя] = @Имя, [Отчество] = @Отчество, [Дата рождения]=@Дата_рождения, [Контактный номер]=@Контактный_номер, [Адрес проживания]=@Адрес_проживания,[Данные паспорта]=@Данные_паспорта,[Номер читательского билета]=@Номер_читательского_билета,[Код группы]=@Код_группы,[Имя для входа] = @Имя_для_входа where [Фамилия] = @Фамилия AND [Имя] = @Имя AND [Отчество] = @Отчество";
+
+
+                        using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
+                        {
+
+
+                            using (SqlCommand checkReaderCommand = new SqlCommand(checkReaderQuery, connection))
+                            {
+
+
+
+                                
+                                object result = checkReaderCommand.ExecuteScalar();
+                                int readerCount = result == null ? 0 : (int)result;
+                                int groupId = GetOrCreateGroup(connection, gName);
+                                if ((int)readerCount == 0)
+                                {
+
+
+                                    using (SqlCommand insertCommand = new SqlCommand(insertReaderQuery, connection))
+                                    {
+                                        insertCommand.Parameters.AddWithValue("@Фамилия", f);
+                                        insertCommand.Parameters.AddWithValue("@Имя", i);
+                                        insertCommand.Parameters.AddWithValue("@Отчество", o);
+                                        insertCommand.Parameters.AddWithValue("@Дата_рождения", date);
+                                        insertCommand.Parameters.AddWithValue("@Контактный_номер", number);
+                                        insertCommand.Parameters.AddWithValue("@Адрес_проживания", adress);
+                                        insertCommand.Parameters.AddWithValue("@Данные_паспорта", passport);
+                                        insertCommand.Parameters.AddWithValue("@Номер_читательского_билета", readerId);
+                                        insertCommand.Parameters.AddWithValue("@Код_группы", groupId);
+                                        insertCommand.Parameters.AddWithValue("@Имя_для_входа", login);
+                                        insertCommand.ExecuteNonQuery();
+                                    }
+
+                                }
+                                else
+                                {
+
+                                    DialogResult updateResult = MessageBox.Show($"Читатель {f} {i} {o} уже существует. Обновить информацию?\n\nВнимание, это удалит сущетсвующего пользователя!", "Обновление читателя", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                                    if (updateResult == DialogResult.Yes)
+                                    {
+                                        using (SqlCommand updateCommand = new SqlCommand(updateReaderQuery, connection))
+                                        {
+                                            updateCommand.Parameters.AddWithValue("@Фамилия", f);
+                                            updateCommand.Parameters.AddWithValue("@Имя", i);
+                                            updateCommand.Parameters.AddWithValue("@Отчество", o);
+                                            updateCommand.Parameters.AddWithValue("@Дата_рождения", date);
+                                            updateCommand.Parameters.AddWithValue("@Контактный_номер", number);
+                                            updateCommand.Parameters.AddWithValue("@Адрес_проживания", adress);
+                                            updateCommand.Parameters.AddWithValue("@Данные_паспорта", passport);
+                                            updateCommand.Parameters.AddWithValue("@Номер_читательского_билета", readerId);
+                                            updateCommand.Parameters.AddWithValue("@Код_группы", groupId);
+                                            updateCommand.Parameters.AddWithValue("@Имя_для_входа", login);
+                                            updateCommand.ExecuteNonQuery();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+
+                    }
+                }
+            }
+            MessageBox.Show("Данные успешно обработаны и добавлены в базу данных.", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        private int GetOrCreateGroup(SqlConnection connection, string groupName)
+        {
+
+            string selectGroupQuery = "SELECT Код FROM Группа WHERE Название = @GroupName AND Курс = 1";
+
+            using (SqlCommand selectGroupCommand = new SqlCommand(selectGroupQuery, connection))
+            {
+                selectGroupCommand.Parameters.AddWithValue("@GroupName", groupName);
+
+                object result = selectGroupCommand.ExecuteScalar();
+                if (result != null)
+                {
+
+                    return (int)result;
+                }
+                else
+                {
+                    string insertGroupQuery = "INSERT INTO Группа (Название, Курс, [Последний курс], [Код факультета]) VALUES (@GroupName, 1, 2, NULL); SELECT SCOPE_IDENTITY();";
+
+                    using (SqlCommand insertGroupCommand = new SqlCommand(insertGroupQuery, connection))
+                    {
+                        insertGroupCommand.Parameters.AddWithValue("@GroupName", groupName);
+
+
+                        return Convert.ToInt32(insertGroupCommand.ExecuteScalar());
+                    }
+                }
+            }
+        }
     }
+
+
+
 }
+
+
