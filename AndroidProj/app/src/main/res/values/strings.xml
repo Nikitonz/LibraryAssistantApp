@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">LibraryViewAndroidApp</string>
+
+    <string name="action_settings">Настройки</string>
+    <string name="menu_home">Домой</string>
+    <string name="menu_about">О программе</string>
+<string name="read_more">Подробнее...</string>
+    <string name="welcome_search">🔍 Начните вводить что-нибудь...</string>
+    <string name="popularTextView">Актуально:</string>
+</resources>

@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/book_item_background"
+    android:gravity="center_vertical"
+    android:padding="3pt"
+    android:layout_margin="1pt">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:text="название" />
+
+    <ImageView
+        android:id="@+id/coverImageView"
+        android:layout_width="match_parent"
+        android:layout_height="165dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_launcher_background" />
+
+    <TextView
+        android:id="@+id/authorTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:text="Автор" />
+
+    <TextView
+        android:id="@+id/yearIzdTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:text="Год выпуска, Издатель" />
+
+    <Button
+        android:id="@+id/bReadMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+
+        android:checkable="false"
+        android:clickable="true"
+        android:text="@string/read_more"
+        android:textSize="10sp" />
+
+</LinearLayout>
