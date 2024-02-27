@@ -16,17 +16,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nikitonz.libraryviewandroidapp.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
     private List<Book> bookList;
-    private List<Book> filteredList;
     private Context context;
 
     public BookAdapter(List<Book> bookList, Context context) {
         this.bookList = bookList;
-        this.filteredList = new ArrayList<>(bookList);
         this.context = context;
     }
 
@@ -39,32 +36,29 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
-        Book book = filteredList.get(position);
+        Book book = bookList.get(position);
         holder.titleTextView.setText(book.getTitle());
         holder.coverImageView.setImageResource(book.getCover());
         holder.authorTextView.setText(book.getAuthor());
         holder.yearIzdTextView.setText(String.valueOf(book.getYear() + ", " + book.getPublisher()));
 
         holder.readMoreButton.setOnClickListener(v -> {
-            TextView popularTextView = ((Activity) context).findViewById(R.id.populartextView);
-            if (popularTextView != null) {
-                popularTextView.setVisibility(popularTextView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-            } else {
-                Toast.makeText(context, "TextView not found", Toast.LENGTH_SHORT).show();
-            }
+
 
             Intent intent = new Intent(context, BookDetailActivity.class);
-            intent.putExtra("book_title", book.getTitle());
-            intent.putExtra("book_author", book.getAuthor());
-            intent.putExtra("book_year", book.getYear());
-
+            //intent.putExtra();
             context.startActivity(intent);
         });
     }
 
     @Override
     public int getItemCount() {
-        return filteredList.size();
+        return bookList.size();
+    }
+
+    public void setBooks(List<Book> books) {
+        this.bookList = books;
+        notifyDataSetChanged();
     }
 
     static class BookViewHolder extends RecyclerView.ViewHolder {
@@ -82,15 +76,5 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
             yearIzdTextView = itemView.findViewById(R.id.yearIzdTextView);
             readMoreButton = itemView.findViewById(R.id.bReadMore);
         }
-    }
-
-    public void filterList(List<Book> filteredBooks) {
-        filteredList.clear();
-        if (filteredBooks.isEmpty()) {
-            filteredList.addAll(bookList);
-        } else {
-            filteredList.addAll(filteredBooks);
-        }
-        notifyDataSetChanged();
     }
 }

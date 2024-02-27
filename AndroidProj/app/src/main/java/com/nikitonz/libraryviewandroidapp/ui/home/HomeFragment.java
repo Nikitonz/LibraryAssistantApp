@@ -19,12 +19,12 @@ import com.nikitonz.libraryviewandroidapp.BookMgr.BookAdapter;
 import com.nikitonz.libraryviewandroidapp.BookMgr.DatabaseMgr;
 import com.nikitonz.libraryviewandroidapp.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
     private RecyclerView recyclerViewBooks;
     private EditText searchEditText;
+    private TextView popularTextView;
     private BookAdapter bookAdapter;
     private List<Book> allBooks;
 
@@ -34,40 +34,25 @@ public class HomeFragment extends Fragment {
 
         recyclerViewBooks = root.findViewById(R.id.recyclerViewBooks);
         searchEditText = root.findViewById(R.id.searchEditText);
+        popularTextView = root.findViewById(R.id.popularTextView);
 
         recyclerViewBooks.setLayoutManager(new GridLayoutManager(getContext(), 2));
         DatabaseMgr db = new DatabaseMgr(getContext());
-        allBooks = db.getAllBooks();
+        allBooks = db.getBooks();
+
         bookAdapter = new BookAdapter(allBooks, getContext());
         recyclerViewBooks.setAdapter(bookAdapter);
 
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
             @Override
             public void afterTextChanged(Editable s) {
-                String searchText = s.toString().toLowerCase().trim();
-                filterBooks(searchText);
-
-                // Проверяем, пуст ли поисковый запрос
-                if (searchText.isEmpty()) {
-                    TextView popularTextView = getActivity().findViewById(R.id.populartextView);
-                    if (popularTextView != null) {
-                        popularTextView.setVisibility(View.VISIBLE);
-                    }
-                } else {
-
-                    TextView popularTextView = getActivity().findViewById(R.id.populartextView);
-                    if (popularTextView != null) {
-                        popularTextView.setVisibility(View.GONE);
-                    }
-                }
+                filterBooks(s.toString());
             }
         });
 
@@ -75,15 +60,13 @@ public class HomeFragment extends Fragment {
     }
 
     private void filterBooks(String searchText) {
-        List<Book> filteredBooks = new ArrayList<>();
-        for (Book book : allBooks) {
-            if (book.getTitle().toLowerCase().contains(searchText.toLowerCase()) ||
-                    book.getAuthor().toLowerCase().contains(searchText.toLowerCase()) ||
-                    book.getPublisher().toLowerCase().contains(searchText.toLowerCase()) ||
-                    String.valueOf(book.getYear()).contains(searchText)) {
-                filteredBooks.add(book);
-            }
+        if (searchText.isEmpty()) {
+            popularTextView.setVisibility(View.VISIBLE);
+            allBooks = new DatabaseMgr(getContext()).getBooks();
+        } else {
+            popularTextView.setVisibility(View.GONE);
+            allBooks = new DatabaseMgr(getContext()).getBooks(searchText);
         }
-        bookAdapter.filterList(filteredBooks);
+        bookAdapter.setBooks(allBooks);
     }
 }
