@@ -1,5 +1,6 @@
 package com.nikitonz.libraryviewandroidapp.BookMgr;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -11,24 +12,24 @@ import com.nikitonz.libraryviewandroidapp.R;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class DatabaseMgr {
     private static final String DATABASE_NAME = "books.db";
     private static final int DATABASE_VERSION = 1;
 
     private static final String TABLE_NAME = "books";
-    private static final List<String> COLUMNS = new ArrayList<>();
-
-    static {
-        COLUMNS.add("title TEXT");
-        COLUMNS.add("author TEXT");
-        COLUMNS.add("genre TEXT");
-        COLUMNS.add("publisher TEXT");
-        COLUMNS.add("year INTEGER");
-        COLUMNS.add("pagecount INTEGER");
-        COLUMNS.add("language TEXT");
-        COLUMNS.add("cover INTEGER");
-        COLUMNS.add("available INTEGER");
-    }
+    private static final List<String> COLUMNS = new ArrayList<String>() {{
+        add("[Название книги] TEXT");
+        add("[Автор] TEXT");
+        add("[Жанр] TEXT");
+        add("[Издательство] TEXT");
+        add("[Год выпуска] INTEGER");
+        add("[Число страниц] INTEGER");
+        add("[Язык книги] TEXT");
+        add("[Обложка] INTEGER");
+        add("'Доступность' INTEGER");
+    }};
 
     private SQLiteDatabase database;
 
@@ -39,6 +40,7 @@ public class DatabaseMgr {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
+
             StringBuilder createTableQuery = new StringBuilder("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (");
             for (int i = 0; i < COLUMNS.size(); i++) {
                 createTableQuery.append(COLUMNS.get(i));
@@ -56,7 +58,6 @@ public class DatabaseMgr {
                 int count = cursor.getInt(0);
                 cursor.close();
 
-
                 if (count == 0) {
                     addSampleBooks(db);
                 }
@@ -66,26 +67,35 @@ public class DatabaseMgr {
         private void addSampleBooks(SQLiteDatabase db) {
             for (int i = 1; i <= 5; i++) {
                 ContentValues values = new ContentValues();
-                values.put("title", "Book " + i);
-                values.put("author", "Author " + i);
-                values.put("genre", "Genre " + i);
-                values.put("publisher", "Publisher " + i);
-                values.put("year", 2022 + i); // Пример года
-                values.put("pagecount", 200 + i * 50); // Пример числа страниц
-                values.put("language", "English"); // Пример языка
-                values.put("cover", R.drawable.ic_launcher_background); // Пример обложки
-                values.put("available", 1); // Пример доступности
-
+                values.put("[Название книги]", "Книга " + i);
+                values.put("[Автор]", "Автор " + i);
+                values.put("[Жанр]", "Жанр " + i);
+                values.put("[Издательство]", "Издательство " + i);
+                values.put("[Год выпуска]", 2022 + i);
+                values.put("[Число страниц]", 200 + i * 50);
+                values.put("[Язык книги]", "Английский");
+                values.put("[Обложка]", R.drawable.ic_launcher_background);
+                values.put("[Доступность]", 1);
                 db.insert(TABLE_NAME, null, values);
+
             }
+            ContentValues values = new ContentValues();
+            values.put("[Название книги]", "Книга ");
+            values.put("[Автор]", "Автор ");
+            values.put("[Жанр]", "Жанр ");
+            values.put("[Издательство]", "Издательство ");
+            values.put("[Год выпуска]", 2022);
+            values.put("[Число страниц]", 1);
+            values.put("[Язык книги]", "Английский");
+
+            values.put("[Доступность]", 1);
+            db.insert(TABLE_NAME, null, values);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
         }
-
-
     }
 
     public DatabaseMgr(Context context) {
@@ -95,15 +105,15 @@ public class DatabaseMgr {
 
     public void addBook(Book book) {
         ContentValues values = new ContentValues();
-        values.put("title", book.getTitle());
-        values.put("author", book.getAuthor());
-        values.put("genre", book.getGenre());
-        values.put("publisher", book.getPublisher());
-        values.put("year", book.getYear());
-        values.put("pagecount", book.getPageCount());
-        values.put("language", book.getLanguage());
-        values.put("cover", book.getCover());
-        values.put("available", book.isAvailable() ? 1 : 0);
+        values.put("[Название книги]", book.getTitle());
+        values.put("[Автор]", book.getAuthor());
+        values.put("[Жанр]", book.getGenre());
+        values.put("[Издательство]", book.getPublisher());
+        values.put("[Год выпуска]", book.getYear());
+        values.put("[Число страниц]", book.getPageCount());
+        values.put("[Язык книги]", book.getLanguage());
+        values.put("[Обложка]", book.getCover());
+        values.put("[Доступность]", book.isAvailable() ? 1 : 0);
         database.insert(TABLE_NAME, null, values);
     }
 
@@ -112,38 +122,23 @@ public class DatabaseMgr {
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME, null);
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                int titleIndex = cursor.getColumnIndex("title");
-                int authorIndex = cursor.getColumnIndex("author");
-                int genreIndex = cursor.getColumnIndex("genre");
-                int publisherIndex = cursor.getColumnIndex("publisher");
-                int yearIndex = cursor.getColumnIndex("year");
-                int pageCountIndex = cursor.getColumnIndex("pagecount");
-                int languageIndex = cursor.getColumnIndex("language");
-                int availableIndex = cursor.getColumnIndex("available");
-                int coverIndex = cursor.getColumnIndex("cover");
+                @SuppressLint("Range") String title = cursor.getString(cursor.getColumnIndex("Название книги"));
+                @SuppressLint("Range") String author = cursor.getString(cursor.getColumnIndex("Автор"));
+                @SuppressLint("Range") String genre = cursor.getString(cursor.getColumnIndex("Жанр"));
+                @SuppressLint("Range") String publisher = cursor.getString(cursor.getColumnIndex("Издательство"));
+                @SuppressLint("Range") int year = cursor.getInt(cursor.getColumnIndex("Год выпуска"));
+                @SuppressLint("Range") int pageCount = cursor.getInt(cursor.getColumnIndex("Число страниц"));
+                @SuppressLint("Range") String language = cursor.getString(cursor.getColumnIndex("Язык книги"));
+                @SuppressLint("Range") int available = cursor.getInt(cursor.getColumnIndex("Доступность"));
+                @SuppressLint("Range") int cover = cursor.getInt(cursor.getColumnIndex("Обложка"));
 
-                if (titleIndex != -1 && authorIndex != -1 && genreIndex != -1 && publisherIndex != -1 &&
-                        yearIndex != -1 && pageCountIndex != -1 && languageIndex != -1 &&
-                        availableIndex != -1 && coverIndex != -1) {
-
-                    String title = cursor.getString(titleIndex);
-                    String author = cursor.getString(authorIndex);
-                    String genre = cursor.getString(genreIndex);
-                    String publisher = cursor.getString(publisherIndex);
-                    int year = cursor.getInt(yearIndex);
-                    int pageCount = cursor.getInt(pageCountIndex);
-                    String language = cursor.getString(languageIndex);
-                    boolean available = cursor.getInt(availableIndex) == 1;
-                    int cover = cursor.getInt(coverIndex);
-
-                    Book book = new Book(title, author, genre, publisher, year, pageCount, language, available, cover);
-                    bookList.add(book);
-                }
+                Book book = new Book(title != null ? title : "", author != null ? author : "", genre != null ? genre : "",
+                        publisher != null ? publisher : "", year != -1 ? year : 0, pageCount != -1 ? pageCount : 0,
+                        language != null ? language : "", available != -1 ? available == 1 : false, cover != -1 ? cover : 0);
+                bookList.add(book);
             } while (cursor.moveToNext());
             cursor.close();
         }
         return bookList;
     }
-
-    // Другие методы для работы с базой данных
 }
