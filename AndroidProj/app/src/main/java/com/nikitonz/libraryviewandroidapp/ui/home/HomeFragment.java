@@ -27,6 +27,7 @@ public class HomeFragment extends Fragment {
     private TextView popularTextView;
     private BookAdapter bookAdapter;
     private List<Book> allBooks;
+    private DatabaseMgr db;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -37,9 +38,9 @@ public class HomeFragment extends Fragment {
         popularTextView = root.findViewById(R.id.popularTextView);
 
         recyclerViewBooks.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        DatabaseMgr db = new DatabaseMgr(getContext());
-        allBooks = db.getBooks();
+        db = new DatabaseMgr(getContext());
 
+        allBooks = db.getBooks();
         bookAdapter = new BookAdapter(allBooks, getContext());
         recyclerViewBooks.setAdapter(bookAdapter);
 
@@ -62,10 +63,10 @@ public class HomeFragment extends Fragment {
     private void filterBooks(String searchText) {
         if (searchText.isEmpty()) {
             popularTextView.setVisibility(View.VISIBLE);
-            allBooks = new DatabaseMgr(getContext()).getBooks();
+            allBooks = db.getBooks();
         } else {
             popularTextView.setVisibility(View.GONE);
-            allBooks = new DatabaseMgr(getContext()).getBooks(searchText);
+            allBooks = db.getBooks(searchText);
         }
         bookAdapter.setBooks(allBooks);
     }

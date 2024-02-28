@@ -1,35 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".BookMgr.BookDetailActivity">
+    android:layout_height="wrap_content"
+    android:layout_margin="1pt"
+    android:background="@drawable/book_item_background"
+    android:gravity="center_vertical"
+    android:padding="3pt">
 
     <TextView
         android:id="@+id/titleTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_below="@id/coverImageView"
+        android:ellipsize="end"
+
+        android:maxLines="2"
+        android:text="название"
+        android:textAlignment="viewStart"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/coverImageView"
+        android:layout_width="393dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="10dp"
+         />
 
     <TextView
         android:id="@+id/authorTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_below="@id/titleTextView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"/>
+        android:layout_below="@id/genreTextView"
+        android:ellipsize="end"
+
+        android:maxLines="2"
+        android:text="Автор"
+        android:textAlignment="viewStart"
+        android:textStyle="italic" />
 
     <TextView
-        android:id="@+id/yearTextView"
-        android:layout_width="wrap_content"
+        android:id="@+id/yearIzdTextView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
         android:layout_below="@id/authorTextView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"/>
+        android:ellipsize="end"
+
+        android:maxLines="2"
+        android:text="Год выпуска, Издатель"
+        android:textAlignment="viewStart"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/descriptionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/langPageCounttextView"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="7dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:scrollbars="vertical"
+        android:text="Подробное описание книги"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/genreTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleTextView"
+        android:text="Жанр" />
+
+    <TextView
+        android:id="@+id/langPageCounttextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/yearIzdTextView"
+        android:text="Язык и число страниц" />
+
 </RelativeLayout>

@@ -1,6 +1,5 @@
 package com.nikitonz.libraryviewandroidapp.BookMgr;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -9,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,11 +41,23 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         holder.yearIzdTextView.setText(String.valueOf(book.getYear() + ", " + book.getPublisher()));
 
         holder.readMoreButton.setOnClickListener(v -> {
+            try {
+                Intent intent = new Intent(context, BookDetailActivity.class);
+                intent.putExtra("title", book.getTitle());
+                intent.putExtra("author", book.getAuthor());
+                intent.putExtra("genre", book.getGenre());
+                intent.putExtra("publisher", book.getPublisher());
+                intent.putExtra("year", String.valueOf(book.getYear())); // Преобразуйте int в String
+                intent.putExtra("pageCount", String.valueOf(book.getPageCount())); // Преобразуйте int в String
+                intent.putExtra("language", book.getLanguage());
+                intent.putExtra("available", book.isAvailable());
+                intent.putExtra("cover", book.getCover());
+                intent.putExtra("description", book.getDescription());
+                context.startActivity(intent);
 
+            }
+            catch (Exception e){}
 
-            Intent intent = new Intent(context, BookDetailActivity.class);
-            //intent.putExtra();
-            context.startActivity(intent);
         });
     }
 

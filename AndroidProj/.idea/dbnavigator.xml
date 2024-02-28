@@ -50,9 +50,12 @@
   <component name="DBNavigator.Project.DatasetFilterManager">
     <filter-actions connection-id="a53295fc-32bd-431c-8ce1-8812fbaad470" dataset="main.books" active-filter-id="c1f004e8-8a1d-4fd9-8831-e829535a5e93">
       <filter id="c1f004e8-8a1d-4fd9-8831-e829535a5e93" name="Filter" temporary="false" custom-name="false" type="custom">
-        <condition><![CDATA[1]]></condition>
+        <condition>1</condition>
       </filter>
     </filter-actions>
+  </component>
+  <component name="DBNavigator.Project.ExecutionManager">
+    <retain-sticky-names value="false" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />

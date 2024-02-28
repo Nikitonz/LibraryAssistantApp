@@ -5,18 +5,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 import com.nikitonz.libraryviewandroidapp.R;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseMgr {
-    private static final String DATABASE_NAME = "books.db";
-    private static final int DATABASE_VERSION = 1;
-    private static final String TABLE_NAME = "books";
-
-    private SQLiteDatabase database;
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
         DatabaseHelper(Context context) {
@@ -46,15 +47,35 @@ public class DatabaseMgr {
             onCreate(db);
         }
     }
+    private static final String DATABASE_NAME = "books.db";
+    private static final int DATABASE_VERSION = 1;
+    private static final String TABLE_NAME = "books";
+
+    private SQLiteDatabase database;
+    private Connection connection;
 
     public DatabaseMgr(Context context) {
         DatabaseHelper dbHelper = new DatabaseHelper(context);
         database = dbHelper.getWritableDatabase();
+        connectToRemoteDatabase(context.getApplicationContext());
 
         if (isEmpty()) {
             addSampleBooks();
         }
+
+
+
+        if (connection != null) {
+            synchronizeLocalDatabaseWithRemote();
+        }
     }
+
+
+
+
+
+
+
 
     private boolean isEmpty() {
         Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME, null);
@@ -77,10 +98,10 @@ public class DatabaseMgr {
             values.put("[Год выпуска]", 2022 + i);
             values.put("[Число страниц]", 200 + i * 50);
             values.put("[Язык книги]", "Английский");
-            values.put("[Обложка]", 0); // Устанавливаем обложку в 0
-            values.put("Доступность", 1); // Устанавливаем доступность
+            values.put("[Обложка]", 0);
+            values.put("Доступность", 1);
             values.put("[Краткое описание]", "Описание книги " + i);
-            values.put("[Как часто брали]", i); // Начальное значение популярности
+            values.put("[Как часто брали]", i);
             database.insert(TABLE_NAME, null, values);
         }
 
@@ -94,26 +115,12 @@ public class DatabaseMgr {
         values.put("[Язык книги]", "Английский");
         values.put("[Обложка]", R.drawable.ic_launcher_background);
         values.put("Доступность", 1);
-        values.put("[Краткое описание]", "Описание книги kj;w;ng;wjergn;wjingf;iwrkejgbn;elirkqjgbn;leirksjbg;qlerikgbqe;lrgjbuneiqar;lgberl;igbnaqe;lrigbujknerq;ilkgujbnei;rlgujbne;rilujgbn;eqarigbneirslgbulnareilgauberligubaerlgaikjuwbergl;ijurebgla;qjkusrewbg lerugbjli;ergubreu ipu gwiubhgiwuebgpwiubgiubg ui bgiuwbgpiuebwrgqpiebugniwrsuebgr");
+        values.put("[Краткое описание]", "Описание книги kj;w;ng;wjueацуоатцутуошатцуаз ташзщ   уоцагшщзитуй2   ашщзг аш и  гшаруашщ груашгщ    шщагрцу ашгрцуашгцура шгур шщгцуарш щгцура шгцурацушгарцушагрцуагцр ацшгур ацшуг ацуршгар цугарц ушгарцугшарцушгарцшугарцушгарцушгарцуша цугар цугша цруагш цруагшцур ацугшар цущгшарцущгшарцущшгар цущшагцурщагцур ашгцуа цушагрцушагцруашщцуращшцурацщшугарцушгарцшугарцшугарцушгарцушга gr");
         values.put("[Как часто брали]", 0);
         database.insert(TABLE_NAME, null, values);
     }
 
-    public void addBook(Book book) {
-        ContentValues values = new ContentValues();
-        values.put("[Название книги]", book.getTitle());
-        values.put("[Автор]", book.getAuthor());
-        values.put("[Жанр]", book.getGenre());
-        values.put("[Издательство]", book.getPublisher());
-        values.put("[Год выпуска]", book.getYear());
-        values.put("[Число страниц]", book.getPageCount());
-        values.put("[Язык книги]", book.getLanguage());
-        values.put("[Обложка]", book.getCover());
-        values.put("Доступность", book.isAvailable() ? 1 : 0);
-        values.put("[Краткое описание]", book.getDescription());
-        values.put("[Как часто брали]", book.getPopularity());
-        database.insert(TABLE_NAME, null, values);
-    }
+
 
     public List<Book> getBooks(String searchCriteria) {
         String query = "SELECT * FROM " + TABLE_NAME;
@@ -124,12 +131,12 @@ public class DatabaseMgr {
                     "[Жанр] LIKE '%" + searchCriteria + "%' OR " +
                     "[Издательство] LIKE '%" + searchCriteria + "%'";
         }
-        query += " ORDER BY [Как часто брали] DESC";
+        query += " ORDER BY [Название книги] ASC";
         return getQueryResponse(query);
     }
 
     public List<Book> getBooks() {
-        String query = "SELECT * FROM " + TABLE_NAME + " ORDER BY [Как часто брали] DESC LIMIT 20";
+        String query = "SELECT * FROM " + TABLE_NAME + " ORDER BY [Название книги] ASC LIMIT 20";
         return getQueryResponse(query);
     }
 
@@ -167,5 +174,117 @@ public class DatabaseMgr {
             cursor.close();
         }
         return bookList;
+    }
+
+
+
+    private void connectToRemoteDatabase(Context context) {
+        String url = "jdbc:sqlserver://127.0.0.1:1433;databaseName=Библиотека";
+        String username = "Guest";
+        String password = "1";
+
+        try {
+            connection = DriverManager.getConnection(url, username, password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            connection = null;
+            Toast.makeText(context, "Cannot establish connection", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void synchronizeLocalDatabaseWithRemote() {
+        new Thread(() -> {
+            if (connection != null) {
+                try {
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery("SELECT * FROM your_view_name");
+
+                    createNewLocalTable("new_books");
+                    fillNewLocalTable(resultSet);
+
+                    boolean tablesAreEqual = checkTablesEquality();
+                    if (tablesAreEqual) {
+                        dropNewLocalTable();
+                    } else {
+                        dropMainLocalTable();
+                        renameNewLocalTable();
+                    }
+                    resultSet.close();
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void createNewLocalTable(String tablename) throws SQLException {
+
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS " + tablename + " (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "[Название книги] TEXT, " +
+                "[Автор] TEXT, " +
+                "[Жанр] TEXT, " +
+                "[Издательство] TEXT, " +
+                "[Год выпуска] INTEGER, " +
+                "[Число страниц] INTEGER, " +
+                "[Язык книги] TEXT, " +
+                "[Обложка] INTEGER, " +
+                "'Доступность' INTEGER, " +
+                "[Краткое описание] TEXT, " +
+                "[Как часто брали] INTEGER)";
+        database.execSQL(createTableQuery);
+    }
+
+    private void fillNewLocalTable(ResultSet resultSet) throws SQLException {
+
+        while (resultSet.next()) {
+            String title = resultSet.getString("title");
+            String author = resultSet.getString("author");
+
+            String insertQuery = "INSERT INTO new_books ([Название книги], [Автор], ...) VALUES " +
+                    "('" + title + "', '" + author + "', ...)";
+            database.execSQL(insertQuery);
+        }
+    }
+
+    private boolean checkTablesEquality() {
+
+        String countMainTableQuery = "SELECT COUNT(*) FROM " + TABLE_NAME;
+        String countNewTableQuery = "SELECT COUNT(*) FROM new_books";
+
+        Cursor cursorMainTable = database.rawQuery(countMainTableQuery, null);
+        Cursor cursorNewTable = database.rawQuery(countNewTableQuery, null);
+
+        int countMain = 0, countNew = 0;
+        if (cursorMainTable.moveToFirst()) {
+            countMain = cursorMainTable.getInt(0);
+        }
+        if (cursorNewTable.moveToFirst()) {
+            countNew = cursorNewTable.getInt(0);
+        }
+
+        cursorMainTable.close();
+        cursorNewTable.close();
+
+        return countMain == countNew;
+    }
+
+    private void dropNewLocalTable() throws SQLException {
+
+        String dropQuery = "DROP TABLE IF EXISTS new_books";
+        database.execSQL(dropQuery);
+    }
+
+    private void dropMainLocalTable() throws SQLException {
+
+        String dropQuery = "DROP TABLE IF EXISTS " + TABLE_NAME;
+        database.execSQL(dropQuery);
+    }
+
+    private void renameNewLocalTable() throws SQLException {
+
+        String renameQuery = "ALTER TABLE new_books RENAME TO " + TABLE_NAME;
+        database.execSQL(renameQuery);
     }
 }
