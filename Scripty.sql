@@ -9,7 +9,7 @@ DROP TRIGGER trg_УдалитьЧитателейПриОбновленииГруппы;
 DROP FUNCTION dbo.GetPercentageUsersByGroupAndFaculty;
 DROP FUNCTION dbo.GetDebtorsReport
 drop function dbo.GetBookStatusAndDueDate
-
+DROP VIEW ТаблицаДляМобилок
 GO
 alter table Книга
 drop constraint FK_Книга_Издательство,
@@ -110,6 +110,8 @@ create table Книга
 [Год выпуска] int,
 [Число страниц] int,
 [Язык книги] varchar(20) not null,
+[Обложка] image,
+[Краткое описание] varchar(4000),
 [Цена] money
 )
 GO
@@ -627,3 +629,44 @@ SELECT * FROM dbo.GetDebtorsReport('2020-01-01', '2024-12-31');
 select * from dbo.GetBookStatusAndDueDate(3,2)
 --y++
 exec УвеличитьКурсГрупп
+
+CREATE VIEW IF NOT EXISTS ТаблицаДляМобилок AS
+SELECT 
+    Книга.[Название], 
+    [Авторы].[Фамилия] + ' ' + [Авторы].[Имя] AS Автор,
+    Жанр.[Название жанра] AS Жанр,
+    Издательство.[Название] AS Издательство,
+    Книга.[Год выпуска], 
+    Книга.[Число страниц], 
+    Книга.[Язык книги], 
+    Книга.[Обложка], 
+    CASE 
+        WHEN (
+            SELECT COUNT(*) 
+            FROM [Выдача и возврат] 
+            WHERE 
+                [Код книги] = Книга.Код AND 
+                [Дата возврата] IS NULL AND 
+                [Книга утеряна] = 0
+        ) = 0 THEN 0
+        ELSE 1
+    END AS Доступность, 
+    (
+        SELECT COUNT(*) 
+        FROM [Выдача и возврат] 
+        WHERE 
+            [Код книги] = Книга.Код
+    ) AS [Как часто брали], 
+    Книга.[Краткое описание]
+FROM 
+    Книга
+JOIN 
+    Жанр ON Книга.[Код жанра] = Жанр.Код
+JOIN 
+    [Автор книги] ON [Автор книги].[Код книги] = Книга.Код
+JOIN 
+    [Авторы] ON [Авторы].Код = [Автор книги].[Код автора]
+JOIN 
+    [Издательство] ON Книга.[Код издательства] = [Издательство].Код;
+GO
+	--select * from ТаблицаДляМобилок
