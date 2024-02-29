@@ -9,13 +9,13 @@ public class Book {
     private int pageCount;
     private String language;
 
-    private int cover;
+    private byte[] cover;
     private boolean available;
 
     private String description;
     private int popularity;
 
-    public Book(String title, String author, String genre, String publisher, int year, int pageCount, String language, boolean available, int cover, String description, int popularity) {
+    public Book(String title, String author, String genre, String publisher, int year, int pageCount, String language, boolean available, byte[] cover, String description, int popularity) {
         this.title = title;
         this.author = author;
         this.genre = genre;
@@ -77,7 +77,7 @@ public class Book {
 
 
 
-    public int getCover() {
+    public byte[] getCover() {
         return cover;
     }
 

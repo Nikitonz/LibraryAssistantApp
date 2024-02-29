@@ -2,6 +2,9 @@ package com.nikitonz.libraryviewandroidapp.BookMgr;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +21,21 @@ import java.util.List;
 
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
     private List<Book> bookList;
-    private Context context;
+    private final Context context;
 
     public BookAdapter(List<Book> bookList, Context context) {
         this.bookList = bookList;
         this.context = context;
     }
-
+    public static byte[] hexStringToByteArray(String hexString) {
+        int len = hexString.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
+                    + Character.digit(hexString.charAt(i+1), 16));
+        }
+        return data;
+    }
     @NonNull
     @Override
     public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -36,9 +47,17 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
         Book book = bookList.get(position);
         holder.titleTextView.setText(book.getTitle());
-        holder.coverImageView.setImageResource(book.getCover());
+
         holder.authorTextView.setText(book.getAuthor());
         holder.yearIzdTextView.setText(String.valueOf(book.getYear() + ", " + book.getPublisher()));
+
+        byte[] coverBytes = book.getCover();
+        if (coverBytes != null) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(coverBytes,0,coverBytes.length);
+            holder.coverImageView.setImageBitmap(bitmap);
+        } else {
+            holder.coverImageView.setImageResource(R.drawable.ic_menu_book);
+        }
 
         holder.readMoreButton.setOnClickListener(v -> {
             try {
@@ -47,8 +66,8 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
                 intent.putExtra("author", book.getAuthor());
                 intent.putExtra("genre", book.getGenre());
                 intent.putExtra("publisher", book.getPublisher());
-                intent.putExtra("year", String.valueOf(book.getYear())); // Преобразуйте int в String
-                intent.putExtra("pageCount", String.valueOf(book.getPageCount())); // Преобразуйте int в String
+                intent.putExtra("year", String.valueOf(book.getYear()));
+                intent.putExtra("pageCount", String.valueOf(book.getPageCount()));
                 intent.putExtra("language", book.getLanguage());
                 intent.putExtra("available", book.isAvailable());
                 intent.putExtra("cover", book.getCover());

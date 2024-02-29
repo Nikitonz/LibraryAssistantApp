@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="1pt"
-    android:background="@drawable/book_item_background"
     android:gravity="center_vertical"
     android:padding="3pt">
 
@@ -22,12 +21,11 @@
 
     <ImageView
         android:id="@+id/coverImageView"
-        android:layout_width="393dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
         android:layout_alignParentTop="true"
         android:layout_marginTop="1dp"
-        android:layout_marginBottom="10dp"
-         />
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/authorTextView"

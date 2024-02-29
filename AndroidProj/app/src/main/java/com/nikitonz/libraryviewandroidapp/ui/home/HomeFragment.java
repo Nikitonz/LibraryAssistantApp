@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,8 +23,6 @@ import com.nikitonz.libraryviewandroidapp.R;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
-    private RecyclerView recyclerViewBooks;
-    private EditText searchEditText;
     private TextView popularTextView;
     private BookAdapter bookAdapter;
     private List<Book> allBooks;
@@ -33,17 +32,23 @@ public class HomeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        recyclerViewBooks = root.findViewById(R.id.recyclerViewBooks);
-        searchEditText = root.findViewById(R.id.searchEditText);
+        RecyclerView recyclerViewBooks = root.findViewById(R.id.recyclerViewBooks);
         popularTextView = root.findViewById(R.id.popularTextView);
+        EditText searchEditText = root.findViewById(R.id.searchEditText);
 
         recyclerViewBooks.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        db = new DatabaseMgr(getContext());
 
+
+        db = new DatabaseMgr(getContext());
         allBooks = db.getBooks();
         bookAdapter = new BookAdapter(allBooks, getContext());
         recyclerViewBooks.setAdapter(bookAdapter);
 
+        ImageButton bStartSearch = root.findViewById(R.id.bStartSearch);
+        bStartSearch.setOnClickListener(v -> {
+            String searchText = searchEditText.getText().toString();
+            filterBooks(searchText);
+        });
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -53,19 +58,24 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                filterBooks(s.toString());
+                if (s.toString().isEmpty()){
+                    popularTextView.setVisibility(View.VISIBLE);
+                    filterBooks("");
+                }
+                else {
+                    popularTextView.setVisibility(View.GONE);
+                }
             }
         });
-
         return root;
     }
 
     private void filterBooks(String searchText) {
         if (searchText.isEmpty()) {
-            popularTextView.setVisibility(View.VISIBLE);
+
             allBooks = db.getBooks();
         } else {
-            popularTextView.setVisibility(View.GONE);
+
             allBooks = db.getBooks(searchText);
         }
         bookAdapter.setBooks(allBooks);

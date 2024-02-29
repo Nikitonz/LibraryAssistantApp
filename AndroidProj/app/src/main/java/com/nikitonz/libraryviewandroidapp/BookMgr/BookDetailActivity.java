@@ -1,7 +1,10 @@
 package com.nikitonz.libraryviewandroidapp.BookMgr;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +29,10 @@ public class BookDetailActivity extends AppCompatActivity {
                 String genre = intent.getStringExtra("genre");
                 String langPageCount = intent.getStringExtra("language") + ", " + intent.getStringExtra("pageCount");
                 String description = intent.getStringExtra("description");
+                byte[] coverBytes = intent.getByteArrayExtra("cover");
+
+
+
 
                 TextView titleTextView = findViewById(R.id.titleTextView);
                 TextView authorTextView = findViewById(R.id.authorTextView);
@@ -33,6 +40,9 @@ public class BookDetailActivity extends AppCompatActivity {
                 TextView yearTextView = findViewById(R.id.yearIzdTextView);
                 TextView langPageCounttextView = findViewById(R.id.langPageCounttextView);
                 TextView descriptionTextView = findViewById(R.id.descriptionTextView);
+                ImageView coverImageView = findViewById(R.id.coverImageView);
+
+
 
                 titleTextView.setText(title);
                 authorTextView.setText(author);
@@ -40,6 +50,12 @@ public class BookDetailActivity extends AppCompatActivity {
                 genreTextView.setText(genre);
                 langPageCounttextView.setText(langPageCount);
                 descriptionTextView.setText(description);
+                if (coverBytes != null) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(coverBytes,0,coverBytes.length);
+                    coverImageView.setImageBitmap(bitmap);
+                } else {
+                    coverImageView.setImageResource(R.drawable.ic_menu_book);
+                }
             }
             catch (Exception e) {};
         }
