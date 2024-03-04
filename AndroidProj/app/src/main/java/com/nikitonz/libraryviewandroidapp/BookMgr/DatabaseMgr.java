@@ -2,6 +2,7 @@ package com.nikitonz.libraryviewandroidapp.BookMgr;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
@@ -64,10 +65,17 @@ public class DatabaseMgr {
         return bookList;
     }
 
-
+    private String getPreference(String key, String defaultValue) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        return sharedPreferences.getString(key, defaultValue);
+    }
     @SuppressLint("NewApi")
     public void connectToRemoteDatabase() {
-        String ip = "192.168.100.3", port = "1433", db = "Библиотека", username = "Guest", password = "1";
+        String ip = getPreference("ip", "192.168.100.3");
+        String port = getPreference("port", "1433");
+        String db = getPreference("db", "Библиотека");
+        String username = getPreference("username", "Guest");
+        String password = getPreference("password", "1");
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         try {

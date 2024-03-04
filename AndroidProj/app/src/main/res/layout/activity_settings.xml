@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".SettingsActivity">
+
+    <EditText
+        android:id="@+id/editTextIp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="IP адрес" />
+
+    <EditText
+        android:id="@+id/editTextPort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextIp"
+        android:hint="Порт" />
+
+    <EditText
+        android:id="@+id/editTextDb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextPort"
+        android:hint="База данных" />
+
+    <EditText
+        android:id="@+id/editTextUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextDb"
+        android:hint="Имя пользователя" />
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextUsername"
+        android:hint="Пароль"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextPassword"
+        android:text="Сохранить" />
+
+</RelativeLayout>
