@@ -3,13 +3,13 @@ use Ѕиблиотека;
 
 DROP PROCEDURE GetUserRoles;
 DROP PROCEDURE GetUserTablePermissions;
-DROP PROCEDURE SearchBooks;
+DROP FUNCTION SearchBooks;
 DROP PROCEDURE ”величить урс√рупп;
 DROP TRIGGER trg_”далить„итателейѕриќбновлении√руппы;
 DROP FUNCTION dbo.GetPercentageUsersByGroupAndFaculty;
 DROP FUNCTION dbo.GetDebtorsReport
-drop function dbo.GetBookStatusAndDueDate
-drop function “аблицаƒл€ћобилок
+DROP FUNCTION dbo.GetBookStatusAndDueDate
+DROP FUNCTION BooksPublicInfo
 GO
 alter table  нига
 drop constraint FK_ нига_»здательство,
@@ -385,8 +385,11 @@ VALUES
     (1, 4, 'INV004', '2023-04-15', 4),
     (2, 1, 'INV005', '2023-04-20', 1);
 GO
-CREATE PROCEDURE SearchBooks
+CREATE FUNCTION SearchBooks(
     @SearchTerm VARCHAR(100)
+	
+	)
+	RETURNS TABLE
 AS
 BEGIN
     SELECT
@@ -505,7 +508,7 @@ BEGIN
             WHERE G.[ урс] > G.[ѕоследний курс]
         );
 
-        -- ”дал€ем группу, но только если не осталось читателей
+    
         DELETE FROM √руппа
         WHERE [ урс] > [ѕоследний курс];
     END
@@ -666,7 +669,7 @@ go
 --exec ”величить урс√рупп
 
 
-CREATE FUNCTION dbo.“аблицаƒл€ћобилок(
+CREATE FUNCTION dbo.BooksPublicInfo(
     @SearchTerm VARCHAR(100)
 )
 RETURNS TABLE
@@ -727,5 +730,3 @@ CREATE USER GuestTest FOR LOGIN Guest;
 GRANT SELECT, INSERT ON dbo.“аблицаƒл€ћобилок TO GuestTest;
 GO
 
-USE Ѕиблиотека; SELECT TOP(20) * FROM “аблицаƒл€ћобилок('') 
---USE Ѕиблиотека; SELECT TOP(20) * FROM “аблицаƒл€ћобилок('“олстой') 
