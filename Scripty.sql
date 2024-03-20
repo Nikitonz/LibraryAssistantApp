@@ -3,13 +3,13 @@ use Библиотека;
 
 DROP PROCEDURE GetUserRoles;
 DROP PROCEDURE GetUserTablePermissions;
-DROP PROCEDURE SearchBooks;
+DROP function SearchBooks;
 DROP PROCEDURE УвеличитьКурсГрупп;
 DROP TRIGGER trg_УдалитьЧитателейПриОбновленииГруппы;
 DROP FUNCTION dbo.GetPercentageUsersByGroupAndFaculty;
 DROP FUNCTION dbo.GetDebtorsReport
-drop function dbo.GetBookStatusAndDueDate
-drop function ТаблицаДляМобилок
+DROP FUNCTION dbo.GetBookStatusAndDueDate
+DROP function BooksPublicInfo
 GO
 alter table Книга
 drop constraint FK_Книга_Издательство,
@@ -385,10 +385,12 @@ VALUES
     (1, 4, 'INV004', '2023-04-15', 4),
     (2, 1, 'INV005', '2023-04-20', 1);
 GO
-CREATE PROCEDURE SearchBooks
+CREATE FUNCTION SearchBooks(
     @SearchTerm VARCHAR(100)
+)
+RETURNS TABLE
 AS
-BEGIN
+RETURN (
     SELECT
         Книга.Название AS 'Название книги',
         Авторы.Фамилия + ' ' + Авторы.Имя + ' ' + Авторы.Отчество AS 'Автор',
@@ -404,18 +406,17 @@ BEGIN
     JOIN
         [Автор книги] ON [Автор книги].[Код книги] = Книга.Код
     JOIN
-        [Авторы] ON [Авторы].Код = [Автор книги].[Код автора]
+        Авторы ON Авторы.Код = [Автор книги].[Код автора]
     JOIN
-        [Издательство] ON Книга.[Код издательства] = [Издательство].Код 
+        Издательство ON Книга.[Код издательства] = Издательство.Код 
     WHERE
         Книга.Название LIKE '%' + @SearchTerm + '%'
         OR Авторы.Фамилия LIKE '%' + @SearchTerm + '%'
         OR Авторы.Имя LIKE '%' + @SearchTerm + '%'
         OR Авторы.Отчество LIKE '%' + @SearchTerm + '%'
-        OR Жанр.[Название жанра] LIKE '%' + @SearchTerm + '%';
-END;
+        OR Жанр.[Название жанра] LIKE '%' + @SearchTerm + '%'
+);
 go
-
 
 
 
@@ -505,7 +506,7 @@ BEGIN
             WHERE G.[Курс] > G.[Последний курс]
         );
 
-        -- Удаляем группу, но только если не осталось читателей
+    
         DELETE FROM Группа
         WHERE [Курс] > [Последний курс];
     END
@@ -666,7 +667,7 @@ go
 --exec УвеличитьКурсГрупп
 
 
-CREATE FUNCTION dbo.ТаблицаДляМобилок(
+CREATE FUNCTION dbo.BooksPublicInfo(
     @SearchTerm VARCHAR(100)
 )
 RETURNS TABLE
@@ -727,5 +728,3 @@ CREATE USER GuestTest FOR LOGIN Guest;
 GRANT SELECT, INSERT ON dbo.ТаблицаДляМобилок TO GuestTest;
 GO
 
-USE Библиотека; SELECT TOP(20) * FROM ТаблицаДляМобилок('') 
---USE Библиотека; SELECT TOP(20) * FROM ТаблицаДляМобилок('Толстой') 
