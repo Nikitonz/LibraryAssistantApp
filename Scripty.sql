@@ -3,7 +3,6 @@ use Библиотека;
 
 DROP PROCEDURE GetUserRoles;
 DROP PROCEDURE GetUserTablePermissions;
-DROP FUNCTION SearchBooks;
 DROP PROCEDURE УвеличитьКурсГрупп;
 DROP TRIGGER trg_УдалитьЧитателейПриОбновленииГруппы;
 DROP FUNCTION dbo.GetPercentageUsersByGroupAndFaculty;
@@ -385,38 +384,7 @@ VALUES
     (1, 4, 'INV004', '2023-04-15', 4),
     (2, 1, 'INV005', '2023-04-20', 1);
 GO
-CREATE FUNCTION SearchBooks(
-    @SearchTerm VARCHAR(100)
-)
-RETURNS TABLE
-AS
-RETURN (
-    SELECT
-        Книга.Название AS 'Название книги',
-        Авторы.Фамилия + ' ' + Авторы.Имя + ' ' + Авторы.Отчество AS 'Автор',
-        Жанр.[Название жанра] AS 'Жанр',
-        Издательство.Название AS 'Издательство',
-        Книга.[Год выпуска] AS 'Год выпуска',
-        Книга.[Число страниц] AS 'Число страниц',
-        Книга.[Язык книги] AS 'Язык книги'
-    FROM
-        Книга
-    JOIN
-        Жанр ON Книга.[Код жанра] = Жанр.Код
-    JOIN
-        [Автор книги] ON [Автор книги].[Код книги] = Книга.Код
-    JOIN
-        Авторы ON Авторы.Код = [Автор книги].[Код автора]
-    JOIN
-        Издательство ON Книга.[Код издательства] = Издательство.Код 
-    WHERE
-        Книга.Название LIKE '%' + @SearchTerm + '%'
-        OR Авторы.Фамилия LIKE '%' + @SearchTerm + '%'
-        OR Авторы.Имя LIKE '%' + @SearchTerm + '%'
-        OR Авторы.Отчество LIKE '%' + @SearchTerm + '%'
-        OR Жанр.[Название жанра] LIKE '%' + @SearchTerm + '%'
-);
-go
+
 
 
 
@@ -719,12 +687,15 @@ RETURN
         OR Жанр.[Название жанра] LIKE '%' + @SearchTerm + '%'
 );
 GO
+
+
+select * from BooksPublicInfo('');
 DROP USER GuestTest;
 GO
 DROP LOGIN Guest;
 GO
 CREATE LOGIN Guest WITH PASSWORD = '1';
 CREATE USER GuestTest FOR LOGIN Guest;
-GRANT SELECT, INSERT ON dbo.ТаблицаДляМобилок TO GuestTest;
+GRANT SELECT, INSERT ON dbo.BooksPublicInfo TO GuestTest;
 GO
 
