@@ -3,13 +3,13 @@ use Ѕиблиотека;
 
 DROP PROCEDURE GetUserRoles;
 DROP PROCEDURE GetUserTablePermissions;
-DROP function SearchBooks;
+DROP FUNCTION SearchBooks;
 DROP PROCEDURE ”величить урс√рупп;
 DROP TRIGGER trg_”далить„итателейѕриќбновлении√руппы;
 DROP FUNCTION dbo.GetPercentageUsersByGroupAndFaculty;
 DROP FUNCTION dbo.GetDebtorsReport
 DROP FUNCTION dbo.GetBookStatusAndDueDate
-DROP function BooksPublicInfo
+DROP FUNCTION BooksPublicInfo
 GO
 alter table  нига
 drop constraint FK_ нига_»здательство,
