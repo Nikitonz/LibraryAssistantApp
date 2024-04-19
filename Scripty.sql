@@ -3,12 +3,12 @@ use Библиотека;
 
 DROP PROCEDURE GetUserRoles;
 DROP PROCEDURE GetUserTablePermissions;
-DROP PROCEDURE УвеличитьКурсГрупп;
-DROP TRIGGER trg_УдалитьЧитателейПриОбновленииГруппы;
+DROP PROCEDURE RemoveOutdatedReaders;
 DROP FUNCTION dbo.GetPercentageUsersByGroupAndFaculty;
 DROP FUNCTION dbo.GetDebtorsReport
 DROP FUNCTION dbo.GetBookStatusAndDueDate
 DROP FUNCTION BooksPublicInfo
+DROP TABLE АрхивЧитателей
 GO
 alter table Книга
 drop constraint FK_Книга_Издательство,
@@ -49,8 +49,6 @@ drop constraint FK_Группа_Факультеты
 go
 alter table Читатель
 drop constraint FK_Читатель_Группы
-go
-drop table Операции
 go
 drop table Издательство
 go
@@ -223,8 +221,8 @@ CREATE TABLE Группа
 (
 Код INT PRIMARY KEY NOT NULL IDENTITY,
 Название VARCHAR(40) NOT NULL,
-Курс INT NOT NULL,
-[Последний курс] INT NOT NULL,
+[Год поступления] INT NOT NULL,
+[Год окончания] INT NOT NULL,
 [Код факультета] INT NOT NULL
 );
 CREATE TABLE Факультет
@@ -232,7 +230,28 @@ CREATE TABLE Факультет
 Код INT PRIMARY KEY NOT NULL IDENTITY,
 Название VARCHAR(40) NOT NULL
 );
+
+
 go
+
+
+
+CREATE TABLE АрхивЧитателей (
+        Код INT PRIMARY KEY NOT NULL IDENTITY,
+        [Фамилия] VARCHAR(40),
+        [Имя] VARCHAR(40),
+        [Отчество] VARCHAR(40),
+        [Дата рождения] DATE,
+        [Контактный номер] VARCHAR(40),
+        [Адрес проживания] VARCHAR(40),
+        [Данные паспорта] CHAR(60),
+        [Номер читательского билета] VARCHAR(40),
+        [Код группы] INT,
+        [Имя для входа] VARCHAR(100)
+    );
+
+
+
 alter table Книга
 add constraint FK_Книга_Издательство  foreign key ([Код издательства]) references Издательство(Код),
 constraint FK_Книга_Жанр  foreign key ([Код жанра]) references Жанр(Код),
@@ -358,7 +377,7 @@ VALUES
     ('математики и ТП'),
     ('физики');
 -- Для таблицы Группа
-INSERT INTO Группа (Название, Курс, [Последний курс], [Код факультета])
+INSERT INTO Группа (Название, [Год поступления], [Год окончания], [Код факультета])
 VALUES 
     ('ПИ-20', 2, 4, 1),
     ('ПО-19', 1, 4, 1),
@@ -385,9 +404,66 @@ VALUES
     (2, 1, 'INV005', '2023-04-20', 1);
 GO
 
+--ПУБЛИЧНАЯ ИНФОРМАЦИЯ
+CREATE FUNCTION BooksPublicInfo(
+    @SearchTerm VARCHAR(100)
+)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT 
+        Книга.[Название], 
+        [Авторы].[Фамилия] + ' ' + [Авторы].[Имя] AS Автор,
+        Жанр.[Название жанра] AS Жанр,
+        Издательство.[Название] AS Издательство,
+        Книга.[Год выпуска], 
+        Книга.[Число страниц], 
+        Книга.[Язык книги], 
+        Книга.[Обложка], 
+        CASE 
+            WHEN (
+                SELECT COUNT(*) 
+                FROM [Выдача и возврат] 
+                WHERE 
+                    [Код книги] = Книга.Код AND 
+                    [Дата возврата] IS NULL AND 
+                    [Книга утеряна] = 0
+            ) = 0 THEN 0
+            ELSE 1
+        END AS Доступность, 
+        (
+            SELECT COUNT(*) 
+            FROM [Выдача и возврат] 
+            WHERE 
+                [Код книги] = Книга.Код
+        ) AS [Как часто брали], 
+        Книга.[Краткое описание]
+    FROM 
+        Книга
+    JOIN 
+        Жанр ON Книга.[Код жанра] = Жанр.Код
+    JOIN 
+        [Автор книги] ON [Автор книги].[Код книги] = Книга.Код
+    JOIN 
+        [Авторы] ON [Авторы].Код = [Автор книги].[Код автора]
+    JOIN 
+        [Издательство] ON Книга.[Код издательства] = [Издательство].Код
+    WHERE 
+        Книга.Название LIKE '%' + @SearchTerm + '%'
+        OR [Авторы].[Фамилия] LIKE '%' + @SearchTerm + '%'
+        OR [Авторы].[Имя] LIKE '%' + @SearchTerm + '%'
+        OR [Авторы].[Отчество] LIKE '%' + @SearchTerm + '%'
+        OR Жанр.[Название жанра] LIKE '%' + @SearchTerm + '%'
+);
+GO
 
 
+select * from BooksPublicInfo('');
+go
+--КОНЕЦ ПУБЛИЧНАЯ ИНФОРМАЦИЯ
 
+--СЛУЖЕБНАЯ ИНФОРМАЦИЯ
 CREATE PROCEDURE GetUserTablePermissions
 	@DatabaseUserName NVARCHAR(255),
     @TableName NVARCHAR(255)
@@ -421,69 +497,8 @@ BEGIN
 END;
 go
 
-
-
-CREATE TABLE Операции
-(
-    Код INT PRIMARY KEY NOT NULL IDENTITY,
-    [Таблица] VARCHAR(50) NOT NULL,
-    [Операция] VARCHAR(50) NOT NULL,
-    [Дата операции] INT NOT NULL
-);
-
-go
-CREATE PROCEDURE УвеличитьКурсГрупп
-AS
-BEGIN
-	IF NOT EXISTS (SELECT 1 FROM Операции WHERE [Таблица] = 'Группа' AND [Операция] = 'Увеличение курса' AND YEAR([Дата операции]) = YEAR(GETDATE()))
-	BEGIN
-		UPDATE Группа
-		SET Курс = Курс + 1;
-		INSERT INTO Операции ([Таблица], [Операция], [Дата операции])
-		VALUES ('Группа', 'Увеличение курса', YEAR(GETDATE()));
-	END;
-END;
-go
-
-
-
-CREATE TRIGGER trg_УдалитьЧитателейПриОбновленииГруппы
-ON Группа
-AFTER UPDATE
-AS
-BEGIN
-    IF UPDATE([Последний курс]) OR UPDATE([Курс])
-    BEGIN
-        IF EXISTS (
-            SELECT 1
-            FROM Операции
-            WHERE [Таблица] = 'Группа' 
-                AND [Операция] = 'Увеличение курса' 
-                AND [Дата операции] = YEAR(GETDATE())
-				
-        )
-		BEGIN
-            ROLLBACK;
-            RETURN;
-        END
-        DELETE FROM Читатель
-        WHERE [Код группы] IN (
-            SELECT G.[Код]
-            FROM Группа G
-            INNER JOIN INSERTED I ON G.[Код] = I.[Код]
-            WHERE G.[Курс] > G.[Последний курс]
-        );
-
-    
-        DELETE FROM Группа
-        WHERE [Курс] > [Последний курс];
-    END
-END;
-GO
-
---exec УвеличитьКурсГрупп
-
-
+--КОНЕЦ СЛУЖЕБНАЯ ИНФОРМАЦИЯ
+--ОТЧЕТЫ 
 CREATE FUNCTION dbo.GetPercentageUsersByGroupAndFaculty
 (
     @StartDate DATE,
@@ -522,7 +537,7 @@ RETURN
     SELECT
         Ф.[Название] AS [Название факультета],
         Г.[Название] AS [Название группы],
-        Г.[Курс],
+        CAST(YEAR(GETDATE())-Г.[Год поступления] as INT) as [Курс],
         ISNULL(ЧитателиСВыдачами.С_выдачами, 0) AS [С выдачами],
         ISNULL(Читатели.Общее_количество, 0) AS [Общее количество],
         IIF(ISNULL(Читатели.Общее_количество, 0) = 0, 0, 100 * CAST(ISNULL(ЧитателиСВыдачами.С_выдачами, 0) AS FLOAT) / CAST(ISNULL(Читатели.Общее_количество, 0) AS FLOAT)) AS [Процент пользователей от читателей]
@@ -583,7 +598,7 @@ RETURN
     SELECT
         Ф.[Название] AS [Название факультета],
         Г.[Название] AS [Название группы],
-        Г.[Курс],
+        CAST(YEAR(GETDATE())-Г.[Год поступления] AS INT) AS Курс,
         VK.[Месяц],
         VK.[Семестр],
         VK.[Год],
@@ -616,86 +631,52 @@ RETURN
             ) THEN 'Книга на руках'
             ELSE 'Книга сдана'
         END AS [Статус книги],
-        DATEADD(MONTH, 1, [Выдача и возврат].[Дата выдачи]) AS [Ближайшая дата сдачи]--MIN(ISNULL([Дата возврата], '9999-12-31'))
+        DATEADD(MONTH, 1, [Выдача и возврат].[Дата выдачи]) AS [Ближайшая дата сдачи]       --MIN(ISNULL([Дата возврата], '9999-12-31'))
     FROM [Выдача и возврат]
     WHERE [Код читателя] = @ReaderID
     AND [Код книги] = @BookID
 );
 go
 
---select * from dbo.GetBookStatusAndDueDate(1,1)
+--КОНЕЦ ОТЧЕТОВ
+-- ОПЕРАЦИИ
+IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'Guest1')
+BEGIN
+    DROP USER Guest1;
+END
+GO
 
---o1
---SELECT * FROM dbo.GetPercentageUsersByGroupAndFaculty('2020-01-01', '2024-12-31');
---o2
---SELECT * FROM dbo.GetDebtorsReport('2020-01-01', '2024-12-31');
---o3
---select * from dbo.GetBookStatusAndDueDate(3,2)
---y++
---exec УвеличитьКурсГрупп
-
-
-CREATE FUNCTION dbo.BooksPublicInfo(
-    @SearchTerm VARCHAR(100)
-)
-RETURNS TABLE
-AS
-RETURN
-(
-    SELECT 
-        Книга.[Название], 
-        [Авторы].[Фамилия] + ' ' + [Авторы].[Имя] AS Автор,
-        Жанр.[Название жанра] AS Жанр,
-        Издательство.[Название] AS Издательство,
-        Книга.[Год выпуска], 
-        Книга.[Число страниц], 
-        Книга.[Язык книги], 
-        Книга.[Обложка], 
-        CASE 
-            WHEN (
-                SELECT COUNT(*) 
-                FROM [Выдача и возврат] 
-                WHERE 
-                    [Код книги] = Книга.Код AND 
-                    [Дата возврата] IS NULL AND 
-                    [Книга утеряна] = 0
-            ) = 0 THEN 0
-            ELSE 1
-        END AS Доступность, 
-        (
-            SELECT COUNT(*) 
-            FROM [Выдача и возврат] 
-            WHERE 
-                [Код книги] = Книга.Код
-        ) AS [Как часто брали], 
-        Книга.[Краткое описание]
-    FROM 
-        Книга
-    JOIN 
-        Жанр ON Книга.[Код жанра] = Жанр.Код
-    JOIN 
-        [Автор книги] ON [Автор книги].[Код книги] = Книга.Код
-    JOIN 
-        [Авторы] ON [Авторы].Код = [Автор книги].[Код автора]
-    JOIN 
-        [Издательство] ON Книга.[Код издательства] = [Издательство].Код
-    WHERE 
-        Книга.Название LIKE '%' + @SearchTerm + '%'
-        OR [Авторы].[Фамилия] LIKE '%' + @SearchTerm + '%'
-        OR [Авторы].[Имя] LIKE '%' + @SearchTerm + '%'
-        OR [Авторы].[Отчество] LIKE '%' + @SearchTerm + '%'
-        OR Жанр.[Название жанра] LIKE '%' + @SearchTerm + '%'
-);
+IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'Guest1')
+BEGIN
+    DROP LOGIN Guest1;
+END
 GO
 
 
-select * from BooksPublicInfo('');
-DROP USER GuestTest;
-GO
-DROP LOGIN Guest;
-GO
-CREATE LOGIN Guest WITH PASSWORD = '1';
-CREATE USER GuestTest FOR LOGIN Guest;
-GRANT SELECT, INSERT ON dbo.BooksPublicInfo TO GuestTest;
+CREATE LOGIN Guest1 WITH PASSWORD = '1';
+CREATE USER Guest1 FOR LOGIN Guest1;
+
+GRANT SELECT ON Библиотека.dbo.BooksPublicInfo TO Guest1;
 GO
 
+
+
+CREATE PROCEDURE RemoveOutdatedReaders AS
+BEGIN
+  
+   
+
+  
+    INSERT INTO АрхивЧитателей
+    SELECT *
+    FROM Читатель
+	inner join Группа on Читатель.[Код группы] = Группа.Код
+    WHERE YEAR(GETDATE()) > [Год окончания];
+
+   
+/*    DELETE FROM Читатель
+	
+    WHERE YEAR(GETDATE()) > ;*/
+END;
+GO
+--КОНЕЦ ОПЕРАЦИИ
