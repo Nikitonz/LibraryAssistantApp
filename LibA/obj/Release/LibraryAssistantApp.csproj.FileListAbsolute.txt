@@ -12,3 +12,17 @@ C:\Users\nikit\Desktop\LibA\LibraryAssistantApp\LibA\obj\Release\LibraryAssistan
 C:\Users\nikit\Desktop\LibA\LibraryAssistantApp\LibA\obj\Release\LibraryAssistantApp.csproj.CoreCompileInputs.cache
 C:\Users\nikit\Desktop\LibA\LibraryAssistantApp\LibA\obj\Release\LibA.exe
 C:\Users\nikit\Desktop\LibA\LibraryAssistantApp\LibA\obj\Release\LibA.pdb
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\bin\Release\LibA.exe.config
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\bin\Release\LibA.exe
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\bin\Release\LibA.pdb
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Release\LibraryAssistantApp.csproj.AssemblyReference.cache
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Release\LibA.AdminPanel.resources
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Release\LibA.AuthForm.resources
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Release\LibA.DynamicLinkerAndReports.resources
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Release\LibA.SettingsPane.resources
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Release\LibA.UserPanel.resources
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Release\LibA.Properties.Resources.resources
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Release\LibraryAssistantApp.csproj.GenerateResource.cache
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Release\LibraryAssistantApp.csproj.CoreCompileInputs.cache
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Release\LibA.exe
+C:\Users\nikit\Desktop\LibraryAssistantApp\LibA\obj\Release\LibA.pdb

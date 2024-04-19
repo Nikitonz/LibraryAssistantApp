@@ -324,7 +324,7 @@ namespace LibA
 
         private async void перевестиГруппыНаСледующийГодToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await DBWorker.ExecProcedure("УвеличитьКурсГрупп");
+            await DBWorker.ExecProcedure("RemoveOutdatedReaders");
         }
 
 

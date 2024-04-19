@@ -25,7 +25,7 @@ namespace LibA
             {
                 администрированиеToolStripMenuItem.Visible = false;
             };
-           
+            ConnectionManager.Instance.SetupConnectionString("Guest1", "1");
 
 
         }
@@ -71,6 +71,7 @@ namespace LibA
         {
             ConnectionManager.Instance.Disconnect();
             this.statText.Text = "";
+            ConnectionManager.Instance.SetupConnectionString("Guest1", "1");
 
 
         }
@@ -219,14 +220,14 @@ namespace LibA
 
         private async void doSearch_Click(object sender, EventArgs e)
         {
-            
 
-            using (SqlCommand command = new SqlCommand("SearchBooks", await ConnectionManager.Instance.OpenConnection()))
+
+            using (SqlCommand command = new SqlCommand("SELECT * FROM BooksPublicInfo(@SearchTerm)",  await ConnectionManager.Instance.OpenConnection()))
             {
                 try
                 {
 
-                    command.CommandType = CommandType.StoredProcedure;
+                 
                     if (searchInput.Text == string.Empty || searchInput.Text.Equals("Начните вводить что-нибудь..."))
                         throw new Exception();
                     command.Parameters.AddWithValue("@SearchTerm", searchInput.Text);

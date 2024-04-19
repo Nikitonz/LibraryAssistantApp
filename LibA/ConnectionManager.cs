@@ -43,7 +43,7 @@ namespace LibA {
             if (_instance != null)
             {
                 _instance.connectionString = null;
-                _instance = null;
+               
                 DBWorker.OldTable = null;
                 Disconnection?.Invoke(this, EventArgs.Empty);
             }
