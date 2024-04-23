@@ -234,21 +234,32 @@ namespace LibA
                     SqlDataAdapter adapter = new SqlDataAdapter(command);
                     DataTable dataTable = new DataTable();
                     adapter.Fill(dataTable);
+                    dataTable.Columns.Remove("Обложка");
                     dataGridViewMain.DataSource = dataTable;
                     dataGridViewMain.Visible = true;
-                    dataGridViewMain.RowHeadersVisible = false;
                     dataGridViewMain.Columns["Год выпуска"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                     dataGridViewMain.Columns["Число страниц"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
-
                     foreach (DataGridViewColumn column in dataGridViewMain.Columns)
                     {
-                        if (column.AutoSizeMode != DataGridViewAutoSizeColumnMode.AllCells)
-                        {
-                            column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                        }
+                        column.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                     }
 
+                  
+                    
+
+                  
+                    foreach (DataGridViewRow row in dataGridViewMain.Rows)
+                    {
+                        foreach (DataGridViewCell cell in row.Cells)
+                        {
+                            if (cell.Value != null)
+                            {
+                                cell.Style.WrapMode = DataGridViewTriState.True;
+                            }
+                        }
+                    }
+                   
 
 
 
@@ -259,10 +270,12 @@ namespace LibA
                 }
             }
         }
+        private void dataGridViewMain_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            // Обработка ошибки при заполнении DataGridView данными
+           
+        }
 
-
-
-
-
+     
     }
 }

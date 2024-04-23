@@ -125,15 +125,9 @@ namespace LibA
                 ConnectionManager.Instance.SetupConnectionString(textBox3.Text, textBox4.Text);
                 using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
                 {
-                    if (connection == null)
-                        throw new Exception();
-                       
-                    if (connection.State is ConnectionState.Open)
-                    {
-                        MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else throw new Exception();
-
+                    if (connection == null || connection.State != ConnectionState.Open)
+                        throw new Exception("Ошибка подключения");
+                    MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     if (await DBWorker.CheckUserRights(await ConnectionManager.Instance.OpenConnection()))
                     {
                         HasRights?.Invoke(this, EventArgs.Empty);
@@ -142,11 +136,14 @@ namespace LibA
 
 
                 }
-                    
-                    
+
+
                 this.Close();
-                    
-               
+
+
+            }
+            catch (SqlException sqlex) {
+                this.Close();
             }
             catch (Exception ex)
             {

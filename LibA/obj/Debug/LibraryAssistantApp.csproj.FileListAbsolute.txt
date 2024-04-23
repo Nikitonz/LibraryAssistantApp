@@ -78,3 +78,17 @@ C:\Users\nikit\Desktop\LibA\LibraryAssistantApp\LibA\obj\Debug\LibraryAssistantA
 C:\Users\nikit\Desktop\LibA\LibraryAssistantApp\LibA\obj\Debug\LibraryAssistantApp.csproj.CoreCompileInputs.cache
 C:\Users\nikit\Desktop\LibA\LibraryAssistantApp\LibA\obj\Debug\LibA.exe
 C:\Users\nikit\Desktop\LibA\LibraryAssistantApp\LibA\obj\Debug\LibA.pdb
+C:\Users\nikit\Desktop\Шарпы\LibA\bin\Debug\LibA.exe.config
+C:\Users\nikit\Desktop\Шарпы\LibA\bin\Debug\LibA.exe
+C:\Users\nikit\Desktop\Шарпы\LibA\bin\Debug\LibA.pdb
+C:\Users\nikit\Desktop\Шарпы\LibA\obj\Debug\LibraryAssistantApp.csproj.AssemblyReference.cache
+C:\Users\nikit\Desktop\Шарпы\LibA\obj\Debug\LibA.AdminPanel.resources
+C:\Users\nikit\Desktop\Шарпы\LibA\obj\Debug\LibA.AuthForm.resources
+C:\Users\nikit\Desktop\Шарпы\LibA\obj\Debug\LibA.DynamicLinkerAndReports.resources
+C:\Users\nikit\Desktop\Шарпы\LibA\obj\Debug\LibA.SettingsPane.resources
+C:\Users\nikit\Desktop\Шарпы\LibA\obj\Debug\LibA.UserPanel.resources
+C:\Users\nikit\Desktop\Шарпы\LibA\obj\Debug\LibA.Properties.Resources.resources
+C:\Users\nikit\Desktop\Шарпы\LibA\obj\Debug\LibraryAssistantApp.csproj.GenerateResource.cache
+C:\Users\nikit\Desktop\Шарпы\LibA\obj\Debug\LibraryAssistantApp.csproj.CoreCompileInputs.cache
+C:\Users\nikit\Desktop\Шарпы\LibA\obj\Debug\LibA.exe
+C:\Users\nikit\Desktop\Шарпы\LibA\obj\Debug\LibA.pdb
