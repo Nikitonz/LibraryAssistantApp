@@ -86,6 +86,8 @@ namespace LibA
                 //AddProgressBarToRegBox();
                 //await Task.Delay(10000);
                 string response = await ConnectionManager.Instance.SendRegData(transfer, textBox2.Text, textBox5.Text);
+                if (response is null)
+                    throw new Exception("Похоже, сервис регистрации недоступен. Попробуйте позже");
                 if (response == "200")
                 {
                     ConnectionManager.Instance.SetupConnectionString(textBox2.Text, textBox5.Text);
@@ -101,11 +103,11 @@ namespace LibA
             }
             catch (SqlException er)
             {
-                MessageBox.Show($"Невозможно добавить такого пользователя\n" + er.Message, "RegErr", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Невозможно добавить пользователя\n" + er.Message, "RegErr", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception er)
             {
-                MessageBox.Show($"Невозможно добавить такого пользователя\n" + er.Message, "RegErr", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Невозможно добавить пользователя\n" + er.Message, "RegErr", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }
@@ -122,33 +124,27 @@ namespace LibA
         {
             try
             {
-                ConnectionManager.Instance.SetupConnectionString(textBox3.Text, textBox4.Text);
-                using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
+                bool validConn = ConnectionManager.Instance.SetupConnectionString(textBox3.Text, textBox4.Text);
+                if (validConn)
                 {
-                    if (connection == null || connection.State != ConnectionState.Open)
-                        throw new Exception("Ошибка подключения");
                     MessageBox.Show("Успешно подключено", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     if (await DBWorker.CheckUserRights(await ConnectionManager.Instance.OpenConnection()))
                     {
                         HasRights?.Invoke(this, EventArgs.Empty);
                     }
                     RegAuthSuccess?.Invoke(this, EventArgs.Empty);
-
+                    this.Close();
 
                 }
+                else throw new Exception();
 
-
-                this.Close();
+                
 
 
             }
-            catch (SqlException sqlex) {
-                this.Close();
-            }
+            
             catch (Exception ex)
             {
-                //MessageBox.Show("Ошибка подключения: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                //textBox3.Text = "";
                 textBox4.Text = "";
                 textBox3.Focus();
             }

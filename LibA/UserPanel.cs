@@ -25,7 +25,7 @@ namespace LibA
             {
                 администрированиеToolStripMenuItem.Visible = false;
             };
-            ConnectionManager.Instance.SetupConnectionString("Guest1", "1");
+            
 
 
         }
@@ -222,7 +222,7 @@ namespace LibA
         {
 
 
-            using (SqlCommand command = new SqlCommand("SELECT * FROM BooksPublicInfo(@SearchTerm)",  await ConnectionManager.Instance.OpenConnection()))
+            using (SqlCommand command = new SqlCommand("SELECT [Название],[Автор],[Жанр],[Издательство],[Год выпуска],[Число страниц],[Язык книги],[Доступность],[Как часто брали],[Краткое описание] FROM BooksPublicInfo(@SearchTerm)",  await ConnectionManager.Instance.OpenConnection()))
             {
                 try
                 {
@@ -234,11 +234,10 @@ namespace LibA
                     SqlDataAdapter adapter = new SqlDataAdapter(command);
                     DataTable dataTable = new DataTable();
                     adapter.Fill(dataTable);
-                    dataTable.Columns.Remove("Обложка");
+                    //dataTable.Columns.Remove("Обложка");
                     dataGridViewMain.DataSource = dataTable;
                     dataGridViewMain.Visible = true;
-                    dataGridViewMain.Columns["Год выпуска"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-                    dataGridViewMain.Columns["Число страниц"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                  
 
                     foreach (DataGridViewColumn column in dataGridViewMain.Columns)
                     {

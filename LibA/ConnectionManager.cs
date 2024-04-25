@@ -43,7 +43,7 @@ namespace LibA {
             if (_instance != null)
             {
                 _instance.connectionString = null;
-               
+                SetupConnectionString("Guest1", "1");
                 DBWorker.OldTable = null;
                 Disconnection?.Invoke(this, EventArgs.Empty);
             }
@@ -58,7 +58,7 @@ namespace LibA {
 
             if (login is null || password is null)
             {
-                MessageBox.Show("Поля для регистрации не могут быть пусты");
+                MessageBox.Show("Поля не могут быть пусты");
                 return false;
             }
             else
@@ -75,15 +75,16 @@ namespace LibA {
                     }
                 }
             }
+            
             catch (Exception e)
             {
                 connectionString = backup;
-                //MessageBox.Show("Ошибка создания соединения. Проверьте данные и попробуйте ещё раз");
+                MessageBox.Show("Ошибка создания соединения. Проверьте данные и попробуйте ещё раз");
                 Console.WriteLine(e.Message);
-                return false;
+                return false;  //not valid 
 
             }
-            return true;
+            return true; //valid
 
         }
 

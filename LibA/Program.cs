@@ -16,6 +16,7 @@ namespace LibA
             
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            ConnectionManager.Instance.SetupConnectionString("Guest1", "1");
             Application.Run(new UserPanel());
            
         }
