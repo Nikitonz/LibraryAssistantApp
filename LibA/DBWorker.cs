@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO.Packaging;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -70,8 +71,6 @@ namespace LibA
                 commandText = $"SELECT * FROM [{tableName}]";
             try
             {
-
-
                 using (SqlCommand command = new SqlCommand(commandText, await ConnectionManager.Instance.OpenConnection()))
                 {
                     using (SqlDataAdapter adapter = new SqlDataAdapter(command))
@@ -83,9 +82,6 @@ namespace LibA
 
                     }
                 }
-
-
-
             }
             catch (Exception e)
             {
@@ -102,12 +98,10 @@ namespace LibA
                 using (SqlCommand command = new SqlCommand(procname, await ConnectionManager.Instance.OpenConnection()))
                 {
                     command.CommandType = CommandType.StoredProcedure;
-
                     foreach (var parameter in parameters)
                     {
                         command.Parameters.Add(parameter);
                     }
-
                     await command.ExecuteNonQueryAsync();
                 }
                 MessageBox.Show($"Выполнение процедуры {procname} успешно");
@@ -116,6 +110,43 @@ namespace LibA
             {
                
                 MessageBox.Show($"Ошибка выполнения процедуры {procname}: {e.Message}");
+            }
+        }
+
+        public static async Task<DataTable> GetDataTable(string procname, params object[] parameters)
+        {
+            try
+            {
+                using (SqlCommand command = new SqlCommand($"Exec {procname}", await ConnectionManager.Instance.OpenConnection()))
+                {
+                    // Извлекаем имена параметров из строки procname
+                    Regex regex = new Regex(@"@\w+");
+                    MatchCollection matches = regex.Matches(procname);
+
+                    if (matches.Count != parameters.Length)
+                    {
+                        throw new ArgumentException("Количество параметров не соответствует количеству имен параметров в запросе.");
+                    }
+
+                    // Ассоциируем параметры с их именами в запросе
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        string paramName = matches[i].Value;
+                        command.Parameters.AddWithValue(paramName, parameters[i]);
+                    }
+
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        return dt;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка в {procname}: {ex.Message}");
+                return null;
             }
         }
 
@@ -196,10 +227,39 @@ namespace LibA
         }
 
 
+        public static async Task<List<string>> GetLinkedTableNames(string parentTableName, string columnName)
+        {
 
+            List<string> linkedTables = new List<string>();
+            try
+            {
+                using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
+                {
+                    SqlCommand command = new SqlCommand("GetDependentTableName", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@ParentTableName", parentTableName);
+                    command.Parameters.AddWithValue("@ColumnName", columnName);
+
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        string referencedTable = reader[0].ToString();
+                        linkedTables.Add(referencedTable);
+                    }
+
+                    reader.Close();
+                }
+            }
+            catch
+            {
+            }
+            return linkedTables;
+        }
 
         private static async Task<IEnumerable<string>> CheckTablePermissions(string tableName, SqlConnection connection)
         {
+            //TODO
             var builder = new SqlConnectionStringBuilder(connection.ConnectionString);
             string currentUsername = builder.UserID;
 
@@ -215,7 +275,7 @@ namespace LibA
             {
 
                 if (await CheckUserRights(connection))
-                    return new List<string> { "SELECT", "INSERT", "UPDATE", "DELETE", "ALTER", "CREATE", "DROP", "EXECUTE", "GRANT", "REFERENCES", "VIEW DEFINITION", /* и другие операции */ };
+                    return new List<string> { "SELECT", "INSERT", "UPDATE", "DELETE", "ALTER", "CREATE", "DROP", "EXECUTE", "GRANT", "REFERENCES", "VIEW DEFINITION" };
               
 
 
@@ -244,74 +304,11 @@ namespace LibA
             return userPermissions;
         }
 
-        public static string FindMatchingTableName(string columnName, List<string> tableNames, string selectedTableName)
-        {
-            string matchingTableName = string.Empty;
-            double maxSimilarity = 0;
-
-            foreach (string tableName in tableNames)
-            {
-                // Проверяем, что текущая таблица не совпадает с выбранной таблицей
-                if (!tableName.Equals(selectedTableName, StringComparison.OrdinalIgnoreCase))
-                {
-                    double similarity = CalculateSimilarity(columnName, tableName.ToLower());
-                    if (similarity > maxSimilarity)
-                    {
-                        maxSimilarity = similarity;
-                        matchingTableName = tableName;
-                    }
-                }
-            }
-
-            return matchingTableName;
-        }
-
-        private static int CalculateLevenshteinDistance(string str1, string str2)
-        {
-            int[,] matrix = new int[str1.Length + 1, str2.Length + 1];
-
-            for (int i = 0; i <= str1.Length; i++)
-            {
-                matrix[i, 0] = i;
-            }
-
-            for (int j = 0; j <= str2.Length; j++)
-            {
-                matrix[0, j] = j;
-            }
-
-            for (int i = 1; i <= str1.Length; i++)
-            {
-                for (int j = 1; j <= str2.Length; j++)
-                {
-                    int cost = (str1[i - 1] == str2[j - 1]) ? 0 : 1;
-
-                    matrix[i, j] = Math.Min(
-                        Math.Min(matrix[i - 1, j] + 1, matrix[i, j - 1] + 1),
-                        matrix[i - 1, j - 1] + cost
-                    );
-                }
-            }
-
-            return matrix[str1.Length, str2.Length];
-        }
-
-        private static double CalculateSimilarity(string str1, string str2)
-        {
-            int distance = CalculateLevenshteinDistance(str1, str2);
-            int maxLength = Math.Max(str1.Length, str2.Length);
-            if (maxLength == 0)
-            {
-                return 1.0;  // Специальный случай: две пустые строки считаются полностью схожими
-            }
-            else
-            {
-                return 1.0 - (double)distance / maxLength;
-            }
-        }
+        
 
         public static async Task<bool> CheckUserRights(SqlConnection connection)
         {
+            //TODO
             var builder = new SqlConnectionStringBuilder(connection.ConnectionString);
             string userID = builder.UserID;
             string getRolesQuery = "EXEC GetUserRoles @LoginName";

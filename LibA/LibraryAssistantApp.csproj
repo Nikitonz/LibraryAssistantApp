@@ -81,11 +81,17 @@
     </Compile>
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="DBWorker.cs" />
-    <Compile Include="DynamicLinkerAndReports.cs">
+    <Compile Include="DLinker.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DynamicLinkerAndReports.Designer.cs">
-      <DependentUpon>DynamicLinkerAndReports.cs</DependentUpon>
+    <Compile Include="DLinker.Designer.cs">
+      <DependentUpon>DLinker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reports.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reports.Designer.cs">
+      <DependentUpon>Reports.cs</DependentUpon>
     </Compile>
     <Compile Include="SettingsPane.cs">
       <SubType>Form</SubType>
@@ -113,8 +119,11 @@
     <EmbeddedResource Include="AuthForm.resx">
       <DependentUpon>AuthForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DynamicLinkerAndReports.resx">
-      <DependentUpon>DynamicLinkerAndReports.cs</DependentUpon>
+    <EmbeddedResource Include="DLinker.resx">
+      <DependentUpon>DLinker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports.resx">
+      <DependentUpon>Reports.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsPane.resx">
       <DependentUpon>SettingsPane.cs</DependentUpon>

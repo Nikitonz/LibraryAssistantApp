@@ -78,6 +78,7 @@ namespace LibA {
             
             catch (Exception e)
             {
+                
                 connectionString = backup;
                 MessageBox.Show("Ошибка создания соединения. Проверьте данные и попробуйте ещё раз");
                 Console.WriteLine(e.Message);

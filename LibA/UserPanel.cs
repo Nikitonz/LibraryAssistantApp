@@ -235,19 +235,31 @@ namespace LibA
                     DataTable dataTable = new DataTable();
                     adapter.Fill(dataTable);
                     //dataTable.Columns.Remove("Обложка");
-                    dataGridViewMain.DataSource = dataTable;
-                    dataGridViewMain.Visible = true;
-                  
-
-                    foreach (DataGridViewColumn column in dataGridViewMain.Columns)
+                    string[] availability = new string[dataTable.Rows.Count];
+                    for (int i = 0; i < dataTable.Rows.Count; i++)
                     {
-                        column.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                        availability[i] = ((int)dataTable.Rows[i]["Доступность"] == 1) ? "В наличии" : "Нет в наличии";
                     }
 
-                  
-                    
+                    int columnIndex = dataTable.Columns["Доступность"].Ordinal;
+                    dataTable.Columns.Remove("Доступность");
+                    dataTable.Columns.Add("Доступность", typeof(string));
+                    dataTable.Columns["Доступность"].SetOrdinal(columnIndex);
 
-                  
+                    for (int i = 0; i < dataTable.Rows.Count; i++)
+                    {
+                        dataTable.Rows[i]["Доступность"] = availability[i];
+                    }
+                    dataGridViewMain.DataSource = dataTable;
+                    dataGridViewMain.Visible = true;
+
+                    dataGridViewMain.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
+
+
+
+
+
                     foreach (DataGridViewRow row in dataGridViewMain.Rows)
                     {
                         foreach (DataGridViewCell cell in row.Cells)
@@ -271,10 +283,23 @@ namespace LibA
         }
         private void dataGridViewMain_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
-            // Обработка ошибки при заполнении DataGridView данными
+  
            
         }
+        private void dataGridViewMain_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (dataGridViewMain.Columns[e.ColumnIndex].Name == "Доступность") 
+            {
+                if (e.Value != null && e.Value.ToString() == "В наличии")
+                {
+                    e.CellStyle.BackColor = Color.LightGreen; 
+                }
+                else if (e.Value != null && e.Value.ToString() == "Нет в наличии")
+                {
+                    e.CellStyle.BackColor = Color.FromArgb(255, 255, 192, 192); 
+                }
+            }
+        }
 
-     
     }
 }

@@ -84,7 +84,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(611, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(732, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -187,12 +187,12 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.DBStat,
             this.statText});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 270);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 374);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
             this.statusStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
             this.statusStrip1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.statusStrip1.Size = new System.Drawing.Size(611, 29);
+            this.statusStrip1.Size = new System.Drawing.Size(732, 29);
             this.statusStrip1.TabIndex = 8;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -273,7 +273,7 @@
             this.dataGridViewMain.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Raised;
             this.dataGridViewMain.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dataGridViewMain.GridColor = System.Drawing.SystemColors.ControlLightLight;
-            this.dataGridViewMain.Location = new System.Drawing.Point(60, 72);
+            this.dataGridViewMain.Location = new System.Drawing.Point(11, 72);
             this.dataGridViewMain.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridViewMain.MultiSelect = false;
             this.dataGridViewMain.Name = "dataGridViewMain";
@@ -285,9 +285,10 @@
             this.dataGridViewMain.ShowCellToolTips = false;
             this.dataGridViewMain.ShowEditingIcon = false;
             this.dataGridViewMain.ShowRowErrors = false;
-            this.dataGridViewMain.Size = new System.Drawing.Size(44, 28);
+            this.dataGridViewMain.Size = new System.Drawing.Size(131, 69);
             this.dataGridViewMain.TabIndex = 9;
             this.dataGridViewMain.Visible = false;
+            this.dataGridViewMain.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridViewMain_CellFormatting);
             this.dataGridViewMain.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dataGridViewMain_DataError);
             // 
             // authFormBindingSource
@@ -298,7 +299,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(611, 299);
+            this.ClientSize = new System.Drawing.Size(732, 403);
             this.Controls.Add(this.dataGridViewMain);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);

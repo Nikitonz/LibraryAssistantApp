@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 
 namespace LibA
@@ -94,11 +95,13 @@ namespace LibA
 
             string selectedTable = Tables.Items[Tables.SelectedIndex > 0 ? Tables.SelectedIndex : 0].ToString();
             DataTable datatable = await DBWorker.GetDataTable(selectedTable);
+           
             if (datatable != null)
             {
                 buttonRollback.Enabled = false;
                 buttonRollback.BackColor = Color.Gray;
                 DBWorker.OldTable = datatable.Copy();
+                
                 dataGridViewMain.DataSource = datatable;
                 dataGridViewMain.Enabled = true;
                 dataGridViewMain.Visible = true;
@@ -284,43 +287,35 @@ namespace LibA
 
         private void статистикаИспользованияToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DynamicLinkerAndReports dln = new DynamicLinkerAndReports();
-            dln.MakeData("SELECT * FROM dbo.GetPercentageUsersByGroupAndFaculty(@startdate, @enddate)");
+            Reports dln = new Reports();
+            dln.MakeReport("GetPercentageUsersByGroupAndFaculty @startdate, @enddate", ReportType.With2Calendars);
             dln.ShowDialog();
         }
 
         private void проверитьКнигиУЧитателяToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DynamicLinkerAndReports dln = new DynamicLinkerAndReports();
-
-            dln.MakeData("SELECT * FROM dbo.GetDebtorsReport(@startdate, @enddate)");
+            Reports dln = new Reports();
+            dln.MakeReport("GetDebtorsReport @startdate, @enddate", ReportType.With2Calendars);
             dln.ShowDialog();
         }
 
-        private async void должникиToolStripMenuItem_Click(object sender, EventArgs e)
+        private void должникиToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                int selectedRow = 0;
-                using (DynamicLinkerAndReports dln = new DynamicLinkerAndReports())
-                {
-
-                    DataTable data = await DBWorker.GetDataTable("SELECT * from Читатель");
-                    dln.MakeData(data);
-                    dln.ShowDialog();
-                    selectedRow = dln.selectedRowCode;
-                }
-                if (selectedRow == 0)
-                    return;
-                using (DynamicLinkerAndReports dln = new DynamicLinkerAndReports())
-                {
-                    DataTable data = await DBWorker.GetDataTable($"select * from dbo.GetBookStatusAndDueDate({selectedRow})");
-                    dln.MakeData(data);
-                    dln.ShowDialog();
-                }
+            using (Reports dln = new()) {
+                dln.MakeReport("GetReaderInfoExact", ReportType.None);
+                dln.ShowDialog();
             }
-            catch { }
         }
+        private void гдеКнигаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (Reports dln = new())
+            {
+                dln.MakeReport("FindBookLocation @sterm", ReportType.TextInput);
+                dln.ShowDialog();
+            }
+        }
+
+        //OPERATIONS
 
         private async void перевестиГруппыНаСледующийГодToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -332,65 +327,50 @@ namespace LibA
 
         private async void dataGridViewMain_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            string tableName = null;
-            if (dataGridViewMain.DataSource is DataTable dataTable1)
-            {
-                tableName = dataTable1.TableName;
-            }
-
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
+                string headerText = dataGridViewMain.Columns[e.ColumnIndex].HeaderText.ToLower();
 
-                string columnName = dataGridViewMain.Columns[e.ColumnIndex].Name;
-
-
-                if (columnName.ToLower().StartsWith("код") || columnName.ToLower().StartsWith("id"))
+                if (headerText.StartsWith("код") || headerText.StartsWith("id"))
                 {
+                    string columnName = dataGridViewMain.Columns[e.ColumnIndex].Name;
+                   
+                    string ctableName = ((DataTable)dataGridViewMain.DataSource)?.TableName;
+                    List<string> tableNames = await DBWorker.GetLinkedTableNames(ctableName, columnName);
 
-                    int selectedRow = 0;
-
-                    DataTable dataTable = await GetDataForTable(columnName, tableName);
-                    using (DynamicLinkerAndReports linkerAndReports = new DynamicLinkerAndReports())
+                    if (tableNames.Count > 0)
                     {
-
-                        linkerAndReports.MakeData(dataTable);
-                        linkerAndReports.ShowDialog();
-
-                        selectedRow = linkerAndReports.selectedRowCode;
-
+                        foreach (string tableName in tableNames)
+                        {
+                       
+                            DataTable dependentTable = await DBWorker.GetDataTable(tableName);
+                            
+                           
+                            if (dependentTable != null)
+                            {
+                                DLinker dLinkerForm = new DLinker(dependentTable);
+                                dLinkerForm.SelectionMade += (selectedValue) =>
+                                {
+                                    dataGridViewMain.EndEdit();
+                                    dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = selectedValue;
+                                };
+                                dLinkerForm.ShowDialog();
+                              
+                            }
+                            else
+                            {
+                                MessageBox.Show($"Связанная таблица '{tableName}' не найдена.");
+                            }
+                        }
                     }
-                    if (selectedRow != 0)
+                    else
                     {
-                        dataGridViewMain.EndEdit();
-                        dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = selectedRow;
-                        dataGridViewMain.InvalidateCell(e.ColumnIndex, e.RowIndex);
+                        MessageBox.Show("Связанная таблица не найдена.");
                     }
                 }
             }
         }
-
-
-
-
-        private async Task<DataTable> GetDataForTable(string columnName, string selectedTable)
-        {
-            DataTable dataTable = new DataTable();
-            string lowerColumnName = columnName.ToLower();
-
-            string[] tablesSM = await DBWorker.BdGetDataMSSQL("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' order by table_name ASC");
-            List<string> tables = new List<string>(tablesSM);
-
-
-            string matchingTableName = DBWorker.FindMatchingTableName(lowerColumnName, tables, selectedTable);
-
-            if (!string.IsNullOrEmpty(matchingTableName))
-            {
-                dataTable = await DBWorker.GetDataTable(matchingTableName);
-            }
-
-            return dataTable;
-        }
-
+        
         private async void загрузкаПервокурсниковToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -499,7 +479,7 @@ namespace LibA
         }
         private int GetOrCreateGroup(SqlConnection connection, string groupName)
         {
-
+            //TODO
             string selectGroupQuery = "SELECT Код FROM Группа WHERE Название = @GroupName AND Курс = 1";
 
             using (SqlCommand selectGroupCommand = new SqlCommand(selectGroupQuery, connection))
@@ -526,6 +506,13 @@ namespace LibA
                 }
             }
         }
+
+        private void dataGridViewMain_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+
+        }
+
+        
     }
 
 
