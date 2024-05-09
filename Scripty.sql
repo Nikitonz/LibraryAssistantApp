@@ -4,85 +4,59 @@ use Библиотека;
 DROP PROCEDURE GetUserRoles;
 DROP PROCEDURE GetUserTablePermissions;
 DROP PROCEDURE RemoveOutdatedReaders;
-DROP FUNCTION dbo.GetPercentageUsersByGroupAndFaculty;
-DROP FUNCTION dbo.GetDebtorsReport
-DROP FUNCTION dbo.GetBookStatusAndDueDate
+DROP PROCEDURE GetPercentageUsersByGroupAndFaculty;
+DROP PROCEDURE GetDebtorsReport
+DROP PROCEDURE GetReaderInfoExact
 DROP FUNCTION BooksPublicInfo
+DROP PROCEDURE dbo.GetDependentTableName;
+DROP PROCEDURE FindBookLocation
 DROP TABLE АрхивЧитателей
-GO
 alter table Книга
 drop constraint FK_Книга_Издательство,
 constraint FK_Книга_Жанр,
 constraint FK_Книга_Стеллаж
-GO
 alter table [Автор книги]
 drop constraint FK_Книга_Автор_книги,
 constraint FK_Автор_книги_Авторы
-GO
 alter table [Поступление книг]
 drop constraint FK_Книга_Поступления_книг,
 constraint FK_Поступление_книг_Поставки
-GO
 alter table [Списание книг]
 drop constraint FK_Книга_Списание_книг,
 constraint FK_Списание_книг_Списание
-GO
 alter table [Выдача и возврат]
-drop constraint FK_Выдача_Возврат_Книга,
-constraint FK_Выдача_Возврат_Сотрудники,
-constraint FK_Выдача_Возврат_Читатель
-GO
+drop constraint FK_Выдача_и_возврат_Книга,
+constraint FK_Выдача_и_возврат_Сотрудники,
+constraint FK_Выдача_и_возврат_Читатель
 alter table [Стеллажи]
 drop constraint FK_Стеллажи_Помещения
-GO
 alter table [Сотрудники]
 drop constraint FK_Сотрудники_Помещения
-go
 alter table [Поставки]
 drop constraint FK_Поставки_Сотрудники
-go
 alter table [Списание]
 drop constraint FK_Списание_Сотрудники
-go
 alter table Группа
 drop constraint FK_Группа_Факультеты
-go
 alter table Читатель
 drop constraint FK_Читатель_Группы
-go
 drop table Издательство
-go
 drop table Жанр
-go
 drop table Книга
-go
 drop table [Автор книги]
-go
 drop table Авторы
-go
 drop table [Поступление книг]
-go
 drop table Поставки
-go
 drop table [Списание книг]
-go
 drop table Списание
-go
 drop table [Выдача и возврат]
-go
 drop table Стеллажи
-go
 drop table Читатель
-go
 drop table [Помещения]
-go
 drop table Сотрудники
-go
 drop table Факультет
-go
 drop table Группа
-go
-
+GO
 
 Create table Издательство
 (Код int not null primary key identity,
@@ -109,7 +83,8 @@ create table Книга
 [Язык книги] varchar(20) not null,
 [Обложка] VARBINARY(MAX),
 [Краткое описание] varchar(4000),
-[Цена] money
+[Цена] money,
+[Инвентарный номер] varchar(20)
 )
 GO
 
@@ -246,7 +221,9 @@ CREATE TABLE АрхивЧитателей (
         [Адрес проживания] VARCHAR(40),
         [Данные паспорта] CHAR(60),
         [Номер читательского билета] VARCHAR(40),
-        [Код группы] INT,
+        [Название группы] varchar(20),
+		[Факультет] varchar(20),
+		[Задолженности] varchar(500),
         [Имя для входа] VARCHAR(100)
     );
 
@@ -263,16 +240,16 @@ constraint FK_Автор_книги_Авторы  foreign key ([Код автора]) references Авторы(К
 GO
 alter table [Поступление книг]
 add constraint FK_Книга_Поступления_книг foreign key ([Код книги]) references Книга(Код),
-constraint FK_Поступление_книг_Поставки  foreign key ([Код поставки]) references Авторы(Код)
+constraint FK_Поступление_книг_Поставки  foreign key ([Код поставки]) references Поставки(Код)
 GO
 alter table [Списание книг]
-add constraint FK_Книга_Списание_книг foreign key ([Код книги]) references Поставки(Код),
+add constraint FK_Книга_Списание_книг foreign key ([Код книги]) references Книга(Код),
 constraint FK_Списание_книг_Списание  foreign key ([Код списания книг]) references Списание(Код)
 GO
 alter table [Выдача и возврат]
-add constraint FK_Выдача_Возврат_Книга foreign key ([Код книги]) references Книга(Код),
-constraint FK_Выдача_Возврат_Сотрудники foreign key ([Код сотрудника, выдавшего книгу]) references Сотрудники(Код),
-constraint FK_Выдача_Возврат_Читатель foreign key ([Код читателя]) references Читатель(Код)
+add constraint FK_Выдача_и_возврат_Книга foreign key ([Код книги]) references Книга(Код),
+constraint FK_Выдача_и_возврат_Сотрудники foreign key ([Код сотрудника, выдавшего книгу]) references Сотрудники(Код),
+constraint FK_Выдача_и_возврат_Читатель foreign key ([Код читателя]) references Читатель(Код)
 GO
 alter table [Стеллажи]
 add constraint FK_Стеллажи_Помещения  foreign key ([Код зала]) references Помещения(Код)
@@ -335,10 +312,10 @@ INSERT INTO Издательство values
 INSERT INTO Книга ([Код издательства], [Код жанра], [Код стеллажа], [Название], [Год выпуска], [Число страниц], [Язык книги], [Обложка], [Краткое описание], [Цена])
 VALUES 
     (1, 1, 1, 'Война и мир', 1869, 1225, 'русский', NULL, 'Эпический роман Льва Толстого о войне 1812 года', 25.99),
-    (2, 2, 2, 'Преступление и наказание', 1866, 551, 'русский', NULL, 'Роман Федора Достоевского о преступлении и наказании', 19.99),
+    (2, 2, 2, 'Преступление и наказание', 1866, 551, 'русский', NULL, 'Роман Федора Достоевского о преступлении и наказании 987897897987897854848546548756714273173213213213212312313213213213213213213213213215649674987987', 19.99),
     (2, 3, 3, 'Евгений Онегин', 1833, 368, 'русский', NULL, 'Роман Александра Пушкина', 14.99),
-    (1, 4, 4, 'Дама с собачкой', 1899, 192, 'русский', (SELECT BulkColumn FROM Openrowset(Bulk 'D:\Downloads\43w8XwCrfeQ.jpg', Single_Blob) as Image), 'Повесть Антона Чехова', 12.99);
-
+    (1, 4, 4, 'Дама с собачкой', 1899, 192, 'русский', null, 'Повесть Антона Чехова', 12.99);
+	-- (SELECT BulkColumn FROM Openrowset(Bulk 'D:\Downloads\43w8XwCrfeQ.jpg', Single_Blob) as Image)
 -- Для таблицы [Автор книги]
 INSERT INTO [Автор книги] ([Код книги], [Код автора])
 VALUES 
@@ -379,11 +356,11 @@ VALUES
 -- Для таблицы Группа
 INSERT INTO Группа (Название, [Год поступления], [Год окончания], [Код факультета])
 VALUES 
-    ('ПИ-20', 2, 4, 1),
-    ('ПО-19', 1, 4, 1),
-    ('ИТП-21', 1, 4, 1),
-    ('ЭК-22', 1, 4, 1),
-    ('М-20', 2, 4, 2);
+    ('ПИ-20', 2020, 2023, 1),
+    ('ПО-19', 2019, 2023, 1),
+    ('ИТП-21', 2019, 2025, 1),
+    ('ЭК-22', 2020, 2025, 1),
+    ('М-20', 2020, 2024, 2);
 
 
 
@@ -395,13 +372,13 @@ VALUES
     ('Сидоров', 'Алексей', 'Петрович', '1998-07-25', '+375291234569', 'ул. Кирова, 15', 'MP3456789', 'C003', 3);
 
 -- Для таблицы [Выдача и возврат]
-INSERT INTO [Выдача и возврат] ([Код читателя], [Код книги], [Инвертарный номер], [Дата выдачи], [Код сотрудника, выдавшего книгу])
+INSERT INTO [Выдача и возврат] ([Код читателя], [Код книги], [Инвертарный номер], [Дата выдачи],[Дата возврата], [Код сотрудника, выдавшего книгу])
 VALUES 
-    (1, 1, 'INV001', '2023-04-01', 1),
-    (2, 2, 'INV002', '2023-04-05', 2),
-    (3, 3, 'INV003', '2023-04-10', 3),
-    (1, 4, 'INV004', '2023-04-15', 4),
-    (2, 1, 'INV005', '2023-04-20', 1);
+    (1, 1, 'INV001', '2023-04-01',null, 1),
+    (2, 2, 'INV002', '2023-05-05',null, 2),
+    (3, 3, 'INV003', '2023-06-10','2024-05-05', 3)
+    --(1, 1, 'INV004', '2023-04-15', 4),
+    --(2, 1, 'INV005', '2023-04-20', 1);
 GO
 
 --ПУБЛИЧНАЯ ИНФОРМАЦИЯ
@@ -414,7 +391,7 @@ RETURN
 (
     SELECT 
         Книга.[Название], 
-        [Авторы].[Фамилия] + ' ' + [Авторы].[Имя] AS Автор,
+        [Авторы].[Фамилия] + ' ' + [Авторы].[Имя] + ' ' + Авторы.Отчество AS Автор,
         Жанр.[Название жанра] AS Жанр,
         Издательство.[Название] AS Издательство,
         Книга.[Год выпуска], 
@@ -422,16 +399,17 @@ RETURN
         Книга.[Язык книги], 
         Книга.[Обложка], 
         CASE 
-            WHEN (
-                SELECT COUNT(*) 
-                FROM [Выдача и возврат] 
-                WHERE 
-                    [Код книги] = Книга.Код AND 
-                    [Дата возврата] IS NULL AND 
-                    [Книга утеряна] = 0
-            ) = 0 THEN 0
-            ELSE 1
-        END AS Доступность, 
+			WHEN EXISTS (
+				SELECT 1
+				FROM [Выдача и возврат]
+				WHERE 
+					[Код книги] = Книга.Код AND 
+					[Дата возврата] IS NOT NULL AND 
+					([Книга утеряна] IS NULL OR [Книга утеряна] = 0)
+            
+			) THEN 1
+			ELSE 0
+		END AS Доступность,
         (
             SELECT COUNT(*) 
             FROM [Выдача и возврат] 
@@ -456,13 +434,30 @@ RETURN
         OR [Авторы].[Отчество] LIKE '%' + @SearchTerm + '%'
         OR Жанр.[Название жанра] LIKE '%' + @SearchTerm + '%'
 );
+
+
+--КОНЕЦ ПУБЛИЧНАЯ ИНФОРМАЦИЯ
+GO
+--СЛУЖЕБНЫЕ ОПЕРАЦИИ
+IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'Guest1')
+BEGIN
+    DROP USER Guest1;
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'Guest1')
+BEGIN
+    DROP LOGIN Guest1;
+END
 GO
 
 
-select * from BooksPublicInfo('');
-go
---КОНЕЦ ПУБЛИЧНАЯ ИНФОРМАЦИЯ
+CREATE LOGIN Guest1 WITH PASSWORD = '1';
+CREATE USER Guest1 FOR LOGIN Guest1;
 
+GRANT SELECT ON Библиотека.dbo.BooksPublicInfo TO Guest1;
+GO
+--КОНЕЦ СЛУЖЕБНЫЕ ОПЕРАЦИИ
 --СЛУЖЕБНАЯ ИНФОРМАЦИЯ
 CREATE PROCEDURE GetUserTablePermissions
 	@DatabaseUserName NVARCHAR(255),
@@ -497,17 +492,52 @@ BEGIN
 END;
 go
 
+
+CREATE PROCEDURE GetDependentTableName
+	@ParentTableName varchar(50),
+	@ColumnName varchar(50)
+as
+BEGIN
+SELECT 
+        OBJECT_NAME(fk.referenced_object_id) AS ReferencedTable
+    FROM 
+        sys.foreign_key_columns fkc
+        JOIN sys.foreign_keys fk ON fkc.constraint_object_id = fk.object_id
+        JOIN sys.columns c ON fkc.parent_column_id = c.column_id AND fkc.parent_object_id = c.object_id
+    WHERE 
+        OBJECT_NAME(fk.parent_object_id) = @ParentTableName
+        AND c.name = @ColumnName
+END;
+
+/*
+SELECT 
+    fk.name AS ForeignKey,
+    OBJECT_NAME(fk.parent_object_id) AS ParentTable,
+    c1.name AS ParentColumn,
+    OBJECT_NAME(fk.referenced_object_id) AS ReferencedTable,
+    c2.name AS ReferencedColumn
+FROM 
+    sys.foreign_keys AS fk
+INNER JOIN 
+    sys.foreign_key_columns AS fkc ON fk.OBJECT_ID = fkc.constraint_object_id
+INNER JOIN 
+    sys.columns AS c1 ON fkc.parent_object_id = c1.object_id AND fkc.parent_column_id = c1.column_id
+INNER JOIN 
+    sys.columns AS c2 ON fkc.referenced_object_id = c2.object_id AND fkc.referenced_column_id = c2.column_id
+WHERE 
+    OBJECT_NAME(fk.parent_object_id) = 'Книга'
+	*/
 --КОНЕЦ СЛУЖЕБНАЯ ИНФОРМАЦИЯ
+go
 --ОТЧЕТЫ 
-CREATE FUNCTION dbo.GetPercentageUsersByGroupAndFaculty
+
+CREATE PROCEDURE dbo.GetPercentageUsersByGroupAndFaculty
 (
     @StartDate DATE,
     @EndDate DATE
 )
-RETURNS TABLE
 AS
-RETURN
-(
+BEGIN
     WITH ВыдачиКниг AS (
         SELECT
             Ч.Код AS [Код читателя],
@@ -537,7 +567,7 @@ RETURN
     SELECT
         Ф.[Название] AS [Название факультета],
         Г.[Название] AS [Название группы],
-        CAST(YEAR(GETDATE())-Г.[Год поступления] as INT) as [Курс],
+        CAST(YEAR(GETDATE()) - Г.[Год поступления] AS INT) AS [Курс],
         ISNULL(ЧитателиСВыдачами.С_выдачами, 0) AS [С выдачами],
         ISNULL(Читатели.Общее_количество, 0) AS [Общее количество],
         IIF(ISNULL(Читатели.Общее_количество, 0) = 0, 0, 100 * CAST(ISNULL(ЧитателиСВыдачами.С_выдачами, 0) AS FLOAT) / CAST(ISNULL(Читатели.Общее_количество, 0) AS FLOAT)) AS [Процент пользователей от читателей]
@@ -558,16 +588,18 @@ RETURN
             GROUP BY
                 Г.[Код факультета],
                 Г.[Код]
-        ) AS Читатели ON Г.[Код] = Читатели.[Код группы] AND Ф.[Код] = Читатели.[Код факультета]
-);
+        ) AS Читатели ON Г.[Код] = Читатели.[Код группы] AND Ф.[Код] = Читатели.[Код факультета];
+END;
 go
 
 
-CREATE FUNCTION dbo.GetDebtorsReport(@StartDate DATETIME2, @EndDate DATETIME2)
-RETURNS TABLE
-AS
-RETURN
+CREATE PROCEDURE dbo.GetDebtorsReport
 (
+    @StartDate DATETIME2,
+    @EndDate DATETIME2
+)
+AS
+BEGIN
     WITH ВыдачиКниг AS (
         SELECT
             Г.[Код факультета],
@@ -598,85 +630,123 @@ RETURN
     SELECT
         Ф.[Название] AS [Название факультета],
         Г.[Название] AS [Название группы],
-        CAST(YEAR(GETDATE())-Г.[Год поступления] AS INT) AS Курс,
-        VK.[Месяц],
+        CAST(YEAR(GETDATE()) - Г.[Год поступления] AS INT) AS Курс,
+        VK.[Месяц] as [Месяц выдачи книги],
         VK.[Семестр],
         VK.[Год],
         VK.[Количество должников]
     FROM
         ВыдачиКниг VK
         INNER JOIN Группа Г ON VK.[Код группы] = Г.[Код]
-        INNER JOIN Факультет Ф ON VK.[Код факультета] = Ф.[Код]
-);
-
+        INNER JOIN Факультет Ф ON VK.[Код факультета] = Ф.[Код];
+END;
 go
 
-CREATE FUNCTION dbo.GetBookStatusAndDueDate
-(
-    @ReaderID INT,
-    @BookID INT
-)
-RETURNS TABLE
+CREATE PROCEDURE dbo.GetReaderInfoExact
 AS
-RETURN
-(
+BEGIN
     SELECT
-        CASE
-            WHEN EXISTS (
-                SELECT 1
-                FROM [Выдача и возврат]
-                WHERE [Код читателя] = @ReaderID
-                AND [Код книги] = @BookID
-                AND [Дата возврата] IS NULL
-            ) THEN 'Книга на руках'
-            ELSE 'Книга сдана'
-        END AS [Статус книги],
-        DATEADD(MONTH, 1, [Выдача и возврат].[Дата выдачи]) AS [Ближайшая дата сдачи]       --MIN(ISNULL([Дата возврата], '9999-12-31'))
-    FROM [Выдача и возврат]
-    WHERE [Код читателя] = @ReaderID
-    AND [Код книги] = @BookID
-);
-go
+        
+        [Читатель].[Фамилия],
+        [Читатель].[Имя],
+        [Читатель].[Отчество],
+        [Читатель].[Дата рождения],
+        [Читатель].[Контактный номер],
+        [Читатель].[Адрес проживания],
+        [Читатель].[Данные паспорта],
+        [Читатель].[Номер читательского билета],
+        [Группа].[Название] as 'Название группы',
+        [Факультет].[Название] as 'Название факультета',
+        [Читатель].[Имя для входа],
+        [Выдача и возврат].[Дата выдачи] AS [Дата выдачи книги],
+        [Выдача и возврат].[Дата возврата] AS [Дата возврата книги],
+        [Книга].[Название] AS [Название книги],
+        [Книга].[Язык книги] AS [Язык книги],
+		[Книга].[Инвентарный номер]
+    FROM [Читатель]
+    INNER JOIN [Выдача и возврат] ON [Читатель].[Код] = [Выдача и возврат].[Код читателя]
+    INNER JOIN [Книга] ON [Выдача и возврат].[Код книги] = [Книга].[Код]
+	INNER JOIN Группа ON Группа.Код = Читатель.[Код группы]
+	INNER JOIN Факультет ON Факультет.Код = Группа.[Код факультета]
+    WHERE [Выдача и возврат].[Дата возврата] IS NULL;
+END;
+GO
+CREATE PROCEDURE FindBookLocation
+    @sterm NVARCHAR(100)
+AS
+BEGIN
+    SELECT
+        [Авторы].[Фамилия] + ' ' + [Авторы].[Имя] + ' ' + Авторы.Отчество AS Автор,
+        Книга.Название AS 'Название книги',
+        Стеллажи.[Номер стеллажа] AS 'Номер стеллажа',
+        Помещения.Название AS 'Название помещения',
+        Помещения.Название AS 'Тип помещения',
+        Помещения.[Адрес помещения] AS 'Адрес помещения'
+    FROM
+        Книга
+	INNER JOIN 
+		[Автор книги] ON Книга.Код=[Автор книги].[Код книги]
+	INNER JOIN 
+		[Авторы] ON [Автор книги].[Код автора] = Авторы.Код
+    INNER JOIN
+        Стеллажи ON Книга.[Код стеллажа] = Стеллажи.Код
+    INNER JOIN
+        Помещения ON Стеллажи.[Код зала] = Помещения.Код
+    WHERE
+        Книга.Название LIKE '%' + @sterm + '%' OR
+        EXISTS (
+            SELECT 1
+            FROM
+                [Автор книги]
+            INNER JOIN
+                Авторы ON [Автор книги].[Код автора] = Авторы.Код
+            WHERE
+                [Авторы].[Фамилия] LIKE '%' + @sterm + '%' OR
+                [Авторы].[Имя] LIKE '%' + @sterm + '%' OR
+                [Авторы].[Отчество] LIKE '%' + @sterm + '%'
+        ) OR
+        EXISTS (
+            SELECT 1
+            FROM
+                Жанр
+            WHERE
+                Жанр.[Название жанра] LIKE '%' + @sterm + '%'
+        );
+END;
+GO
+
+
 
 --КОНЕЦ ОТЧЕТОВ
+GO
 -- ОПЕРАЦИИ
-IF EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'Guest1')
-BEGIN
-    DROP USER Guest1;
-END
-GO
-
-IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'Guest1')
-BEGIN
-    DROP LOGIN Guest1;
-END
-GO
-
-
-CREATE LOGIN Guest1 WITH PASSWORD = '1';
-CREATE USER Guest1 FOR LOGIN Guest1;
-
-GRANT SELECT ON Библиотека.dbo.BooksPublicInfo TO Guest1;
-GO
-
-
 
 CREATE PROCEDURE RemoveOutdatedReaders AS
 BEGIN
-  
-   
-
-  
-    INSERT INTO АрхивЧитателей
-    SELECT *
+    
+    INSERT INTO АрхивЧитателей ([Фамилия], [Имя], [Отчество], [Дата рождения],
+                                 [Контактный номер], [Адрес проживания], [Данные паспорта],
+                                 [Номер читательского билета], [Название группы], [Факультет],
+                                 [Задолженности], [Имя для входа])
+    SELECT Читатель.[Фамилия], Читатель.[Имя], Читатель.[Отчество], Читатель.[Дата рождения],
+           Читатель.[Контактный номер], Читатель.[Адрес проживания], Читатель.[Данные паспорта],
+           Читатель.[Номер читательского билета], Группа.[Название], Факультет.[Название],
+           (SELECT STRING_AGG(CONCAT(Книга.[Название], ' (', Книга.[Инвентарный номер], ')', ' - ', 
+                                    CONVERT(VARCHAR(10), [Дата выдачи], 104)), ', ')
+            FROM [Выдача и возврат]
+            INNER JOIN Книга ON [Выдача и возврат].[Код книги] = Книга.[Код]
+            WHERE [Выдача и возврат].[Код читателя] = Читатель.[Код] AND [Дата возврата] IS NULL) AS [Задолженности],
+           Читатель.[Имя для входа]
     FROM Читатель
-	inner join Группа on Читатель.[Код группы] = Группа.Код
-    WHERE YEAR(GETDATE()) > [Год окончания];
+    INNER JOIN Группа ON Читатель.[Код группы] = Группа.Код
+    INNER JOIN Факультет ON Группа.[Код факультета] = Факультет.Код
+    WHERE YEAR(GETDATE()) > Группа.[Год окончания];
 
-   
-/*    DELETE FROM Читатель
-	
-    WHERE YEAR(GETDATE()) > ;*/
+    -- Удаляем читателей из таблицы Читатель
+    --DELETE FROM Читатель
+    --WHERE [Код] IN (SELECT [Код] FROM АрхивЧитателей);
 END;
-GO
+
 --КОНЕЦ ОПЕРАЦИИ
+
+GO
