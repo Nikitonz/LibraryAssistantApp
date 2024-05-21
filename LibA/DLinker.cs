@@ -15,25 +15,37 @@ namespace LibA
     {
         public delegate void SelectionDelegate(string selectedValue);
         public event SelectionDelegate SelectionMade;
-        public DLinker(DataTable dt)
+        public DLinker(DataTable dt, int code = 0)
         {
-            
             InitializeComponent();
             dataGridViewMain.DataSource = dt;
             dataGridViewMain.Columns[0].Visible = false;
             this.Text = $"Режим выбора: {dt.TableName}";
-        }
 
+            this.Load += (sender, e) =>
+            {
+                DataGridViewRow row = dataGridViewMain.Rows
+                    .Cast<DataGridViewRow>()
+                    .FirstOrDefault(r => Convert.ToInt32(r.Cells["Код"].Value) == code);
+                if (row != null)
+                {
+                    int rowIndex = row.Index;
+                    dataGridViewMain.FirstDisplayedScrollingRowIndex = rowIndex;
+                    row.Selected = true;
+                }
+            };
+        }
+        
         private async void dataGridViewMain_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
 
-            if (e.RowIndex >= 0 && e.ColumnIndex >=0)
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
 
                 string headerText = dataGridViewMain.Columns[e.ColumnIndex].HeaderText.ToLower();
 
 
-                if ((headerText.StartsWith("код") || headerText.StartsWith("id"))&& !(headerText.Equals("код", StringComparison.OrdinalIgnoreCase) || headerText.Equals("id", StringComparison.OrdinalIgnoreCase)) )
+                if ((headerText.StartsWith("код") || headerText.StartsWith("id")) && !(headerText.Equals("код", StringComparison.OrdinalIgnoreCase) || headerText.Equals("id", StringComparison.OrdinalIgnoreCase)))
                 {
 
                     string columnName = dataGridViewMain.Columns[e.ColumnIndex].Name;
@@ -51,7 +63,7 @@ namespace LibA
 
                             if (dependentTable != null)
                             {
-                                DLinker dLinkerForm = new DLinker(dependentTable);
+                                DLinker dLinkerForm = new DLinker(dependentTable, (int)dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
                                 dLinkerForm.SelectionMade += (selectedValue) =>
                                 {
                                     dataGridViewMain.EndEdit();
@@ -74,7 +86,7 @@ namespace LibA
 
                 }
 
-                
+
             }
             else
             {

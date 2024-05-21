@@ -92,19 +92,31 @@ namespace LibA
 
         }
 
-        public static async Task ExecProcedure(string procname, params SqlParameter[] parameters) {
+        public static async Task ExecProcedure(string procname, params object[] parameters) {
             try
             {
+                if (procname.ToLower().StartsWith("exec"))
+                    procname = "Execute " + procname;
                 using (SqlCommand command = new SqlCommand(procname, await ConnectionManager.Instance.OpenConnection()))
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    foreach (var parameter in parameters)
+
+                    Regex regex = new Regex(@"@\w+");
+                    MatchCollection matches = regex.Matches(procname);
+
+                    if (matches.Count != parameters.Length)
                     {
-                        command.Parameters.Add(parameter);
+                        throw new ArgumentException("Количество параметров не соответствует количеству имен параметров в запросе.");
+                    }
+
+
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        string paramName = matches[i].Value;
+                        command.Parameters.AddWithValue(paramName, parameters[i]);
                     }
                     await command.ExecuteNonQueryAsync();
                 }
-                MessageBox.Show($"Выполнение процедуры {procname} успешно");
+                
             }
             catch (Exception e)
             {
@@ -117,9 +129,11 @@ namespace LibA
         {
             try
             {
-                using (SqlCommand command = new SqlCommand($"Exec {procname}", await ConnectionManager.Instance.OpenConnection()))
+                if (procname.ToLower().StartsWith("exec"))
+                    procname = "Execute " + procname;
+                using (SqlCommand command = new SqlCommand(procname, await ConnectionManager.Instance.OpenConnection()))
                 {
-                    // Извлекаем имена параметров из строки procname
+                    
                     Regex regex = new Regex(@"@\w+");
                     MatchCollection matches = regex.Matches(procname);
 
@@ -128,7 +142,7 @@ namespace LibA
                         throw new ArgumentException("Количество параметров не соответствует количеству имен параметров в запросе.");
                     }
 
-                    // Ассоциируем параметры с их именами в запросе
+                   
                     for (int i = 0; i < parameters.Length; i++)
                     {
                         string paramName = matches[i].Value;
@@ -159,6 +173,9 @@ namespace LibA
 
         public static async Task BeginTransaction(DataTable dt)
         {
+
+
+
             using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
             {
                 IEnumerable<string> userPermissions = await CheckTablePermissions(dt.TableName, connection);
@@ -179,6 +196,7 @@ namespace LibA
                         {
                             using (SqlDataAdapter adapter = new SqlDataAdapter($"SELECT * FROM [{dt.TableName}]", connection))
                             {
+                               
                                 adapter.SelectCommand.Transaction = transaction;
 
                                 SqlCommandBuilder commandBuilder = new SqlCommandBuilder(adapter);

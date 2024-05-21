@@ -70,7 +70,7 @@
             this.DBStat.MergeAction = System.Windows.Forms.MergeAction.Replace;
             this.DBStat.Name = "DBStat";
             this.DBStat.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.DBStat.Size = new System.Drawing.Size(121, 24);
+            this.DBStat.Size = new System.Drawing.Size(148, 24);
             this.DBStat.Text = "База данных: OK";
             // 
             // menuStrip1
@@ -83,8 +83,8 @@
             this.оПрограммеToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(732, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(976, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -94,7 +94,7 @@
             this.регистрацияИАвторизацияToolStripMenuItem,
             this.выходToolStripMenuItem1});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // регистрацияИАвторизацияToolStripMenuItem
@@ -103,20 +103,20 @@
             this.зарегистрироватьсяToolStripMenuItem,
             this.авторизироватьсяToolStripMenuItem});
             this.регистрацияИАвторизацияToolStripMenuItem.Name = "регистрацияИАвторизацияToolStripMenuItem";
-            this.регистрацияИАвторизацияToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.регистрацияИАвторизацияToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
             this.регистрацияИАвторизацияToolStripMenuItem.Text = "Регистрация и авторизация";
             // 
             // зарегистрироватьсяToolStripMenuItem
             // 
             this.зарегистрироватьсяToolStripMenuItem.Name = "зарегистрироватьсяToolStripMenuItem";
-            this.зарегистрироватьсяToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.зарегистрироватьсяToolStripMenuItem.Size = new System.Drawing.Size(234, 26);
             this.зарегистрироватьсяToolStripMenuItem.Text = "Зарегистрироваться";
             this.зарегистрироватьсяToolStripMenuItem.Click += new System.EventHandler(this.зарегистрироватьсяToolStripMenuItem_Click);
             // 
             // авторизироватьсяToolStripMenuItem
             // 
             this.авторизироватьсяToolStripMenuItem.Name = "авторизироватьсяToolStripMenuItem";
-            this.авторизироватьсяToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.авторизироватьсяToolStripMenuItem.Size = new System.Drawing.Size(234, 26);
             this.авторизироватьсяToolStripMenuItem.Text = "Авторизироваться";
             this.авторизироватьсяToolStripMenuItem.Click += new System.EventHandler(this.авторизироватьсяToolStripMenuItem_Click);
             // 
@@ -126,28 +126,28 @@
             this.изУчетнойЗаписиToolStripMenuItem,
             this.изПриложенияToolStripMenuItem});
             this.выходToolStripMenuItem1.Name = "выходToolStripMenuItem1";
-            this.выходToolStripMenuItem1.Size = new System.Drawing.Size(225, 22);
+            this.выходToolStripMenuItem1.Size = new System.Drawing.Size(286, 26);
             this.выходToolStripMenuItem1.Text = "Выход";
             this.выходToolStripMenuItem1.Click += new System.EventHandler(this.выходToolStripMenuItem1_Click);
             // 
             // изУчетнойЗаписиToolStripMenuItem
             // 
             this.изУчетнойЗаписиToolStripMenuItem.Name = "изУчетнойЗаписиToolStripMenuItem";
-            this.изУчетнойЗаписиToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.изУчетнойЗаписиToolStripMenuItem.Size = new System.Drawing.Size(223, 26);
             this.изУчетнойЗаписиToolStripMenuItem.Text = "Из учетной записи";
             this.изУчетнойЗаписиToolStripMenuItem.Click += new System.EventHandler(this.изУчетнойЗаписиToolStripMenuItem_Click);
             // 
             // изПриложенияToolStripMenuItem
             // 
             this.изПриложенияToolStripMenuItem.Name = "изПриложенияToolStripMenuItem";
-            this.изПриложенияToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.изПриложенияToolStripMenuItem.Size = new System.Drawing.Size(223, 26);
             this.изПриложенияToolStripMenuItem.Text = "Из приложения";
             this.изПриложенияToolStripMenuItem.Click += new System.EventHandler(this.изПриложенияToolStripMenuItem_Click);
             // 
             // администрированиеToolStripMenuItem
             // 
             this.администрированиеToolStripMenuItem.Name = "администрированиеToolStripMenuItem";
-            this.администрированиеToolStripMenuItem.Size = new System.Drawing.Size(134, 20);
+            this.администрированиеToolStripMenuItem.Size = new System.Drawing.Size(170, 24);
             this.администрированиеToolStripMenuItem.Text = "Администрирование";
             this.администрированиеToolStripMenuItem.Visible = false;
             this.администрированиеToolStripMenuItem.Click += new System.EventHandler(this.администрированиеToolStripMenuItem_Click);
@@ -155,7 +155,7 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(79, 20);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(98, 24);
             this.settingsToolStripMenuItem.Text = "Настройки";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -165,19 +165,19 @@
             this.справкаToolStripMenuItem,
             this.разработчикToolStripMenuItem});
             this.оПрограммеToolStripMenuItem.Name = "оПрограммеToolStripMenuItem";
-            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(94, 20);
+            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(118, 24);
             this.оПрограммеToolStripMenuItem.Text = "О программе";
             // 
             // справкаToolStripMenuItem
             // 
             this.справкаToolStripMenuItem.Name = "справкаToolStripMenuItem";
-            this.справкаToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.справкаToolStripMenuItem.Size = new System.Drawing.Size(180, 26);
             this.справкаToolStripMenuItem.Text = "Справка";
             // 
             // разработчикToolStripMenuItem
             // 
             this.разработчикToolStripMenuItem.Name = "разработчикToolStripMenuItem";
-            this.разработчикToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.разработчикToolStripMenuItem.Size = new System.Drawing.Size(180, 26);
             this.разработчикToolStripMenuItem.Text = "Разработчик";
             this.разработчикToolStripMenuItem.Click += new System.EventHandler(this.разработчикToolStripMenuItem_Click);
             // 
@@ -187,12 +187,12 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.DBStat,
             this.statText});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 374);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 466);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 13, 0);
             this.statusStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
             this.statusStrip1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.statusStrip1.Size = new System.Drawing.Size(732, 29);
+            this.statusStrip1.Size = new System.Drawing.Size(976, 30);
             this.statusStrip1.TabIndex = 8;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -216,12 +216,12 @@
             this.searchPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.searchPanel.Controls.Add(this.searchInput);
             this.searchPanel.Controls.Add(this.doSearch);
-            this.searchPanel.Location = new System.Drawing.Point(9, 27);
-            this.searchPanel.Margin = new System.Windows.Forms.Padding(2);
-            this.searchPanel.MaximumSize = new System.Drawing.Size(1500, 82);
-            this.searchPanel.MinimumSize = new System.Drawing.Size(226, 41);
+            this.searchPanel.Location = new System.Drawing.Point(12, 33);
+            this.searchPanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.searchPanel.MaximumSize = new System.Drawing.Size(1999, 100);
+            this.searchPanel.MinimumSize = new System.Drawing.Size(301, 50);
             this.searchPanel.Name = "searchPanel";
-            this.searchPanel.Size = new System.Drawing.Size(226, 41);
+            this.searchPanel.Size = new System.Drawing.Size(301, 50);
             this.searchPanel.TabIndex = 0;
             // 
             // searchInput
@@ -232,12 +232,12 @@
             this.searchInput.Font = new System.Drawing.Font("Arial", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.searchInput.ForeColor = System.Drawing.SystemColors.GrayText;
             this.searchInput.Location = new System.Drawing.Point(0, 0);
-            this.searchInput.Margin = new System.Windows.Forms.Padding(2);
-            this.searchInput.MaximumSize = new System.Drawing.Size(1500, 150);
+            this.searchInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.searchInput.MaximumSize = new System.Drawing.Size(1999, 150);
             this.searchInput.MaxLength = 100;
-            this.searchInput.MinimumSize = new System.Drawing.Size(76, 20);
+            this.searchInput.MinimumSize = new System.Drawing.Size(101, 20);
             this.searchInput.Name = "searchInput";
-            this.searchInput.Size = new System.Drawing.Size(76, 19);
+            this.searchInput.Size = new System.Drawing.Size(101, 22);
             this.searchInput.TabIndex = 3;
             this.searchInput.Text = "Начните вводить что-нибудь...";
             this.searchInput.Enter += new System.EventHandler(this.searchInput_Enter);
@@ -250,12 +250,12 @@
             this.doSearch.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.doSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.doSearch.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.doSearch.Location = new System.Drawing.Point(199, 2);
-            this.doSearch.Margin = new System.Windows.Forms.Padding(2);
-            this.doSearch.MaximumSize = new System.Drawing.Size(0, 122);
-            this.doSearch.MinimumSize = new System.Drawing.Size(15, 16);
+            this.doSearch.Location = new System.Drawing.Point(265, 2);
+            this.doSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.doSearch.MaximumSize = new System.Drawing.Size(0, 150);
+            this.doSearch.MinimumSize = new System.Drawing.Size(20, 20);
             this.doSearch.Name = "doSearch";
-            this.doSearch.Size = new System.Drawing.Size(15, 21);
+            this.doSearch.Size = new System.Drawing.Size(20, 26);
             this.doSearch.TabIndex = 2;
             this.doSearch.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.doSearch.UseVisualStyleBackColor = false;
@@ -271,10 +271,11 @@
             this.dataGridViewMain.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dataGridViewMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridViewMain.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Raised;
+            this.dataGridViewMain.ColumnHeadersHeight = 29;
             this.dataGridViewMain.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dataGridViewMain.GridColor = System.Drawing.SystemColors.ControlLightLight;
-            this.dataGridViewMain.Location = new System.Drawing.Point(11, 72);
-            this.dataGridViewMain.Margin = new System.Windows.Forms.Padding(2);
+            this.dataGridViewMain.Location = new System.Drawing.Point(15, 89);
+            this.dataGridViewMain.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridViewMain.MultiSelect = false;
             this.dataGridViewMain.Name = "dataGridViewMain";
             this.dataGridViewMain.ReadOnly = true;
@@ -285,7 +286,7 @@
             this.dataGridViewMain.ShowCellToolTips = false;
             this.dataGridViewMain.ShowEditingIcon = false;
             this.dataGridViewMain.ShowRowErrors = false;
-            this.dataGridViewMain.Size = new System.Drawing.Size(131, 69);
+            this.dataGridViewMain.Size = new System.Drawing.Size(175, 85);
             this.dataGridViewMain.TabIndex = 9;
             this.dataGridViewMain.Visible = false;
             this.dataGridViewMain.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridViewMain_CellFormatting);
@@ -297,9 +298,9 @@
             // 
             // UserPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(732, 403);
+            this.ClientSize = new System.Drawing.Size(976, 496);
             this.Controls.Add(this.dataGridViewMain);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -307,8 +308,8 @@
             this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2);
-            this.MinimumSize = new System.Drawing.Size(266, 45);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.MinimumSize = new System.Drawing.Size(349, 47);
             this.Name = "UserPanel";
             this.Text = "Меню библиотеки";
             this.Load += new System.EventHandler(this.UserPanel_SizeChanged);

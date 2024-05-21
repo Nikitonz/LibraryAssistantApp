@@ -154,18 +154,20 @@
             // 
             // i_sterm
             // 
+            this.i_sterm.Dock = System.Windows.Forms.DockStyle.Left;
             this.i_sterm.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.i_sterm.Location = new System.Drawing.Point(0, 10);
+            this.i_sterm.Location = new System.Drawing.Point(0, 13);
             this.i_sterm.Margin = new System.Windows.Forms.Padding(0);
             this.i_sterm.Name = "i_sterm";
-            this.i_sterm.Size = new System.Drawing.Size(517, 29);
+            this.i_sterm.Size = new System.Drawing.Size(224, 29);
             this.i_sterm.TabIndex = 1;
-            // 
+            this.i_sterm.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // b_sterm
             // 
             this.b_sterm.AutoSize = true;
-            this.b_sterm.Location = new System.Drawing.Point(517, 10);
+            this.b_sterm.Dock = System.Windows.Forms.DockStyle.Right;
+            this.b_sterm.Location = new System.Drawing.Point(517, 13);
             this.b_sterm.Margin = new System.Windows.Forms.Padding(0);
             this.b_sterm.Name = "b_sterm";
             this.b_sterm.Size = new System.Drawing.Size(75, 29);

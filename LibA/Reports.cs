@@ -41,6 +41,7 @@ namespace LibA
 
                 gbox_WithTextInput.Visible = true;
                 gbox_WithTextInput.Dock = DockStyle.Top;
+                i_sterm.Width = b_sterm.Left; 
             }
             else if (rtype is ReportType.None)
             {

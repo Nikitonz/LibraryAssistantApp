@@ -34,18 +34,21 @@
             this.деавторизоватьсяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.отчётыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.статистикаИспользованияToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.проверитьКнигиУЧитателяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.должникиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.usageStatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debtorsCommonBetween2DatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debtorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.whereisBookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.операцииToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.загрузкаПервокурсниковToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.создатьШаблонToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.взятьДанныеИзxslsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.перевестиГруппыНаСледующийГодToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.выдатьКнигиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Tables = new System.Windows.Forms.ListBox();
             this.dataGridViewMain = new System.Windows.Forms.DataGridView();
             this.lPane = new System.Windows.Forms.SplitContainer();
             this.buttonRollback = new System.Windows.Forms.Button();
             this.buttonTransact = new System.Windows.Forms.Button();
-            this.гдеКнигаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lPane)).BeginInit();
@@ -101,51 +104,75 @@
             // отчётыToolStripMenuItem
             // 
             this.отчётыToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.статистикаИспользованияToolStripMenuItem,
-            this.проверитьКнигиУЧитателяToolStripMenuItem,
-            this.должникиToolStripMenuItem,
-            this.гдеКнигаToolStripMenuItem});
+            this.usageStatToolStripMenuItem,
+            this.debtorsCommonBetween2DatesToolStripMenuItem,
+            this.debtorsToolStripMenuItem,
+            this.whereisBookToolStripMenuItem});
             this.отчётыToolStripMenuItem.Name = "отчётыToolStripMenuItem";
             this.отчётыToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
             this.отчётыToolStripMenuItem.Text = "Отчёты";
             // 
-            // статистикаИспользованияToolStripMenuItem
+            // usageStatToolStripMenuItem
             // 
-            this.статистикаИспользованияToolStripMenuItem.Name = "статистикаИспользованияToolStripMenuItem";
-            this.статистикаИспользованияToolStripMenuItem.Size = new System.Drawing.Size(276, 22);
-            this.статистикаИспользованияToolStripMenuItem.Text = "Статистика использования";
-            this.статистикаИспользованияToolStripMenuItem.Click += new System.EventHandler(this.статистикаИспользованияToolStripMenuItem_Click);
+            this.usageStatToolStripMenuItem.Name = "usageStatToolStripMenuItem";
+            this.usageStatToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
+            this.usageStatToolStripMenuItem.Text = "Статистика использования";
+            this.usageStatToolStripMenuItem.Click += new System.EventHandler(this.usageStatToolStripMenuItem_Click);
             // 
-            // проверитьКнигиУЧитателяToolStripMenuItem
+            // debtorsCommonBetween2DatesToolStripMenuItem
             // 
-            this.проверитьКнигиУЧитателяToolStripMenuItem.Name = "проверитьКнигиУЧитателяToolStripMenuItem";
-            this.проверитьКнигиУЧитателяToolStripMenuItem.ShowShortcutKeys = false;
-            this.проверитьКнигиУЧитателяToolStripMenuItem.Size = new System.Drawing.Size(276, 22);
-            this.проверитьКнигиУЧитателяToolStripMenuItem.Text = "Должники по факультетам и группам";
-            this.проверитьКнигиУЧитателяToolStripMenuItem.Click += new System.EventHandler(this.проверитьКнигиУЧитателяToolStripMenuItem_Click);
+            this.debtorsCommonBetween2DatesToolStripMenuItem.Name = "debtorsCommonBetween2DatesToolStripMenuItem";
+            this.debtorsCommonBetween2DatesToolStripMenuItem.ShowShortcutKeys = false;
+            this.debtorsCommonBetween2DatesToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
+            this.debtorsCommonBetween2DatesToolStripMenuItem.Text = "Общая информация о должниках за указанный период времени";
+            this.debtorsCommonBetween2DatesToolStripMenuItem.Click += new System.EventHandler(this.debtorsCommonBetween2DatesToolStripMenuItem_Click);
             // 
-            // должникиToolStripMenuItem
+            // debtorsToolStripMenuItem
             // 
-            this.должникиToolStripMenuItem.Name = "должникиToolStripMenuItem";
-            this.должникиToolStripMenuItem.Size = new System.Drawing.Size(276, 22);
-            this.должникиToolStripMenuItem.Text = "Читатели-должники";
-            this.должникиToolStripMenuItem.Click += new System.EventHandler(this.должникиToolStripMenuItem_Click);
+            this.debtorsToolStripMenuItem.Name = "debtorsToolStripMenuItem";
+            this.debtorsToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
+            this.debtorsToolStripMenuItem.Text = "Читатели-должники";
+            this.debtorsToolStripMenuItem.Click += new System.EventHandler(this.debtorsToolStripMenuItem_Click);
+            // 
+            // whereisBookToolStripMenuItem
+            // 
+            this.whereisBookToolStripMenuItem.Name = "whereisBookToolStripMenuItem";
+            this.whereisBookToolStripMenuItem.Size = new System.Drawing.Size(425, 22);
+            this.whereisBookToolStripMenuItem.Text = "Где книга";
+            this.whereisBookToolStripMenuItem.Click += new System.EventHandler(this.whereisBookToolStripMenuItem_Click);
             // 
             // операцииToolStripMenuItem
             // 
             this.операцииToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.загрузкаПервокурсниковToolStripMenuItem,
-            this.перевестиГруппыНаСледующийГодToolStripMenuItem});
+            this.перевестиГруппыНаСледующийГодToolStripMenuItem,
+            this.выдатьКнигиToolStripMenuItem});
             this.операцииToolStripMenuItem.Name = "операцииToolStripMenuItem";
             this.операцииToolStripMenuItem.Size = new System.Drawing.Size(75, 20);
             this.операцииToolStripMenuItem.Text = "Операции";
             // 
             // загрузкаПервокурсниковToolStripMenuItem
             // 
+            this.загрузкаПервокурсниковToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.создатьШаблонToolStripMenuItem,
+            this.взятьДанныеИзxslsToolStripMenuItem});
             this.загрузкаПервокурсниковToolStripMenuItem.Name = "загрузкаПервокурсниковToolStripMenuItem";
             this.загрузкаПервокурсниковToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
             this.загрузкаПервокурсниковToolStripMenuItem.Text = "Загрузка первокурсников";
-            this.загрузкаПервокурсниковToolStripMenuItem.Click += new System.EventHandler(this.загрузкаПервокурсниковToolStripMenuItem_Click);
+            // 
+            // создатьШаблонToolStripMenuItem
+            // 
+            this.создатьШаблонToolStripMenuItem.Name = "создатьШаблонToolStripMenuItem";
+            this.создатьШаблонToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.создатьШаблонToolStripMenuItem.Text = "Создать шаблон .xsls";
+            this.создатьШаблонToolStripMenuItem.Click += new System.EventHandler(this.создатьШаблонToolStripMenuItem_Click);
+            // 
+            // взятьДанныеИзxslsToolStripMenuItem
+            // 
+            this.взятьДанныеИзxslsToolStripMenuItem.Name = "взятьДанныеИзxslsToolStripMenuItem";
+            this.взятьДанныеИзxslsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.взятьДанныеИзxslsToolStripMenuItem.Text = "Взять данные из .xsls";
+            this.взятьДанныеИзxslsToolStripMenuItem.Click += new System.EventHandler(this.взятьДанныеИзxslsToolStripMenuItem_Click);
             // 
             // перевестиГруппыНаСледующийГодToolStripMenuItem
             // 
@@ -153,6 +180,13 @@
             this.перевестиГруппыНаСледующийГодToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
             this.перевестиГруппыНаСледующийГодToolStripMenuItem.Text = "Архивировать данные выпускников";
             this.перевестиГруппыНаСледующийГодToolStripMenuItem.Click += new System.EventHandler(this.перевестиГруппыНаСледующийГодToolStripMenuItem_Click);
+            // 
+            // выдатьКнигиToolStripMenuItem
+            // 
+            this.выдатьКнигиToolStripMenuItem.Name = "выдатьКнигиToolStripMenuItem";
+            this.выдатьКнигиToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
+            this.выдатьКнигиToolStripMenuItem.Text = "Выдать книги";
+            this.выдатьКнигиToolStripMenuItem.Click += new System.EventHandler(this.выдатьКнигиToolStripMenuItem_Click);
             // 
             // Tables
             // 
@@ -162,7 +196,7 @@
             this.Tables.Location = new System.Drawing.Point(0, 0);
             this.Tables.Margin = new System.Windows.Forms.Padding(0);
             this.Tables.Name = "Tables";
-            this.Tables.Size = new System.Drawing.Size(114, 407);
+            this.Tables.Size = new System.Drawing.Size(119, 407);
             this.Tables.TabIndex = 13;
             this.Tables.SelectedIndexChanged += new System.EventHandler(this.Tables_SelectedIndexChanged);
             // 
@@ -174,7 +208,7 @@
             this.dataGridViewMain.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewMain.Location = new System.Drawing.Point(150, 24);
-            this.dataGridViewMain.Margin = new System.Windows.Forms.Padding(2);
+            this.dataGridViewMain.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.dataGridViewMain.Name = "dataGridViewMain";
             this.dataGridViewMain.RowHeadersWidth = 51;
             this.dataGridViewMain.RowTemplate.Height = 24;
@@ -214,7 +248,7 @@
             this.lPane.Panel2.Click += new System.EventHandler(this.lPane_Panel2_Click);
             this.lPane.Panel2MinSize = 20;
             this.lPane.Size = new System.Drawing.Size(150, 464);
-            this.lPane.SplitterDistance = 116;
+            this.lPane.SplitterDistance = 121;
             this.lPane.SplitterWidth = 3;
             this.lPane.TabIndex = 15;
             // 
@@ -252,13 +286,6 @@
             this.buttonTransact.UseVisualStyleBackColor = false;
             this.buttonTransact.Click += new System.EventHandler(this.buttonTransact_Click);
             // 
-            // гдеКнигаToolStripMenuItem
-            // 
-            this.гдеКнигаToolStripMenuItem.Name = "гдеКнигаToolStripMenuItem";
-            this.гдеКнигаToolStripMenuItem.Size = new System.Drawing.Size(276, 22);
-            this.гдеКнигаToolStripMenuItem.Text = "Где книга";
-            this.гдеКнигаToolStripMenuItem.Click += new System.EventHandler(this.гдеКнигаToolStripMenuItem_Click);
-            // 
             // AdminPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -268,7 +295,7 @@
             this.Controls.Add(this.lPane);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "AdminPanel";
             this.Text = "Admin Panel (authorized-user only)";
             this.menuStrip1.ResumeLayout(false);
@@ -295,12 +322,15 @@
         private System.Windows.Forms.Button buttonRollback;
         private System.Windows.Forms.ToolStripMenuItem выходToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem отчётыToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem должникиToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem debtorsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem операцииToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem перевестиГруппыНаСледующийГодToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem статистикаИспользованияToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem проверитьКнигиУЧитателяToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem usageStatToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem debtorsCommonBetween2DatesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem загрузкаПервокурсниковToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem гдеКнигаToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem whereisBookToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem создатьШаблонToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem взятьДанныеИзxslsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem выдатьКнигиToolStripMenuItem;
     }
 }

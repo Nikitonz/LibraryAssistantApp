@@ -235,10 +235,11 @@ namespace LibA
                     DataTable dataTable = new DataTable();
                     adapter.Fill(dataTable);
                     //dataTable.Columns.Remove("Обложка");
+
                     string[] availability = new string[dataTable.Rows.Count];
                     for (int i = 0; i < dataTable.Rows.Count; i++)
                     {
-                        availability[i] = ((int)dataTable.Rows[i]["Доступность"] == 1) ? "В наличии" : "Нет в наличии";
+                        availability[i] = ((int)dataTable.Rows[i]["Доступность"] > 0) ? "В наличии" : "Нет в наличии";
                     }
 
                     int columnIndex = dataTable.Columns["Доступность"].Ordinal;
@@ -290,14 +291,14 @@ namespace LibA
         {
             if (dataGridViewMain.Columns[e.ColumnIndex].Name == "Доступность") 
             {
-                if (e.Value != null && e.Value.ToString() == "В наличии")
+         
+                if (e.Value != null && e.Value == "В наличии")
                 {
                     e.CellStyle.BackColor = Color.LightGreen; 
                 }
-                else if (e.Value != null && e.Value.ToString() == "Нет в наличии")
-                {
+                else 
                     e.CellStyle.BackColor = Color.FromArgb(255, 255, 192, 192); 
-                }
+               
             }
         }
 

@@ -1,11 +1,15 @@
-﻿using System;
+﻿using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Runtime.Remoting;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 
@@ -48,7 +52,7 @@ namespace LibA
             string[] tables = null;
             try
             {
-                tables = await DBWorker.BdGetDataMSSQL("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' order by table_name ASC");
+                tables = await DBWorker.BdGetDataMSSQL("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_name != 'sysdiagrams' order by table_name ASC");
 
             }
             catch
@@ -285,34 +289,43 @@ namespace LibA
             this.Close();
         }
 
-        private void статистикаИспользованияToolStripMenuItem_Click(object sender, EventArgs e)
+        private void usageStatToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Reports dln = new Reports();
             dln.MakeReport("GetPercentageUsersByGroupAndFaculty @startdate, @enddate", ReportType.With2Calendars);
+            ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+            dln.Text = menuItem.Text;
             dln.ShowDialog();
         }
 
-        private void проверитьКнигиУЧитателяToolStripMenuItem_Click(object sender, EventArgs e)
+        private void debtorsCommonBetween2DatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Reports dln = new Reports();
             dln.MakeReport("GetDebtorsReport @startdate, @enddate", ReportType.With2Calendars);
+            ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+            dln.Text = menuItem.Text;
             dln.ShowDialog();
         }
 
-        private void должникиToolStripMenuItem_Click(object sender, EventArgs e)
+        private void debtorsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (Reports dln = new()) {
                 dln.MakeReport("GetReaderInfoExact", ReportType.None);
+                ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+                dln.Text = menuItem.Text;
                 dln.ShowDialog();
             }
         }
-        private void гдеКнигаToolStripMenuItem_Click(object sender, EventArgs e)
+        private void whereisBookToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (Reports dln = new())
             {
                 dln.MakeReport("FindBookLocation @sterm", ReportType.TextInput);
+                ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+                dln.Text = menuItem.Text;
                 dln.ShowDialog();
-            }
+            }   
+                
         }
 
         //OPERATIONS
@@ -320,6 +333,7 @@ namespace LibA
         private async void перевестиГруппыНаСледующийГодToolStripMenuItem_Click(object sender, EventArgs e)
         {
             await DBWorker.ExecProcedure("RemoveOutdatedReaders");
+            MessageBox.Show("Выполнение процедуры успешно");
         }
 
 
@@ -334,7 +348,6 @@ namespace LibA
                 if (headerText.StartsWith("код") || headerText.StartsWith("id"))
                 {
                     string columnName = dataGridViewMain.Columns[e.ColumnIndex].Name;
-                   
                     string ctableName = ((DataTable)dataGridViewMain.DataSource)?.TableName;
                     List<string> tableNames = await DBWorker.GetLinkedTableNames(ctableName, columnName);
 
@@ -342,20 +355,20 @@ namespace LibA
                     {
                         foreach (string tableName in tableNames)
                         {
-                       
                             DataTable dependentTable = await DBWorker.GetDataTable(tableName);
-                            
-                           
+
                             if (dependentTable != null)
                             {
-                                DLinker dLinkerForm = new DLinker(dependentTable);
+                                string cellValueString = dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
+                                int val = string.IsNullOrEmpty(cellValueString) ? 0 : int.Parse(cellValueString);
+                                DLinker dLinkerForm = new DLinker(dependentTable, val);
+
                                 dLinkerForm.SelectionMade += (selectedValue) =>
                                 {
                                     dataGridViewMain.EndEdit();
                                     dataGridViewMain.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = selectedValue;
                                 };
                                 dLinkerForm.ShowDialog();
-                              
                             }
                             else
                             {
@@ -370,150 +383,294 @@ namespace LibA
                 }
             }
         }
-        
-        private async void загрузкаПервокурсниковToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = "desktop";
-            openFileDialog.Filter = "CSV|*.csv|txt|*.txt|CSV или TXT|*.*";
-            openFileDialog.Title = "Открытие файла...";
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                
-                string selectedFileName = openFileDialog.FileName;
-
-                using (StreamReader reader = new StreamReader(selectedFileName))
-                {
-                    bool firstLine = true;
-                    while (!reader.EndOfStream)
-                    {
-                        var line = reader.ReadLine().Split(';');
-                        if (firstLine)
-                        {
-
-                            firstLine = false;
-                            continue;
-                        }
-
-                        var f = line[1];
-                        var i = line[2];
-                        var o = line[3];
-                        var date = DateTime.ParseExact(line[4], "dd.MM.yyyy", CultureInfo.InvariantCulture);
-                        var number = line[5];
-                        var adress = line[6];
-                        var passport = line[7];
-                        var readerId = line[8];
-                        var gName = line[9];
-                        var login = line[10];
-
-                        string checkReaderQuery = $"Select 1 Where Exists (Select 1 From Читатель Where Фамилия = '{f}' and Имя = '{i}' and Отчество = '{o}')";
-                        string insertReaderQuery = $"INSERT INTO Читатель VALUES (@Фамилия, @Имя, @Отчество, @Дата_рождения, @Контактный_номер, @Адрес_проживания, @Данные_паспорта, @Номер_читательского_билета, @Код_группы, @Имя_для_входа)";
-                        string updateReaderQuery = $"UPDATE Читатель SET [Фамилия] = @Фамилия, [Имя] = @Имя, [Отчество] = @Отчество, [Дата рождения]=@Дата_рождения, [Контактный номер]=@Контактный_номер, [Адрес проживания]=@Адрес_проживания,[Данные паспорта]=@Данные_паспорта,[Номер читательского билета]=@Номер_читательского_билета,[Код группы]=@Код_группы,[Имя для входа] = @Имя_для_входа where [Фамилия] = @Фамилия AND [Имя] = @Имя AND [Отчество] = @Отчество";
 
 
-                        using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
-                        {
-
-
-                            using (SqlCommand checkReaderCommand = new SqlCommand(checkReaderQuery, connection))
-                            {
-
-
-
-                                
-                                object result = checkReaderCommand.ExecuteScalar();
-                                int readerCount = result == null ? 0 : (int)result;
-                                int groupId = GetOrCreateGroup(connection, gName);
-                                if ((int)readerCount == 0)
-                                {
-
-
-                                    using (SqlCommand insertCommand = new SqlCommand(insertReaderQuery, connection))
-                                    {
-                                        insertCommand.Parameters.AddWithValue("@Фамилия", f);
-                                        insertCommand.Parameters.AddWithValue("@Имя", i);
-                                        insertCommand.Parameters.AddWithValue("@Отчество", o);
-                                        insertCommand.Parameters.AddWithValue("@Дата_рождения", date);
-                                        insertCommand.Parameters.AddWithValue("@Контактный_номер", number);
-                                        insertCommand.Parameters.AddWithValue("@Адрес_проживания", adress);
-                                        insertCommand.Parameters.AddWithValue("@Данные_паспорта", passport);
-                                        insertCommand.Parameters.AddWithValue("@Номер_читательского_билета", readerId);
-                                        insertCommand.Parameters.AddWithValue("@Код_группы", groupId);
-                                        insertCommand.Parameters.AddWithValue("@Имя_для_входа", login);
-                                        insertCommand.ExecuteNonQuery();
-                                    }
-
-                                }
-                                else
-                                {
-
-                                    DialogResult updateResult = MessageBox.Show($"Читатель {f} {i} {o} уже существует. Обновить информацию?\n\nВнимание, это удалит сущетсвующего пользователя!", "Обновление читателя", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                                    if (updateResult == DialogResult.Yes)
-                                    {
-                                        using (SqlCommand updateCommand = new SqlCommand(updateReaderQuery, connection))
-                                        {
-                                            updateCommand.Parameters.AddWithValue("@Фамилия", f);
-                                            updateCommand.Parameters.AddWithValue("@Имя", i);
-                                            updateCommand.Parameters.AddWithValue("@Отчество", o);
-                                            updateCommand.Parameters.AddWithValue("@Дата_рождения", date);
-                                            updateCommand.Parameters.AddWithValue("@Контактный_номер", number);
-                                            updateCommand.Parameters.AddWithValue("@Адрес_проживания", adress);
-                                            updateCommand.Parameters.AddWithValue("@Данные_паспорта", passport);
-                                            updateCommand.Parameters.AddWithValue("@Номер_читательского_билета", readerId);
-                                            updateCommand.Parameters.AddWithValue("@Код_группы", groupId);
-                                            updateCommand.Parameters.AddWithValue("@Имя_для_входа", login);
-                                            updateCommand.ExecuteNonQuery();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-
-                    }
-                }
-            }
-            MessageBox.Show("Данные успешно обработаны и добавлены в базу данных.", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-        private int GetOrCreateGroup(SqlConnection connection, string groupName)
-        {
-            //TODO
-            string selectGroupQuery = "SELECT Код FROM Группа WHERE Название = @GroupName AND Курс = 1";
-
-            using (SqlCommand selectGroupCommand = new SqlCommand(selectGroupQuery, connection))
-            {
-                selectGroupCommand.Parameters.AddWithValue("@GroupName", groupName);
-
-                object result = selectGroupCommand.ExecuteScalar();
-                if (result != null)
-                {
-
-                    return (int)result;
-                }
-                else
-                {
-                    string insertGroupQuery = "INSERT INTO Группа (Название, Курс, [Последний курс], [Код факультета]) VALUES (@GroupName, 1, 2, NULL); SELECT SCOPE_IDENTITY();";
-
-                    using (SqlCommand insertGroupCommand = new SqlCommand(insertGroupQuery, connection))
-                    {
-                        insertGroupCommand.Parameters.AddWithValue("@GroupName", groupName);
-
-
-                        return Convert.ToInt32(insertGroupCommand.ExecuteScalar());
-                    }
-                }
-            }
-        }
 
         private void dataGridViewMain_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
 
         }
 
+       
+
+        private async void создатьШаблонToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await СоздатьШаблонAsync();
+        }
+
+        private async Task СоздатьШаблонAsync()
+        {
+            try
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                using (ExcelPackage excelPackage = new ExcelPackage())
+                {
+       
+                    ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Читатель");
+
+                  
+                    string[] headers = { "Фамилия", "Имя", "Отчество", "Дата рождения", "Контактный номер",
+                                         "Адрес проживания", "Данные паспорта", "Номер читательского билета",
+                                         "Название группы", "Год поступления", "Год окончания", "Имя для входа" };
+
+                    for (int i = 0; i < headers.Length; i++)
+                    {
+                        worksheet.Cells[1, i + 1].Value = headers[i];
+                    }
+
+                    DataTable groupData = await DBWorker.GetDataTable("Группа");
+                    if (groupData != null && groupData.Rows.Count > 0)
+                    {
+                        ExcelWorksheet groupWorksheet = excelPackage.Workbook.Worksheets.Add("Группы");
+
+
+                        int columnCount = 1;
+                        for (int i = 0; i < groupData.Columns.Count; i++)
+                        {
+                            if (!groupData.Columns[i].ColumnName.StartsWith("код", StringComparison.OrdinalIgnoreCase) &&
+                                !groupData.Columns[i].ColumnName.StartsWith("id", StringComparison.OrdinalIgnoreCase))
+                            {
+                                groupWorksheet.Cells[1, columnCount].Value = groupData.Columns[i].ColumnName;
+                                columnCount++;
+                            }
+                        }
+
+
+                        for (int row = 0; row < groupData.Rows.Count; row++)
+                        {
+                            columnCount = 1;
+                            for (int col = 0; col < groupData.Columns.Count; col++)
+                            {
+                                if (!groupData.Columns[col].ColumnName.StartsWith("код", StringComparison.OrdinalIgnoreCase) &&
+                                    !groupData.Columns[col].ColumnName.StartsWith("id", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    groupWorksheet.Cells[row + 2, columnCount].Value = groupData.Rows[row][col];
+                                    columnCount++;
+                                }
+                            }
+                        }
+                    }
+
+                    
+
+
+                    using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+                    {
+                        saveFileDialog.Filter = "Excel Files (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+                        saveFileDialog.FileName = "Шаблон_Читатель.xlsx";
+
+                        if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            FileInfo excelFile = new FileInfo(saveFileDialog.FileName);
+
+
+                            excelPackage.SaveAs(excelFile);
+                            MessageBox.Show("Шаблон успешно создан.");
+                        }
+                        else { 
+                        
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при создании шаблона: {ex.Message}");
+            }
+        }
+
+       
+        private async void взятьДанныеИзxslsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataTable dt = fetchDataFromExcelFile();
+            await mergeReadersToDatabase(dt);
+            
+
+
+        }
+        private DataTable fetchDataFromExcelFile()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Excel Files (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = openFileDialog.FileName;
+
+                try
+                {
+                    DataTable excelData = new DataTable();
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                    using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath)))
+                    {
+                        ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+
+                        if (worksheet != null)
+                        {
+                          
+                            for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
+                            {
+                                excelData.Columns.Add(worksheet.Cells[1, col].Value?.ToString());
+                            }
+
+                            
+                            for (int rowNum = 2; rowNum <= worksheet.Dimension.End.Row; rowNum++)
+                            {
+                                DataRow row = excelData.Rows.Add();
+                                for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
+                                {
+                                    row[col - 1] = worksheet.Cells[rowNum, col].Value?.ToString();
+                                }
+                            }
+
+                            return excelData;
+                        }
+                        else
+                        {
+                            throw new Exception("Лист Excel не найден.");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при обработке данных из файла Excel: {ex.Message}");
+                }
+            }
+
+            return null;
+        }
+
+
+
+
+
+        public async Task mergeReadersToDatabase(DataTable dataTable)
+        {
+            int groupCode = 0;
+            if (dataTable is not null)
+            {
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    string groupName = row["Название группы"].ToString();
+                    int yearOfEnrollment = int.Parse(row["Год поступления"].ToString());
+                    int yearOfGraduation = int.Parse(row["Год окончания"].ToString());
+
+                    int existingGroupCode = await GetGroupCodeIfExists(groupName, yearOfEnrollment, yearOfGraduation);
+                    if (existingGroupCode > 0)
+                    {
+                        groupCode = existingGroupCode;
+                        break;
+                    }
+                    else
+                    {
+                        groupCode = await AddNewGroup(groupName, yearOfEnrollment, yearOfGraduation);
+                        break;
+                    }
+                }
+
+                if (groupCode > 0)
+                {
+                    await InsertReaders(dataTable, groupCode);
+                }
+            }
+        }
+
+
+        private async Task<int> GetGroupCodeIfExists(string groupName, int yearOfEnrollment, int yearOfGraduation)
+        {
+            int groupCode = 0;
+
+            using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
+            {
+                
+
+                string query = "SELECT Код FROM Группа WHERE Название = @GroupName AND [Год поступления] = @YearOfEnrollment AND [Год окончания] = @YearOfGraduation";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@GroupName", groupName);
+                command.Parameters.AddWithValue("@YearOfEnrollment", yearOfEnrollment);
+                command.Parameters.AddWithValue("@YearOfGraduation", yearOfGraduation);
+
+                object result = await command.ExecuteScalarAsync();
+                if (result != null)
+                {
+                    groupCode = Convert.ToInt32(result);
+                }
+            }
+
+            return groupCode;
+        }
+
+        private async Task<int> AddNewGroup(string groupName, int yearOfEnrollment, int yearOfGraduation)
+        {
+            int groupCode = 0;
+
+            using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
+            {
+          
+
+                string query = "INSERT INTO Группа (Название, [Год поступления], [Год окончания]) VALUES (@GroupName, @YearOfEnrollment, @YearOfGraduation); SELECT SCOPE_IDENTITY();";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@GroupName", groupName);
+                command.Parameters.AddWithValue("@YearOfEnrollment", yearOfEnrollment);
+                command.Parameters.AddWithValue("@YearOfGraduation", yearOfGraduation);
+
+                object result = await command.ExecuteScalarAsync();
+                if (result != null)
+                {
+                    groupCode = Convert.ToInt32(result);
+                }
+            }
+
+            return groupCode;
+        }
+
+        private async Task InsertReaders(DataTable dataTable, int groupCode)
+        {
+            using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
+            {
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    string surname = row["Фамилия"].ToString();
+                    string name = row["Имя"].ToString();
+                    string patronymic = row["Отчество"].ToString();
+                    DateTime dateOfBirth = DateTime.Parse(row["Дата рождения"].ToString());
+                    string contactNumber = row["Контактный номер"].ToString();
+                    string address = row["Адрес проживания"].ToString();
+                    string passportData = row["Данные паспорта"].ToString();
+                    string readerCardNumber = row["Номер читательского билета"].ToString();
+                    string loginName = row["Имя для входа"].ToString();
+
+                    string query = "INSERT INTO Читатель ([Фамилия], [Имя], [Отчество], [Дата рождения], [Контактный номер], [Адрес проживания], [Данные паспорта], [Номер читательского билета], [Код группы], [Имя для входа]) " +
+                                   "VALUES (@Surname, @Name, @Patronymic, @DateOfBirth, @ContactNumber, @Address, @PassportData, @ReaderCardNumber, @GroupCode, @LoginName)";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@Surname", surname);
+                    command.Parameters.AddWithValue("@Name", name);
+                    command.Parameters.AddWithValue("@Patronymic", patronymic);
+                    command.Parameters.AddWithValue("@DateOfBirth", dateOfBirth);
+                    command.Parameters.AddWithValue("@ContactNumber", contactNumber);
+                    command.Parameters.AddWithValue("@Address", address);
+                    command.Parameters.AddWithValue("@PassportData", passportData);
+                    command.Parameters.AddWithValue("@ReaderCardNumber", readerCardNumber);
+                    command.Parameters.AddWithValue("@GroupCode", groupCode);
+                    command.Parameters.AddWithValue("@LoginName", loginName);
+
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+        private void выдатьКнигиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GiveBook b = new();
+            b.Show();
+        }
+
         
+
     }
+
+
+
 
 
 
