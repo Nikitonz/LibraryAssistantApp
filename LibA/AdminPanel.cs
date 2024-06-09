@@ -8,6 +8,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Remoting;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -479,16 +481,23 @@ namespace LibA
             }
         }
 
-       
+
+
+
         private async void взятьДанныеИзxslsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DataTable dt = fetchDataFromExcelFile();
-            await mergeReadersToDatabase(dt);
-            
+            var result = fetchDataFromExcelFile();
+            DataTable dt = result.Item1;
+            string filePath = result.Item2;
 
-
+            if (dt != null && !string.IsNullOrEmpty(filePath))
+            {
+                DataTable extendedTable = generateAPassword(dt, filePath);
+                await mergeReadersToDatabase(extendedTable);
+            }
         }
-        private DataTable fetchDataFromExcelFile()
+
+        private Tuple<DataTable, string> fetchDataFromExcelFile()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Excel Files (*.xlsx)|*.xlsx|All files (*.*)|*.*";
@@ -507,13 +516,13 @@ namespace LibA
 
                         if (worksheet != null)
                         {
-                          
+                            // Add columns
                             for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
                             {
                                 excelData.Columns.Add(worksheet.Cells[1, col].Value?.ToString());
                             }
 
-                            
+                            // Add rows
                             for (int rowNum = 2; rowNum <= worksheet.Dimension.End.Row; rowNum++)
                             {
                                 DataRow row = excelData.Rows.Add();
@@ -523,7 +532,7 @@ namespace LibA
                                 }
                             }
 
-                            return excelData;
+                            return new Tuple<DataTable, string>(excelData, filePath);
                         }
                         else
                         {
@@ -537,17 +546,73 @@ namespace LibA
                 }
             }
 
-            return null;
+            return new Tuple<DataTable, string>(null, null);
         }
 
+        private DataTable generateAPassword(DataTable dataTable, string filePath)
+        {
+            // Adding new columns for login, password, salt, and hashed password
+            
+            dataTable.Columns.Add("Пароль", typeof(string));
+            dataTable.Columns.Add("Соль", typeof(string));
+            dataTable.Columns.Add("Хэш пароля", typeof(string));
 
+            foreach (DataRow row in dataTable.Rows)
+            {
+                string surname = row["Фамилия"].ToString();
+                string name = row["Имя"].ToString();
+                string patronymic = row["Отчество"].ToString();
 
+                string loginName = GenerateLogin(surname, name, patronymic);
+                string password = GenerateRandomPassword();
+                string salt = GenerateSalt();
+                string hashedPassword = HashPassword(password, salt);
 
+                row["Имя для входа"] = loginName;
+                row["Пароль"] = password;
+                row["Соль"] = salt;
+                row["Хэш пароля"] = hashedPassword;
+            }
+
+            // Save updated data to a new worksheet in the same Excel file
+            SaveUpdatedDataToExcel(dataTable, filePath);
+
+            return dataTable;
+        }
+
+        private void SaveUpdatedDataToExcel(DataTable dataTable, string filePath)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath)))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Пароли");
+
+                // Add headers
+                worksheet.Cells[1, 1].Value = "Фамилия";
+                worksheet.Cells[1, 2].Value = "Имя";
+                worksheet.Cells[1, 3].Value = "Отчество";
+                worksheet.Cells[1, 4].Value = "Название группы";
+                worksheet.Cells[1, 5].Value = "Имя для входа";
+                worksheet.Cells[1, 6].Value = "Пароль";
+
+                // Add rows
+                for (int row = 0; row < dataTable.Rows.Count; row++)
+                {
+                    worksheet.Cells[row + 2, 1].Value = dataTable.Rows[row]["Фамилия"].ToString();
+                    worksheet.Cells[row + 2, 2].Value = dataTable.Rows[row]["Имя"].ToString();
+                    worksheet.Cells[row + 2, 3].Value = dataTable.Rows[row]["Отчество"].ToString();
+                    worksheet.Cells[row + 2, 4].Value = dataTable.Rows[row]["Название группы"].ToString();
+                    worksheet.Cells[row + 2, 5].Value = dataTable.Rows[row]["Имя для входа"].ToString();
+                    worksheet.Cells[row + 2, 6].Value = dataTable.Rows[row]["Пароль"].ToString();
+                }
+
+                excelPackage.Save();
+            }
+        }
 
         public async Task mergeReadersToDatabase(DataTable dataTable)
         {
-            int groupCode = 0;
-            if (dataTable is not null)
+            if (dataTable != null)
             {
                 foreach (DataRow row in dataTable.Rows)
                 {
@@ -555,35 +620,30 @@ namespace LibA
                     int yearOfEnrollment = int.Parse(row["Год поступления"].ToString());
                     int yearOfGraduation = int.Parse(row["Год окончания"].ToString());
 
-                    int existingGroupCode = await GetGroupCodeIfExists(groupName, yearOfEnrollment, yearOfGraduation);
-                    if (existingGroupCode > 0)
+                    int groupCode = await GetGroupCodeOrCreateNew(groupName, yearOfEnrollment, yearOfGraduation);
+                    if (groupCode > 0)
                     {
-                        groupCode = existingGroupCode;
-                        break;
+                        await InsertReaders(dataTable, groupCode);
                     }
-                    else
-                    {
-                        groupCode = await AddNewGroup(groupName, yearOfEnrollment, yearOfGraduation);
-                        break;
-                    }
-                }
-
-                if (groupCode > 0)
-                {
-                    await InsertReaders(dataTable, groupCode);
                 }
             }
         }
 
+        private async Task<int> GetGroupCodeOrCreateNew(string groupName, int yearOfEnrollment, int yearOfGraduation)
+        {
+            int groupCode = await GetGroupCodeIfExists(groupName, yearOfEnrollment, yearOfGraduation);
+            if (groupCode == 0)
+            {
+                groupCode = await AddNewGroup(groupName, yearOfEnrollment, yearOfGraduation);
+            }
+            return groupCode;
+        }
 
         private async Task<int> GetGroupCodeIfExists(string groupName, int yearOfEnrollment, int yearOfGraduation)
         {
             int groupCode = 0;
-
             using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
             {
-                
-
                 string query = "SELECT Код FROM Группа WHERE Название = @GroupName AND [Год поступления] = @YearOfEnrollment AND [Год окончания] = @YearOfGraduation";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@GroupName", groupName);
@@ -596,18 +656,14 @@ namespace LibA
                     groupCode = Convert.ToInt32(result);
                 }
             }
-
             return groupCode;
         }
 
         private async Task<int> AddNewGroup(string groupName, int yearOfEnrollment, int yearOfGraduation)
         {
             int groupCode = 0;
-
             using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
             {
-          
-
                 string query = "INSERT INTO Группа (Название, [Год поступления], [Год окончания]) VALUES (@GroupName, @YearOfEnrollment, @YearOfGraduation); SELECT SCOPE_IDENTITY();";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@GroupName", groupName);
@@ -620,7 +676,6 @@ namespace LibA
                     groupCode = Convert.ToInt32(result);
                 }
             }
-
             return groupCode;
         }
 
@@ -628,7 +683,6 @@ namespace LibA
         {
             using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
             {
-
                 foreach (DataRow row in dataTable.Rows)
                 {
                     string surname = row["Фамилия"].ToString();
@@ -640,9 +694,11 @@ namespace LibA
                     string passportData = row["Данные паспорта"].ToString();
                     string readerCardNumber = row["Номер читательского билета"].ToString();
                     string loginName = row["Имя для входа"].ToString();
+                    string salt = row["Соль"].ToString();
+                    string hashedPassword = row["Хэш пароля"].ToString();
 
-                    string query = "INSERT INTO Читатель ([Фамилия], [Имя], [Отчество], [Дата рождения], [Контактный номер], [Адрес проживания], [Данные паспорта], [Номер читательского билета], [Код группы], [Имя для входа]) " +
-                                   "VALUES (@Surname, @Name, @Patronymic, @DateOfBirth, @ContactNumber, @Address, @PassportData, @ReaderCardNumber, @GroupCode, @LoginName)";
+                    string query = "INSERT INTO Пользователь ([Фамилия], [Имя], [Отчество], [Дата рождения], [Контактный номер], [Адрес проживания], [Данные паспорта], [Номер читательского билета], [Код группы], [Имя для входа], [Соль], [Хэш пароля]) " +
+                                   "VALUES (@Surname, @Name, @Patronymic, @DateOfBirth, @ContactNumber, @Address, @PassportData, @ReaderCardNumber, @GroupCode, @LoginName, @Salt, @HashedPassword)";
                     SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("@Surname", surname);
                     command.Parameters.AddWithValue("@Name", name);
@@ -654,18 +710,49 @@ namespace LibA
                     command.Parameters.AddWithValue("@ReaderCardNumber", readerCardNumber);
                     command.Parameters.AddWithValue("@GroupCode", groupCode);
                     command.Parameters.AddWithValue("@LoginName", loginName);
+                    command.Parameters.AddWithValue("@Salt", salt);
+                    command.Parameters.AddWithValue("@HashedPassword", hashedPassword);
 
                     await command.ExecuteNonQueryAsync();
                 }
             }
         }
-        private void выдатьКнигиToolStripMenuItem_Click(object sender, EventArgs e)
+
+        private string GenerateLogin(string lastName, string firstName, string patronymic)
         {
-            GiveBook b = new();
-            b.Show();
+            // Generate login in the format "nmpatronymic"
+            string login = $"{firstName[0].ToString().ToLower()}{patronymic[0].ToString().ToLower()}{lastName.ToLower()}";
+            return login;
         }
 
-        
+        private string GenerateRandomPassword()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            Random random = new Random();
+            return new string(Enumerable.Repeat(chars, 8).Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        private string GenerateSalt()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            Random random = new Random();
+            return new string(Enumerable.Repeat(chars, 16).Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        private static string HashPassword(string password, string salt)
+        {
+            byte[] passwordBytes = Encoding.Unicode.GetBytes(password);
+            byte[] saltBytes = Encoding.Unicode.GetBytes(salt);
+
+            using (var pbkdf2 = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 10000))
+            {
+                byte[] hashBytes = pbkdf2.GetBytes(32);
+                return Convert.ToBase64String(hashBytes);
+            }
+        }
+
+
+
 
     }
 

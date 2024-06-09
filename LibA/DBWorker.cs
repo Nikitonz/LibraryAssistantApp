@@ -91,8 +91,28 @@ namespace LibA
             return null;
 
         }
+        public static async Task ExecProcedure(string procname, params SqlParameter[] parameters)
+        {
+            try
+            {
+                using (SqlCommand command = new SqlCommand(procname, await ConnectionManager.Instance.OpenConnection()))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
 
-        public static async Task ExecProcedure(string procname, params object[] parameters) {
+                    if (parameters.Length > 0)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Ошибка выполнения процедуры {procname}: {e.Message}");
+            }
+        }
+        /*public static async Task ExecProcedure(string procname, params object[] parameters) {
             try
             {
                 if (procname.ToLower().StartsWith("exec"))
@@ -122,6 +142,36 @@ namespace LibA
             {
                
                 MessageBox.Show($"Ошибка выполнения процедуры {procname}: {e.Message}");
+            }
+        }*/
+
+        public static async Task<int> ExecuteFunction(string functionName, params object[] parameters)
+        {
+            try
+            {
+                string commandText = $"select dbo.{functionName}(";
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    commandText += $"'{parameters[i]}',";
+                }
+                commandText = commandText.TrimEnd(',') + ");";
+                
+                using (SqlConnection connection = await ConnectionManager.Instance.OpenConnection())
+                {
+                    
+                    using (SqlCommand command = new SqlCommand(commandText, connection))
+                    {
+                       
+                        int result = Convert.ToInt32(await command.ExecuteScalarAsync());
+                        
+                        return result;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка в {functionName}: {ex.Message}");
+                return -1;
             }
         }
 
@@ -163,7 +213,30 @@ namespace LibA
                 return null;
             }
         }
+        public static async Task<DataTable> GetDataTable(string procname, params SqlParameter[] parameters)
+        {
+            try
+            {
+                if (procname.ToLower().StartsWith("exec"))
+                    procname = "Execute " + procname;
+                using (SqlCommand command = new SqlCommand(procname, await ConnectionManager.Instance.OpenConnection()))
+                {
+                    command.Parameters.AddRange(parameters);
 
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        return dt;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка в {procname}: {ex.Message}");
+                return null;
+            }
+        }
         public static async Task BeginTransaction(DataGridView dgv)
         {
             DataTable dataTable = dgv.DataSource as DataTable;
@@ -292,7 +365,7 @@ namespace LibA
             try
             {
 
-                if (await CheckUserRights(connection))
+                if (true)
                     return new List<string> { "SELECT", "INSERT", "UPDATE", "DELETE", "ALTER", "CREATE", "DROP", "EXECUTE", "GRANT", "REFERENCES", "VIEW DEFINITION" };
               
 
@@ -324,60 +397,9 @@ namespace LibA
 
         
 
-        public static async Task<bool> CheckUserRights(SqlConnection connection)
-        {
-            //TODO
-            var builder = new SqlConnectionStringBuilder(connection.ConnectionString);
-            string userID = builder.UserID;
-            string getRolesQuery = "EXEC GetUserRoles @LoginName";
+        
 
-            using (SqlCommand rolesCommand = new SqlCommand(getRolesQuery, connection))
-            {
-                rolesCommand.Parameters.AddWithValue("@LoginName", userID);
-
-                using (SqlDataReader rolesReader = await rolesCommand.ExecuteReaderAsync())
-                {
-                    while (rolesReader.Read())
-                    {
-                        string roleName = rolesReader.GetString(0);
-
-                      
-                        if (Enum.TryParse<DatabaseRoles>(roleName, out DatabaseRoles role))
-                        {
-                          
-                            if (role != DatabaseRoles.None)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                }
-            }
-        }
-
-        public enum DatabaseRoles
-        {
-            None,
-            db_securityadmin,
-            db_owner,
-            db_denydatawriter,
-            db_denydatareader,
-            db_ddladmin,
-            db_datawriter,
-            db_datareader,
-            db_backupoperator,
-            db_accessadmin,
-            db_executor,
-            db_owner_sid,
-            db_securityadmin_sid,
-            db_accessadmin_sid,
-            db_backupoperator_sid,
-            db_ddladmin_sid,
-            db_datareader_sid,
-            db_datawriter_sid,
-            db_denydatareader_sid
-        }
+       
     }
     
 }

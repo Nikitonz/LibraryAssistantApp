@@ -43,7 +43,6 @@
             this.создатьШаблонToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.взятьДанныеИзxslsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.перевестиГруппыНаСледующийГодToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.выдатьКнигиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Tables = new System.Windows.Forms.ListBox();
             this.dataGridViewMain = new System.Windows.Forms.DataGridView();
             this.lPane = new System.Windows.Forms.SplitContainer();
@@ -145,11 +144,10 @@
             // 
             this.операцииToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.загрузкаПервокурсниковToolStripMenuItem,
-            this.перевестиГруппыНаСледующийГодToolStripMenuItem,
-            this.выдатьКнигиToolStripMenuItem});
+            this.перевестиГруппыНаСледующийГодToolStripMenuItem});
             this.операцииToolStripMenuItem.Name = "операцииToolStripMenuItem";
-            this.операцииToolStripMenuItem.Size = new System.Drawing.Size(75, 20);
-            this.операцииToolStripMenuItem.Text = "Операции";
+            this.операцииToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
+            this.операцииToolStripMenuItem.Text = "Действия";
             // 
             // загрузкаПервокурсниковToolStripMenuItem
             // 
@@ -181,13 +179,6 @@
             this.перевестиГруппыНаСледующийГодToolStripMenuItem.Text = "Архивировать данные выпускников";
             this.перевестиГруппыНаСледующийГодToolStripMenuItem.Click += new System.EventHandler(this.перевестиГруппыНаСледующийГодToolStripMenuItem_Click);
             // 
-            // выдатьКнигиToolStripMenuItem
-            // 
-            this.выдатьКнигиToolStripMenuItem.Name = "выдатьКнигиToolStripMenuItem";
-            this.выдатьКнигиToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
-            this.выдатьКнигиToolStripMenuItem.Text = "Выдать книги";
-            this.выдатьКнигиToolStripMenuItem.Click += new System.EventHandler(this.выдатьКнигиToolStripMenuItem_Click);
-            // 
             // Tables
             // 
             this.Tables.Dock = System.Windows.Forms.DockStyle.Top;
@@ -196,7 +187,7 @@
             this.Tables.Location = new System.Drawing.Point(0, 0);
             this.Tables.Margin = new System.Windows.Forms.Padding(0);
             this.Tables.Name = "Tables";
-            this.Tables.Size = new System.Drawing.Size(119, 407);
+            this.Tables.Size = new System.Drawing.Size(120, 407);
             this.Tables.TabIndex = 13;
             this.Tables.SelectedIndexChanged += new System.EventHandler(this.Tables_SelectedIndexChanged);
             // 
@@ -208,7 +199,7 @@
             this.dataGridViewMain.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewMain.Location = new System.Drawing.Point(150, 24);
-            this.dataGridViewMain.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dataGridViewMain.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridViewMain.Name = "dataGridViewMain";
             this.dataGridViewMain.RowHeadersWidth = 51;
             this.dataGridViewMain.RowTemplate.Height = 24;
@@ -248,7 +239,7 @@
             this.lPane.Panel2.Click += new System.EventHandler(this.lPane_Panel2_Click);
             this.lPane.Panel2MinSize = 20;
             this.lPane.Size = new System.Drawing.Size(150, 464);
-            this.lPane.SplitterDistance = 121;
+            this.lPane.SplitterDistance = 122;
             this.lPane.SplitterWidth = 3;
             this.lPane.TabIndex = 15;
             // 
@@ -295,7 +286,7 @@
             this.Controls.Add(this.lPane);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "AdminPanel";
             this.Text = "Admin Panel (authorized-user only)";
             this.menuStrip1.ResumeLayout(false);
@@ -331,6 +322,5 @@
         private System.Windows.Forms.ToolStripMenuItem whereisBookToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem создатьШаблонToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem взятьДанныеИзxslsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem выдатьКнигиToolStripMenuItem;
     }
 }

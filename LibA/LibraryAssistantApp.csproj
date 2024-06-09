@@ -118,6 +118,12 @@
     <Compile Include="DLinker.Designer.cs">
       <DependentUpon>DLinker.cs</DependentUpon>
     </Compile>
+    <Compile Include="ShowData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowData.Designer.cs">
+      <DependentUpon>ShowData.cs</DependentUpon>
+    </Compile>
     <Compile Include="GiveBook.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -159,6 +165,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DLinker.resx">
       <DependentUpon>DLinker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowData.resx">
+      <DependentUpon>ShowData.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GiveBook.resx">
       <DependentUpon>GiveBook.cs</DependentUpon>

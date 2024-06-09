@@ -19,3 +19,10 @@ C:\Users\nikit\Desktop\LibraryAssistantApp\SqlCreateUser\obj\Debug\SqlCreateUser
 C:\Users\nikit\Desktop\LibraryAssistantApp\SqlCreateUser\obj\Debug\SqlCreateUser.csproj.CoreCompileInputs.cache
 C:\Users\nikit\Desktop\LibraryAssistantApp\SqlCreateUser\obj\Debug\SqlCreateUser.exe
 C:\Users\nikit\Desktop\LibraryAssistantApp\SqlCreateUser\obj\Debug\SqlCreateUser.pdb
+G:\шарпы\SqlCreateUser\bin\Debug\SqlCreateUser.exe.config
+G:\шарпы\SqlCreateUser\bin\Debug\SqlCreateUser.exe
+G:\шарпы\SqlCreateUser\bin\Debug\SqlCreateUser.pdb
+G:\шарпы\SqlCreateUser\obj\Debug\SqlCreateUser.csproj.AssemblyReference.cache
+G:\шарпы\SqlCreateUser\obj\Debug\SqlCreateUser.csproj.CoreCompileInputs.cache
+G:\шарпы\SqlCreateUser\obj\Debug\SqlCreateUser.exe
+G:\шарпы\SqlCreateUser\obj\Debug\SqlCreateUser.pdb

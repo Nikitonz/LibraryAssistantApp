@@ -155,3 +155,5 @@ G:\шарпы\LibA\bin\Debug\System.Numerics.Vectors.xml
 G:\шарпы\LibA\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 G:\шарпы\LibA\obj\Debug\LibraryAssistantApp.csproj.CopyComplete
 G:\шарпы\LibA\obj\Debug\LibA.GiveBook.resources
+F:\шарпы\LibA\obj\Debug\LibA.GiveBook.resources
+G:\шарпы\LibA\obj\Debug\LibA.ShowData.resources

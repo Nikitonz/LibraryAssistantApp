@@ -38,6 +38,7 @@
             this.gbox_WithTextInput = new System.Windows.Forms.GroupBox();
             this.i_sterm = new System.Windows.Forms.TextBox();
             this.b_sterm = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.gbox_with2Calendars.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).BeginInit();
             this.gbox_WithTextInput.SuspendLayout();
@@ -121,9 +122,8 @@
             this.dataGridViewMain.BackgroundColor = System.Drawing.SystemColors.ControlLight;
             this.dataGridViewMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridViewMain.ColumnHeadersHeight = 29;
-            this.dataGridViewMain.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.dataGridViewMain.GridColor = System.Drawing.SystemColors.Control;
-            this.dataGridViewMain.Location = new System.Drawing.Point(0, 450);
+            this.dataGridViewMain.Location = new System.Drawing.Point(0, 411);
             this.dataGridViewMain.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridViewMain.MultiSelect = false;
             this.dataGridViewMain.Name = "dataGridViewMain";
@@ -136,7 +136,7 @@
             this.dataGridViewMain.ShowCellToolTips = false;
             this.dataGridViewMain.ShowEditingIcon = false;
             this.dataGridViewMain.ShowRowErrors = false;
-            this.dataGridViewMain.Size = new System.Drawing.Size(1042, 187);
+            this.dataGridViewMain.Size = new System.Drawing.Size(396, 226);
             this.dataGridViewMain.TabIndex = 5;
             this.dataGridViewMain.Visible = false;
             // 
@@ -176,11 +176,23 @@
             this.b_sterm.UseVisualStyleBackColor = true;
             this.b_sterm.Click += new System.EventHandler(this.b_sterm_Click);
             // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(889, 574);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(141, 51);
+            this.button1.TabIndex = 8;
+            this.button1.Text = "Сохранить для печати";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.printButton_Click);
+            // 
             // Reports
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1042, 637);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.dataGridViewMain);
             this.Controls.Add(this.gbox_WithTextInput);
             this.Controls.Add(this.gbox_with2Calendars);
@@ -208,5 +220,6 @@
         private System.Windows.Forms.GroupBox gbox_WithTextInput;
         private System.Windows.Forms.Button b_sterm;
         private System.Windows.Forms.TextBox i_sterm;
+        private System.Windows.Forms.Button button1;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
@@ -17,6 +18,7 @@ namespace SqlCreateUser
         private TcpListener tcpListener;
         private CancellationTokenSource cancellationTokenSource;
         private const string CRYPTOKEY = "ThisIsASecretKey1234567890123456";
+        private string connectionString = $"Data Source=localhost;Initial Catalog=Библиотека;User ID=sa; Password=33223311";
 
         public SqlServerUserRegister()
         {
@@ -25,11 +27,35 @@ namespace SqlCreateUser
 
         protected override void OnStart(string[] args)
         {
+
             cancellationTokenSource = new CancellationTokenSource();
             tcpListener = new TcpListener(IPAddress.Any, 8888);
             tcpListener.Start();
 
-            _ = AcceptConnectionsAsync(cancellationTokenSource.Token);
+            // Проверка подключения к базе данных при старте службы
+           
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    if (connection.State == ConnectionState.Open)
+                    {
+                        EventLog.WriteEntry("SQLSlujba", "Успешное подключение к базе данных.", EventLogEntryType.Information);
+                        _ = AcceptConnectionsAsync(cancellationTokenSource.Token);
+                    }
+                    else
+                    {
+                        EventLog.WriteEntry("SQLSlujba", "Ошибка: Не удалось установить соединение с базой данных.", EventLogEntryType.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                
+                Stop();
+              
+            }
         }
 
         protected override void OnStop()
@@ -66,76 +92,91 @@ namespace SqlCreateUser
 
                 string receivedData = Encoding.UTF8.GetString(data, 0, bytesRead);
                 string[] credentials = receivedData.Split(',');
-
-                if (credentials.Length == 3)
+                if (credentials.Length >= 3)
                 {
                     string userName = credentials[0].Trim();
                     string login = DecryptString(credentials[1].Trim());
                     string password = DecryptString(credentials[2].Trim());
+                   
+                    // Encrypt the password before storing it
+                    string salt = GenerateSalt();
+                    
+                    string hashedPassword = HashPassword(password, salt);
 
 
+                    
 
-                    string connectionString = $"Data Source=localhost;Initial Catalog=Библиотека;Integrated Security=True";
-
-                    string query = $"CREATE LOGIN {login} WITH PASSWORD = '{password}'; " +
-                                   $"CREATE USER {userName} FOR LOGIN {login}; " +
-                                   $"GRANT EXECUTE ON [SearchBooks] TO {userName}";
-
+                    string query = $"INSERT INTO Пользователь ([Фамилия], [Имя], [Отчество], [Имя для входа], [Хэш пароля], [Соль]) " +
+                                   $"VALUES (@Фамилия, @Имя, @Отчество, @ИмяДляВхода, @HashedPassword, @Salt)";
+                   
                     try
                     {
                         using (SqlConnection connectionTRUSTABLE = new SqlConnection(connectionString))
                         {
                             SqlCommand command = new SqlCommand(query, connectionTRUSTABLE);
                             connectionTRUSTABLE.Open();
-                            await command.ExecuteNonQueryAsync(cancellationToken);
 
                             string[] ui = userName.Split('_');
-
-
-                            command.CommandText = "INSERT INTO Читатель ([Фамилия], [Имя], [Отчество], [Имя для входа]) VALUES (@Фамилия, @Имя, @Отчество, @ИмяДляВхода)";
-                            command.Parameters.Clear();
-                            command.Parameters.AddWithValue("@Фамилия", ui[0]);
-                            command.Parameters.AddWithValue("@Имя", ui[1]);
-                            command.Parameters.AddWithValue("@Отчество", ui[2]);
+                            command.Parameters.AddWithValue("@Фамилия", ui.Length > 0 ? ui[0] : (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@Имя", ui.Length > 1 ? ui[1] : (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@Отчество", ui.Length > 2 ? ui[2] : (object)DBNull.Value);
                             command.Parameters.AddWithValue("@ИмяДляВхода", login);
-
-                     
+                            command.Parameters.AddWithValue("@HashedPassword", hashedPassword);
+                            command.Parameters.AddWithValue("@Salt", salt);
+                            
                             await command.ExecuteNonQueryAsync(cancellationToken);
-
                             
                         }
                     }
                     catch (Exception e)
                     {
                         EventLog.WriteEntry("SQLSlujba", "Ошибка в создании записи.\n" + e.Message, EventLogEntryType.Error);
-
-
                         responce = $"500|{e.Message}";
-
                     }
+
                     if (responce is null)
                         responce = "200";
+
                     EventLog.WriteEntry("SQLSlujba", "Ответ сервера:\n" + responce, EventLogEntryType.Warning);
 
                     byte[] responseData = Encoding.UTF8.GetBytes(responce);
                     await networkStream.WriteAsync(responseData, 0, responseData.Length);
                     await networkStream.FlushAsync();
 
-
                     networkStream.Close();
                     tcpClient.Close();
                 }
-
+                else
+                {
+                    EventLog.WriteEntry("SQLSlujba", "Ошибка в создании записи.\nНекорректные данные полуцченыф" +  EventLogEntryType.Error);
+                }
             }
             catch (Exception ex)
             {
-
                 Console.WriteLine("finally:" + ex.Message);
             }
-           
-
-
         }
+        private static string GenerateSalt()
+        {
+            byte[] saltBytes = new byte[16];
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(saltBytes);
+            }
+            return Convert.ToBase64String(saltBytes);
+        }
+        private static string HashPassword(string password, string salt)
+        {
+            byte[] passwordBytes = Encoding.Unicode.GetBytes(password); // Используем Unicode
+            byte[] saltBytes = Encoding.Unicode.GetBytes(salt); // Используем Unicode
+
+            using (var pbkdf2 = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 10000))
+            {
+                byte[] hashBytes = pbkdf2.GetBytes(32);
+                return Convert.ToBase64String(hashBytes);
+            }
+        }
+        /*
         public static string EncryptString(string plainText)
         {
             using (Aes aesAlg = Aes.Create())
@@ -157,7 +198,7 @@ namespace SqlCreateUser
                 }
             }
         }
-
+        */
         public static string DecryptString(string cipherText)
         {
             using (Aes aesAlg = Aes.Create())

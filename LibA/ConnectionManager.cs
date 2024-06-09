@@ -5,55 +5,53 @@ using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace LibA {
-    public interface IConnectionManager
-    {
-        void Disconnect();
-        bool SetupConnectionString(string login = null, string password = null);
-        Task<SqlConnection> OpenConnection();
-        Task SendRegData(string name, string login, string password);
-        string ReceiveResponce(TcpClient tcpClient);
-        
-    }
-
+namespace LibA
+{
     public class ConnectionManager
     {
         private static ConnectionManager _instance;
-        private String connectionString;
-        private const String CRYPTOKEY = "ThisIsASecretKey1234567890123456";
+        private string connectionString;
+        private const string CRYPTOKEY = "ThisIsASecretKey1234567890123456";
         public event EventHandler Disconnection;
+
         private ConnectionManager() { }
+
         public static ConnectionManager Instance
         {
             get
             {
                 if (_instance is null)
                     _instance = new ConnectionManager();
-
                 return _instance;
             }
         }
 
-        public void Disconnect()
+        public async void Disconnect()
         {
             if (_instance != null)
             {
+                try
+                {
+                    SqlConnection c = new(connectionString);
+                    c.Close();
+                    c.Dispose();
+                }
+                catch { }
                 _instance.connectionString = null;
-                SetupConnectionString("Guest1", "1");
                 DBWorker.OldTable = null;
                 Disconnection?.Invoke(this, EventArgs.Empty);
             }
-
         }
 
-
-        public Boolean SetupConnectionString(string login = null, string password = null)
+        public bool SetupConnectionString(string login = "Guest1", string password = "1")
         {
+
+            
             string backup = connectionString;
+            Disconnect();
             connectionString = $"Data Source={Properties.Settings.Default.dbConnSourceAddr}{(Properties.Settings.Default.DBPort == "" ? "" : $",{Properties.Settings.Default.DBPort}")};Database={Properties.Settings.Default.ICatalog};";
 
             if (login is null || password is null)
@@ -62,39 +60,32 @@ namespace LibA {
                 return false;
             }
             else
-                connectionString += $"User Id = {login};Password='{password}'";
+                connectionString += $"User Id={login};Password='{password}'";
 
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    if (conn.State is not ConnectionState.Open)
+                    if (conn.State != ConnectionState.Open)
                     {
                         throw new Exception();
                     }
                 }
             }
-            
             catch (Exception e)
             {
-                
                 connectionString = backup;
                 MessageBox.Show("Ошибка создания соединения. Проверьте данные и попробуйте ещё раз");
                 Console.WriteLine(e.Message);
-                return false;  //not valid 
-
+                return false; // not valid
             }
-            return true; //valid
-
+            return true; // valid
         }
-
-
 
         public async Task<SqlConnection> OpenConnection()
         {
             SqlConnection connection = null;
-
             try
             {
                 connection = new SqlConnection(connectionString);
@@ -108,16 +99,14 @@ namespace LibA {
             }
             catch
             {
-                MessageBox.Show("Ошибка открытия соединения\n * Проверьте, включен ли сервер\n * Пользователь авторизован? ");
+                MessageBox.Show("Ошибка открытия соединения\n * Проверьте, включен ли сервер\n * Пользователь авторизован?");
                 connection?.Dispose();
             }
-
             return null;
         }
 
         public static async Task<bool> CheckDBConnectionAsync()
         {
-
             try
             {
                 using (TcpClient tcpClient = new TcpClient())
@@ -132,7 +121,6 @@ namespace LibA {
             }
         }
 
-
         public async Task<string> SendRegData(string name, string login, string password)
         {
             string response = null;
@@ -146,10 +134,7 @@ namespace LibA {
                 byte[] bytes = Encoding.UTF8.GetBytes(credentials);
 
                 await networkStream.WriteAsync(bytes, 0, bytes.Length);
-
-                
-                response = await ReceiveResponceAsync(tcpClient);
-                
+                response = await ReceiveResponseAsync(tcpClient);
             }
             catch (Exception)
             {
@@ -162,7 +147,7 @@ namespace LibA {
             return response;
         }
 
-        public async Task<string> ReceiveResponceAsync(TcpClient tcpClient)
+        public async Task<string> ReceiveResponseAsync(TcpClient tcpClient)
         {
             NetworkStream networkStream = tcpClient.GetStream();
             byte[] buffer = new byte[1024];
@@ -184,27 +169,8 @@ namespace LibA {
             {
                 // Обработка исключений
             }
-
             return responseBuilder.ToString();
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         private string EncryptString(string plainText)
         {
@@ -222,7 +188,6 @@ namespace LibA {
                     {
                         swEncrypt.Write(plainText);
                     }
-
                     return Convert.ToBase64String(msEncrypt.ToArray());
                 }
             }
@@ -246,7 +211,8 @@ namespace LibA {
                     }
                 }
             }
-        }
-        */
+        }*/
+        
+
     }
 }
